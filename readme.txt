@@ -1,6 +1,6 @@
 === Custom Field Images ===
 Contributors: scribu
-Tags: custom-fields images thumbs
+Tags: custom-fields, images, thumbs
 Requires at least: 2.5
 Tested up to: 2.5
 Stable tag: trunk
