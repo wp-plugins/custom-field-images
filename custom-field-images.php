@@ -5,7 +5,7 @@ Version: 1.0
 Description: Easily display images using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
-Plugin URI: http://scribu.net/download/
+Plugin URI: http://scribu.net/download/custom-field-images/
 */
 
 /*  Copyright 2008  scribu  (email : scribu@gmail.com)
