@@ -31,4 +31,4 @@ For example, if you want them to appear only when viewing posts by category, add
 
 = Why aren't my images aligning properly? =
 
-This is due to the fact that your theme doesn't have the 'wp-head' action included. You can simply copy the CSS from align.css into your theme's stylesheet.
+This is due to the fact that your theme doesn't have the 'wp_head' hook included. You can simply copy the CSS from align.css into your theme's stylesheet.
