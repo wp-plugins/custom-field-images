@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.0
+Version: 1.1
 Description: Easily display images using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -123,6 +123,7 @@ class cfImg {
 class cfImgAdmin extends cfImg {
 	function cfImgAdmin(){
 		add_action('edit_form_advanced', array(&$this, 'postbox'));
+		add_action('edit_page_form', array(&$this, 'postbox'));
 		add_action('save_post', array(&$this, 'save'));
 		add_action('admin_menu', array(&$this, 'page_init'));
 	}
