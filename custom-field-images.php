@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.1
+Version: 1.1.1
 Description: Easily display images using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -66,10 +66,12 @@ class cfImg {
 
 	function load(){
 		global $post;
-		$id = $post->ID;
 
-		foreach($this->data as $name => $value)
-			$this->data[$name] = stripslashes(get_post_meta($id, $name, $single = true));
+		$custom_fields = get_post_custom($post->ID);
+
+		foreach($this->data as $key => $value)
+			$this->data[$key] = stripslashes($custom_fields[$key][0]);
+
 		if( $this->data['cfi-align'] == '')
 			$this->data['cfi-align'] = 'right';
 	}
