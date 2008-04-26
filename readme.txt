@@ -3,14 +3,16 @@ Contributors: scribu
 Donate link: http://scribu.net/download/
 Tags: custom-fields, images, thumbs
 Requires at least: 2.5
-Tested up to: 2.5
+Tested up to: 2.5.1
 Stable tag: trunk
 
 Display images at the top of your post content, excerpt and feed using custom fields.
 
 == Description ==
 
-Like it's name suggests, Custom Field Images displays images using post metadata. It adds a simple box under the post editing screen for easy handling.
+Custom Field Images gives you increased flexibility in displaying images on specific page types of your blog, like Categories, Tag pages and feeds.
+
+It adds a simple box under the post editing screen for easy handling and also has an Options page.
 
 Credits go to [Justin Tadlock](http://justintadlock.com/archives/2007/10/27/wordpress-custom-fields-adding-images-to-posts), where I got the ideea from.
 
