@@ -1,40 +1,47 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.1.1
-Description: Easily display images using custom fields.
+Version: 1.2
+Description: Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
-Plugin URI: http://scribu.net/download/custom-field-images/
+Plugin URI: http://scribu.net/downloads/custom-field-images.html
 */
 
-/*  Copyright 2008  scribu  (email : scribu@gmail.com)
+/*
+Copyright (C) 2008 scribu.net (scribu AT gmail DOT com)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 class cfImg {
-// Editable variables BEGIN
+
+/****************************/
+/***** Editable options *****/
+/****************************/
+
+	var $attach_stylesheet = TRUE;
+
 	var $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
 		'center' => 'display:block; margin:0 auto .5em auto;',
 		'right' => 'float:right; margin: 0 0 .5em 1em;'
 	);
 
-	var $attach_stylesheet = 1;
-// Editable variables END
+/****************************/
+/***** Do not modify anything below *****/
+/****************************/
 
 	var $data = array(
 		'cfi-url' => '',
@@ -43,7 +50,7 @@ class cfImg {
 		'cfi-link' => ''
 	);
 
-	var $show_in;
+	var $show_in = array();
 	
 	function cfImg(){
 		$this->show_in = get_option('cfi_show_in');
@@ -111,14 +118,19 @@ class cfImg {
 	}
 
 	function display($content){
-		if( (is_feed() && $this->show_in['feed']) || (!is_feed() && $this->show_in['content']) )
+		$is_feed = is_feed();
+		if( ($is_feed && $this->show_in['feed']) || (!$is_feed && $this->show_in['content']) )
 			return $this->generate() . $content;
 		else
 			return $content;
 	}
 
 	function stylesheet(){
-		echo '<link rel="stylesheet" href="'.get_option('siteurl').'/wp-content/plugins/custom-field-images/align.css" type="text/css" media="screen" />'."\n";
+		$siteurl = get_option("siteurl");
+		$siteurl = rtrim($siteurl, '/') . '/';
+		$plugin_path = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__));
+
+		echo '<link rel="stylesheet" href="' . $plugin_path . '/align.css" type="text/css" media="screen" />'."\n";
 	}
 }
 
@@ -134,21 +146,21 @@ class cfImgAdmin extends cfImg {
 		$this->load();
 		
 		?>
-	<div id="cfi-div" class="postbox <?php echo postbox_classes('cfi-div', 'post'); ?>">
+	<div id="cfi-div" class="postbox <?= postbox_classes('cfi-div', 'post'); ?>">
 		<h3>Custom Field Image:</h3>
 		<div class="inside" style="text-align:right">
 			<p><strong>Image URL</strong>:
-				<input name="cfi-url" id="cfi-url" type="text" size="83" value="<?php echo $this->data['cfi-url']; ?>" />
+				<input name="cfi-url" id="cfi-url" type="text" size="83" value="<?= $this->data['cfi-url']; ?>" />
 			</p>
 			<p>Alt. Text:
-				<input name="cfi-alt" id="cfi-alt" type="text" size="83" value="<?php echo $this->data['cfi-alt']; ?>" />
+				<input name="cfi-alt" id="cfi-alt" type="text" size="83" value="<?= $this->data['cfi-alt']; ?>" />
 			</p>
 			<p>Link to:
-				<input name="cfi-link" id="cfi-link" type="text" size="83" value="<?php echo $this->data['cfi-link']; ?>" />
+				<input name="cfi-link" id="cfi-link" type="text" size="83" value="<?= $this->data['cfi-link']; ?>" />
 			</p>
 			<p style="text-align:left">Align: 
 				<?php foreach($this->styles as $align => $style){ ?>
-				<input name="cfi-align" id="cfi-align" type="radio" value="<?php echo $align .'" ';
+				<input name="cfi-align" id="cfi-align" type="radio" value="<?= $align .'" ';
 					if($this->data['cfi-align'] == $align)
 						echo 'checked="checked" ';
 					echo '/>'. $align ."\n";
@@ -227,13 +239,13 @@ class cfImgAdmin extends cfImg {
 <div class="wrap">
 <h2>Custom Field Images Options</h2>
 
-<form id="cfi-display" name="cfi-display" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+<form id="cfi-display" name="cfi-display" method="post" action="<?= str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
   <table class="form-table">
    <tr>
 	<th scope="row" valign="top">Display in</th>
 	<td><?php foreach($this->show_in as $name => $value){ ?>
-		<input type="checkbox" <?php if($value == TRUE) echo 'checked="checked"'; ?> name="<?php echo $name; ?>" value="TRUE" />
-  	 	<label>post <?php echo $name; ?></label>
+		<input type="checkbox" <?php if($value == TRUE) echo 'checked="checked"'; ?> name="<?= $name; ?>" value="TRUE" />
+  	 	<label>post <?= $name; ?></label>
 		<br class="clear" />
 	<?php } ?>
 	</td>
@@ -248,15 +260,15 @@ class cfImgAdmin extends cfImg {
 <br class="clear" />
 
 <h2>Rename custom field keys</h2>
-<form name="rename-key" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+<form name="rename-key" method="post" action="<?= str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
   <table class="form-table">
    <tr>
 	<th scope="row" valign="top">Rename key</th>
 	<td>
 		<?php foreach($this->data as $field => $value){ ?>
-		<input type="text" name="<?php echo $field; ?>" size="25" />
+		<input type="text" name="<?= $field; ?>" size="25" />
   	 	to
-		<input type="text" value="<?php echo $field; ?>" size="25" disabled="disabled" />
+		<input type="text" value="<?= $field; ?>" size="25" disabled="disabled" />
 		<br />
 		<?php } ?>
 		If you already use custom field images, you can rename the custom field keys so that they can be used by this plugin.
@@ -275,7 +287,7 @@ class cfImgAdmin extends cfImg {
 
 <h2>Delete all data</h2>
 <p>This will delete all custom keys asociated with Custom Field Images.</p>
-<form name="cfiDelete" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+<form name="cfiDelete" method="post" action="<?= str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
 	<p class="submit">
 		<input name="submit-delete" type="submit" onClick="return confirm_delete()" value="Delete" />
 	</p>
