@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.2.1
+Version: 1.2.2.1
 Description: Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -51,7 +51,8 @@ class cfImg {
 	);
 
 	var $show_in = array();
-	
+	var $plugin_url;
+
 	function cfImg(){
 		$this->show_in = get_option('cfi_show_in');
 		
@@ -65,10 +66,18 @@ class cfImg {
 		
 		if($this->show_in['feed'])
 			//add_filter('the_content_rss', array(&$this, 'display'));
-			add_filter('the_content', array(&$this, 'display'));	# hack
+			add_filter('the_content', array(&$this, 'display'));	// hack
 		
-		if($cfi_attach_stylesheet)
+		if($cfi_attach_stylesheet){
+			// Set plugin path
+			// Pre-2.6 compatibility
+			if ( !defined('WP_CONTENT_URL') )
+			//	define( 'WP_CONTENT_URL', get_option('siteurl') . '/wp-content');
+			// Guess the location
+			$this->plugin_url = WP_CONTENT_URL . '/plugins/' . plugin_basename(dirname(__FILE__));
+
 			add_action('wp_head', array(&$this, 'stylesheet'));
+		}
 	}
 
 	function load(){
@@ -88,17 +97,17 @@ class cfImg {
 
 		$url = $this->data['cfi-url'];
 		if($url){
-		# Begin img tag
+			// Begin img tag
 			$image.= '<img src="'. $url .'" ';
 
-			# Set alignment
+			// Set alignment
 			$align = $this->data['cfi-align'];
 			if(is_feed())
 				$image.= 'style="' . $this->styles[$align] .'" ';
 			else
 				$image.= 'class="align'. $align .'" ';
 
-			# Set alt text
+			// Set alt text
 			$alt = $this->data['cfi-alt'];
 			$image.= 'alt="';
 			if($alt)
@@ -106,10 +115,10 @@ class cfImg {
 			else
 				$image.= get_the_title() .'" ';
 
-			# End img tag
+			// End img tag
 			$image.= '/>';
 
-			# Set link
+			// Set link
 			$link = $this->data['cfi-link'];
 			if($link)
 			$image = '<a href="'. $link . '">' . $image . '</a>'."\n";
@@ -126,11 +135,7 @@ class cfImg {
 	}
 
 	function stylesheet(){
-		$siteurl = get_option("siteurl");
-		$siteurl = rtrim($siteurl, '/') . '/';
-		$plugin_path = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__));
-
-		echo '<link rel="stylesheet" href="' . $plugin_path . '/align.css" type="text/css" media="screen" />'."\n";
+		echo '<link rel="stylesheet" href="' . $this->plugin_url . '/align.css" type="text/css" media="screen" />'."\n";
 	}
 }
 
@@ -176,11 +181,11 @@ class cfImgAdmin extends cfImg {
 
 		foreach($this->data as $name => $value)
 			if ( $_POST[$name] == ''){
-				# Delete value
+				// Delete value
 				delete_post_meta($post_id, $name);
 			}
 			elseif($_POST[$name] != $value ){
-				# Set new value
+				// Set new value
 				$value = $_POST[$name];
 				$updated = update_post_meta($post_id, $name, $value);
 				if(!$updated)
@@ -188,7 +193,7 @@ class cfImgAdmin extends cfImg {
 			}
 	}
 
-	# Options Page
+	// Options Page
 	function page_init() {
 		$page = add_options_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'page'));
 		add_action("admin_print_scripts-$page", array(&$this, 'page_head'));
@@ -201,7 +206,7 @@ class cfImgAdmin extends cfImg {
 	function page() {
 		$this->show_in = get_option('cfi_show_in');
 
-		# Update display options
+		// Update display options
 		if ( $_POST['submit-display'] ){
 			foreach($this->show_in as $name => $value)
 				$this->show_in[$name] = $_POST[$name];
@@ -213,7 +218,7 @@ class cfImgAdmin extends cfImg {
 		unset($this->show_in);
 		$this->show_in = get_option('cfi_show_in');
 
-		# Rename cf keys
+		// Rename cf keys
 		if ( $_POST['submit-key-rename'] ){
 			global $wpdb;
 
@@ -227,7 +232,7 @@ class cfImgAdmin extends cfImg {
 			echo '<div class="updated"><p>Key renamed.</p></div>';
 		}
 
-		# Delete cf keys
+		// Delete cf keys
 		if ( $_POST['submit-delete'] ){
 			global $wpdb;
 
@@ -303,16 +308,11 @@ class cfImgAdmin extends cfImg {
 	}
 }
 
-# Init
-global $cfImg;
-function cfi_init(){
-	if ( is_admin() )
-		$cfImgAdmin = new cfImgAdmin();
-	else{
-		global $cfImg;
-		$cfImg = new cfImg();
-	}
-}
+// Init
+if ( is_admin() )
+	$cfImgAdmin = new cfImgAdmin();
+else
+	$cfImg = new cfImg();
 
 function custom_field_image(){
 	global $cfImg;
@@ -327,18 +327,8 @@ function cfi_activate(){
 	);
 
 	add_option('cfi_show_in', $show_in);
-	
-/*	#Update from version 1.2
-
-	global $wpdb;
-
-	foreach($this->styles as $style){
-		$query = "UPDATE $wpdb->postmeta SET meta_value = '" . $style ."' WHERE meta_key = 'cfi-align' AND meta_value = '". substr($style, 5) ."'";
-		$wpdb->query($query);
-	}
-*/
 }
 
 register_activation_hook(__FILE__, 'cfi_activate');
-add_action('plugins_loaded', 'cfi_init');
 ?>
+
