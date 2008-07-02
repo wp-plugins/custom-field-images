@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.2.2
+Version: 1.2.1
 Description: Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -126,13 +126,11 @@ class cfImg {
 	}
 
 	function stylesheet(){
-		// Pre-2.6 compatibility
-		if ( !defined('WP_CONTENT_URL') )
-			define( 'WP_CONTENT_URL', get_option('siteurl') . '/wp-content');
-		// Guess the location
-		$plugin_url = WP_CONTENT_URL . '/plugins/' . plugin_basename(dirname(__FILE__));
+		$siteurl = get_option("siteurl");
+		$siteurl = rtrim($siteurl, '/') . '/';
+		$plugin_path = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__));
 
-		echo '<link rel="stylesheet" href="' . $plugin_url . '/align.css" type="text/css" media="screen" />'."\n";
+		echo '<link rel="stylesheet" href="' . $plugin_path . '/align.css" type="text/css" media="screen" />'."\n";
 	}
 }
 
@@ -344,4 +342,3 @@ function cfi_activate(){
 register_activation_hook(__FILE__, 'cfi_activate');
 add_action('plugins_loaded', 'cfi_init');
 ?>
-
