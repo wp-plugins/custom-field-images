@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.2.2.1
+Version: 1.2.3
 Description: Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -31,8 +31,6 @@ class cfImg {
 /***** Editable options *****/
 /****************************/
 
-	var $attach_stylesheet = TRUE;
-
 	var $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
 		'center' => 'display:block; margin:0 auto .5em auto;',
@@ -51,7 +49,6 @@ class cfImg {
 	);
 
 	var $show_in = array();
-	var $plugin_url;
 
 	function cfImg(){
 		$this->show_in = get_option('cfi_show_in');
@@ -67,17 +64,6 @@ class cfImg {
 		if($this->show_in['feed'])
 			//add_filter('the_content_rss', array(&$this, 'display'));
 			add_filter('the_content', array(&$this, 'display'));	// hack
-		
-		if($cfi_attach_stylesheet){
-			// Set plugin path
-			// Pre-2.6 compatibility
-			if ( !defined('WP_CONTENT_URL') )
-			//	define( 'WP_CONTENT_URL', get_option('siteurl') . '/wp-content');
-			// Guess the location
-			$this->plugin_url = WP_CONTENT_URL . '/plugins/' . plugin_basename(dirname(__FILE__));
-
-			add_action('wp_head', array(&$this, 'stylesheet'));
-		}
 	}
 
 	function load(){
@@ -132,10 +118,6 @@ class cfImg {
 			return $this->generate() . $content;
 		else
 			return $content;
-	}
-
-	function stylesheet(){
-		echo '<link rel="stylesheet" href="' . $this->plugin_url . '/align.css" type="text/css" media="screen" />'."\n";
 	}
 }
 
