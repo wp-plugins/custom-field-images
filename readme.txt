@@ -3,7 +3,7 @@ Contributors: scribu
 Donate link: http://scribu.net/download/
 Tags: custom-fields, images, thumbs
 Requires at least: 2.5
-Tested up to: 2.5.1
+Tested up to: 2.6
 Stable tag: trunk
 
 Display images at the top of your post content, excerpt and feed using custom fields.
@@ -34,5 +34,9 @@ For example, if you want them to appear only when viewing posts by category, add
 
 = Why aren't my images aligning properly? =
 
-This is due to the fact that your theme doesn't have the 'wp_head' hook included. You can simply copy the CSS from align.css into your theme's stylesheet.
+This is due to your theme's CSS. Check if you have something like this in style.css:
+
+`img.alignleft { float:left; margin: 0 1em .5em 0; }
+img.alignright { float:right; margin: 0 0 .5em 1em; }
+img.aligncenter { display:block; margin:0 auto .5em auto; }`
 
