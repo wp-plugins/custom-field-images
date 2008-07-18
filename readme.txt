@@ -1,6 +1,6 @@
 === Custom Field Images ===
 Contributors: scribu
-Donate link: http://scribu.net/download/
+Donate link: http://scribu.net/projects/custom-field-images.html
 Tags: custom-fields, images, thumbs
 Requires at least: 2.5
 Tested up to: 2.6

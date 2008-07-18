@@ -114,7 +114,7 @@ class cfImg {
 
 	function display($content){
 		$is_feed = is_feed();
-		if( ($is_feed && $this->show_in['feed']) || (!$is_feed && $this->show_in['content']) )
+		if ( ($is_feed && $this->show_in['feed']) || (!$is_feed && $this->show_in['content']) )
 			return $this->generate() . $content;
 		else
 			return $content;
