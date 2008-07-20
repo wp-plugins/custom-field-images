@@ -313,4 +313,3 @@ function cfi_activate(){
 
 register_activation_hook(__FILE__, 'cfi_activate');
 ?>
-
