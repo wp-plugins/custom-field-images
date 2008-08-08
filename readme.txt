@@ -1,6 +1,6 @@
 === Custom Field Images ===
 Contributors: scribu
-Donate link: http://scribu.net/projects/custom-field-images.html
+Donate link: http://scribu.net/download/
 Tags: custom-fields, images, thumbs
 Requires at least: 2.5
 Tested up to: 2.6
@@ -22,8 +22,8 @@ Custom Field Images can be installed in 3 easy steps:
 
 1. Unzip "Custom Field Images" archive and put the folder into your "plugins" folder (/wp-content/plugins/).
 1. Activate the plugin from the Plugins admin menu.
-1. Inside the Wordpress admin, go to Settings > Custom Field Images, adjust the options according to your needs, and save them.
-
+1. Inside the Wordpress admin, go to Settings > Custom Field Images, adjust the options according to your needs, and save them.s
+	
 == Frequently Asked Questions ==
 
 = How can I show custom field images only on certain page types? =
