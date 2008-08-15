@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.2.5.1
+Version: 1.2.6
 Description: Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -48,10 +48,14 @@ class cfImg {
 		'cfi-link' => ''
 	);
 
-	var $show_in = array();
+	var $show_in = array(
+		'content' => TRUE,
+		'feed' => TRUE,
+		'excerpt' => TRUE,
+	);
 
 	function __construct() {
-		$this->show_in = get_option('cfi_show_in');
+		$this->show_in = get_option('cfi-show-in');
 		
 		if ($this->show_in['content']) {
 			add_filter('the_content', array(&$this, 'display'));
@@ -123,7 +127,7 @@ class cfImg {
 
 // Init
 if ( is_admin() )
-	include ('cfImgAdmin.class.php');
+	require_once ('custom-field-images.admin.php');
 else
 	$cfImg = new cfImg();
 

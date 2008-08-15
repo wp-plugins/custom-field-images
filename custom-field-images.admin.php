@@ -1,21 +1,13 @@
 <?php
 class cfImgAdmin extends cfImg {
 	function __construct() {
-		register_activation_hook(__FILE__, array(&$this, 'activate'));
+		delete_option('cfi-show-in');
+		add_option('cfi-show-in', $this->show_in);
+
 		add_action('edit_form_advanced', array(&$this, 'postbox'));
 		add_action('edit_page_form', array(&$this, 'postbox'));
 		add_action('save_post', array(&$this, 'save'));
 		add_action('admin_menu', array(&$this, 'page_init'));
-	}
-
-	function activate() {
-		$show_in = array(
-			'content' => TRUE,
-			'feed' => TRUE,
-			'excerpt' => TRUE,
-		);
-	
-		add_option('cfi_show_in', $show_in);
 	}
 
 	function postbox() {
@@ -66,23 +58,26 @@ class cfImgAdmin extends cfImg {
 
 	// Options Page
 	function page_init() {
-		add_options_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'page'));
+		if ( current_user_can('manage_options') ) {
+			add_options_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'page'));
+			add_filter( 'plugin_action_links', array(&$this, 'filter_plugin_actions'), 10, 2 );
+		}
 	}
 
 	function page() {
-		$this->show_in = get_option('cfi_show_in');
+		$this->show_in = get_option('cfi-show-in');
 
 		// Update display options
 		if ( $_POST['submit-display'] ) {
 			foreach ($this->show_in as $name => $value)
 				$this->show_in[$name] = $_POST[$name];
 
-			update_option('cfi_show_in', $this->show_in);
+			update_option('cfi-show-in', $this->show_in);
 			echo '<div class="updated"><p>Display options saved.</p></div>';
 		}
 
 		unset($this->show_in);
-		$this->show_in = get_option('cfi_show_in');
+		$this->show_in = get_option('cfi-show-in');
 
 		// Rename cf keys
 		if ( $_POST['submit-key-rename'] ) {
@@ -149,7 +144,7 @@ class cfImgAdmin extends cfImg {
 	<?php } ?>
 		If you already use custom field images, you can rename the custom field keys so that they can be used by this plugin.
 		<br />Example: <em>Thumb URL</em> to <em>cfi-url</em>.
-		<br />Please <strong>make a backup</strong> first!
+		<br />Please <strong>backup your database</strong> first!
 	</td>
 	</tr>
 	</table>
@@ -171,6 +166,18 @@ class cfImgAdmin extends cfImg {
 
 </div>
 <?php
+	}
+
+	function filter_plugin_actions($links, $file) {
+		static $this_plugin;
+		if ( ! $this_plugin )
+			$this_plugin = plugin_basename(dirname(__FILE__)) . '/custom-field-images.php';
+
+		if ( $file == $this_plugin ) {
+			$settings_link = '<a href="options-general.php?page=custom-field-images"><strong>Settings</strong></a>';
+			$links[] = $settings_link;
+		}
+		return $links;
 	}
 }
 
