@@ -1,7 +1,6 @@
 <?php
 class cfImgAdmin extends cfImg {
 	function __construct() {
-		delete_option('cfi-show-in');
 		add_option('cfi-show-in', $this->show_in);
 
 		add_action('edit_form_advanced', array(&$this, 'postbox'));
