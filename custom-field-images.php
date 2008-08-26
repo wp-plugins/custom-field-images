@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.2.6.1
+Version: 1.2.7
 Description: Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -27,9 +27,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 class cfImg {
 
-/****************************/
-/***** Editable options *****/
-/****************************/
+/******************************/
+/*** BEGIN Editable options ***/
+/******************************/
+
+	var $new_window = FALSE;	// Set to TRUE if you want links to open in a new window
 
 	var $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
@@ -37,9 +39,9 @@ class cfImg {
 		'right' => 'float:right; margin: 0 0 .5em 1em;'
 	);
 
-/****************************/
-/* Do not modify anything below */
-/****************************/
+/******************************/
+/**** END Editable options ****/
+/******************************/
 
 	var $data = array(
 		'cfi-url' => '',
@@ -70,7 +72,19 @@ class cfImg {
 			add_filter('the_content', array(&$this, 'display'));	// hack
 	}
 
+	function display($content) {
+		// Checks if we should display the image in feeds or not
+
+		$is_feed = is_feed();
+		if ( ($is_feed && $this->show_in['feed']) || (!$is_feed && $this->show_in['content']) )
+			return $this->generate() . $content;
+		else
+			return $content;
+	}
+
 	function load() {
+		// Loads cfi data for current post
+
 		global $post;
 
 		$custom_fields = get_post_custom($post->ID);
@@ -83,51 +97,61 @@ class cfImg {
 	}
 
 	function generate() {
+		// Creates the image tag
+
 		$this->load();
 
 		$url = $this->data['cfi-url'];
-		if ($url) {
-			// Begin img tag
-			$image.= '<img src="'. $url .'" ';
 
-			// Set alignment
-			$align = $this->data['cfi-align'];
-			if (is_feed())
-				$image .= 'style="' . $this->styles[$align] .'" ';
-			else
-				$image .= 'class="align'. $align .'" ';
+		if (!$url)
+			return;
 
-			// Set alt text
-			$alt = $this->data['cfi-alt'];
-			$image .= 'alt="';
-			if ($alt)
-				$image .= $alt .'" ';
-			else
-				$image .= get_the_title() .'" ';
+		// Begin img tag
+		$image.= '<img src="'. $url .'" ';
 
-			// End img tag
-			$image .= '/>';
+		// Set alignment
+		$align = $this->data['cfi-align'];
+		if (is_feed())
+			$image .= 'style="' . $this->styles[$align] .'" ';
+		else
+			$image .= 'class="align'. $align .'" ';
 
-			// Set link
-			$link = $this->data['cfi-link'];
-			if ($link)
-			$image = '<a href="'. $link . '">' . $image . '</a>'."\n";
-			return $image;
-		}
+		// Set alt text
+		$alt = $this->data['cfi-alt'];
+		$image .= 'alt="';
+		if ($alt)
+			$image .= $alt .'" ';
+		else
+			$image .= get_the_title() .'" ';
+
+		// End img tag
+		$image .= '/>';
+
+		return $this->add_link($image);
 	}
 
-	function display($content) {
-		$is_feed = is_feed();
-		if ( ($is_feed && $this->show_in['feed']) || (!$is_feed && $this->show_in['content']) )
-			return $this->generate() . $content;
-		else
-			return $content;
+	function add_link($image) {
+		// Sets the link for the image
+
+		$link = $this->data['cfi-link'];
+
+		if (!$link)
+			return $image;
+
+		$output = '<a href="'. $link . '"';
+
+		if ($this->new_window)
+			$output .= ' target="_blank"';
+
+		$output .= '>' . $image . '</a>'."\n";
+
+		return $output;
 	}
 }
 
 // Init
 if ( is_admin() )
-	require_once ('custom-field-images.admin.php');
+	require_once('custom-field-images.admin.php');
 else
 	$cfImg = new cfImg();
 
