@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.2.7
+Version: 1.2.8b
 Description: Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -31,7 +31,7 @@ class cfImg {
 /*** BEGIN Editable options ***/
 /******************************/
 
-	var $new_window = FALSE;	// Set to TRUE if you want links to open in a new window
+	var $new_window = TRUE;		// Set to TRUE if you want links to open in a new window
 
 	var $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',

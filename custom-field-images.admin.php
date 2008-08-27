@@ -3,55 +3,57 @@ class cfImgAdmin extends cfImg {
 	function __construct() {
 		add_option('cfi-show-in', $this->show_in);
 
-		add_action('edit_form_advanced', array(&$this, 'postbox'));
-		add_action('edit_page_form', array(&$this, 'postbox'));
+		add_action('admin_menu', array(&$this, 'box_init'));
 		add_action('save_post', array(&$this, 'save'));
+
 		add_action('admin_menu', array(&$this, 'page_init'));
 	}
 
-	function postbox() {
-		$this->load();
-		
-		?>
-	<div id="cfi-div" class="postbox <?= postbox_classes('cfi-div', 'post'); ?>">
-		<h3>Custom Field Image</h3>
-		<div class="inside" style="text-align:right">
-			<p><strong>Image URL</strong>
-				<input name="cfi-url" id="cfi-url" type="text" style="width: 46em" value="<?= $this->data['cfi-url']; ?>" />
-			</p>
-			<p>Alt. Text
-				<input name="cfi-alt" id="cfi-alt" type="text" style="width: 46em" value="<?= $this->data['cfi-alt']; ?>" />
-			</p>
-			<p>Link to
-				<input name="cfi-link" id="cfi-link" type="text" style="width: 46em" value="<?= $this->data['cfi-link']; ?>" />
-			</p>
-			<p style="text-align:left; margin-left:4.8em;">Align
-				<?php foreach ($this->styles as $align => $style) {
-					echo '<input name="cfi-align" id="cfi-align" type="radio" value="' . $align . '" ';
-					if ($this->data['cfi-align'] == $align)
-						echo 'checked="checked" ';
-					echo '/>'. $align ."\n";
-				} ?>
-			</p>
-		</div>
-	</div>
-<?php
+	function box_init() {
+		add_meta_box('cfi-box', 'Custom Field Image', array(&$this, 'box'), 'post', 'normal');
+		add_meta_box('cfi-box', 'Custom Field Image', array(&$this, 'box'), 'page', 'normal');
 	}
+
+	function box() {
+		$this->load();
+
+		echo '<input type="hidden" name="cfi_nonce" id="cfi_nonce" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />' . "\n";
+
+		?>
+		<div style="text-align:right">
+		<p><strong>Image URL</strong>
+			<input name="cfi-url" id="cfi-url" type="text" style="width: 46em" value="<?= $this->data['cfi-url']; ?>" />
+		</p>
+		<p>Alt. Text
+			<input name="cfi-alt" id="cfi-alt" type="text" style="width: 46em" value="<?= $this->data['cfi-alt']; ?>" />
+		</p>
+		<p>Link to
+			<input name="cfi-link" id="cfi-link" type="text" style="width: 46em" value="<?= $this->data['cfi-link']; ?>" />
+		</p>
+		<p style="text-align:left; margin-left:4.5em;">Align
+			<?php foreach ($this->styles as $align => $style) {
+				echo '<input name="cfi-align" id="cfi-align" type="radio" value="' . $align . '" ';
+				if ($this->data['cfi-align'] == $align)
+					echo 'checked="checked" ';
+				echo '/>'. $align ."\n";
+			} ?>
+		</p>
+		</div>
+<?php	}
 
 	function save($post_id) {
 		$this->load();
 
 		foreach ($this->data as $name => $value)
-			if ( $_POST[$name] == '') {
+			if ( !$_POST[$name] ) {
 				// Delete value
 				delete_post_meta($post_id, $name);
 			}
-			elseif ($_POST[$name] != $value ) {
-				// Set new value
-				$value = $_POST[$name];
-				$updated = update_post_meta($post_id, $name, $value);
+			elseif ( $_POST[$name] != $value ) {
+				// Update value
+				$updated = update_post_meta($post_id, $name, $_POST[$name]);
 				if (!$updated)
-					add_post_meta($post_id, $name, $value);
+					add_post_meta($post_id, $name, $_POST[$name]);
 			}
 	}
 
@@ -82,10 +84,10 @@ class cfImgAdmin extends cfImg {
 		if ( $_POST['submit-key-rename'] ) {
 			global $wpdb;
 
-			foreach ($this->data as $field => $value) {
-				$key = $_POST[$field];
+			foreach ($this->data as $name => $value) {
+				$key = $_POST[$name];
 				if ($key) {
-					$query = "UPDATE $wpdb->postmeta SET meta_key = '$field' WHERE meta_key = '$key'";
+					$query = "UPDATE $wpdb->postmeta SET meta_key = '$name' WHERE meta_key = '$key'";
 					$wpdb->query($query);
 				}
 			}
@@ -135,10 +137,10 @@ class cfImgAdmin extends cfImg {
 	<tr>
 	<th scope="row" valign="top">Rename key</th>
 	<td>
-	<?php foreach ($this->data as $field => $value) { ?>
-		<input type="text" name="<?= $field; ?>" size="25" />
+	<?php foreach ($this->data as $name => $value) { ?>
+		<input type="text" name="<?= $name; ?>" size="25" />
 		to
-		<input type="text" value="<?= $field; ?>" size="25" disabled="disabled" />
+		<input type="text" value="<?= $name; ?>" size="25" disabled="disabled" />
 		<br />
 	<?php } ?>
 		If you already use custom field images, you can rename the custom field keys so that they can be used by this plugin.
