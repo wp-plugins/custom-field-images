@@ -18,11 +18,10 @@ Credits go to [Justin Tadlock](http://justintadlock.com/archives/2007/10/27/word
 
 == Installation ==
 
-Custom Field Images can be installed in 3 easy steps:
+The plugin can be installed in 2 easy steps:
 
-1. Unzip "Custom Field Images" archive and put the folder into your "plugins" folder (/wp-content/plugins/).
-1. Activate the plugin from the Plugins admin menu.
-1. Inside the Wordpress admin, go to Settings > Custom Field Images, adjust the options according to your needs, and save them.s
+1. Unzip "Custom Field Images" archive and put the folder into your plugins folder (/wp-content/plugins/).
+1. Activate the plugin from the Plugins menu.
 
 == Frequently Asked Questions ==
 
