@@ -72,10 +72,7 @@ class cfImgAdmin extends cfImg {
 				$this->show_in[$name] = $_POST[$name];
 
 			update_option('cfi-show-in', $this->show_in);
-			echo '<div class="updated"><p>Display options saved.</p></div>';
-
-			unset($this->show_in);
-			$this->show_in = get_option('cfi-show-in');
+			echo '<div class="updated"><p>Options <stron>saved</strong>.</p></div>';
 		}
 
 		// Rename cf keys
