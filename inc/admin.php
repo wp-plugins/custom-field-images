@@ -59,10 +59,8 @@ class cfImgAdmin extends cfImg {
 
 	// Options Page
 	function page_init() {
-		if ( current_user_can('manage_options') ) {
+		if ( current_user_can('manage_options') )
 			add_options_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'page'));
-			add_filter( 'plugin_action_links', array(&$this, 'filter_plugin_actions'), 10, 2 );
-		}
 	}
 
 	function page() {
@@ -167,18 +165,6 @@ class cfImgAdmin extends cfImg {
 
 </div>
 <?php
-	}
-
-	function filter_plugin_actions($links, $file) {
-		static $this_plugin;
-		if ( ! $this_plugin )
-			$this_plugin = plugin_basename(dirname(__FILE__)) . '/custom-field-images.php';
-
-		if ( $file == $this_plugin ) {
-			$settings_link = '<a href="options-general.php?page=custom-field-images"><strong>Settings</strong></a>';
-			$links[] = $settings_link;
-		}
-		return $links;
 	}
 }
 

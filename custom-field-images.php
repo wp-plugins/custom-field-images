@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Version: 1.2.8b
-Description: Easily display images anywhere using custom fields.
+Description: (<a href="options-general.php?page=custom-field-images"><strong>Settings</strong></a>) Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/projects/custom-field-images.html
@@ -151,7 +151,7 @@ class cfImg {
 
 // Init
 if ( is_admin() )
-	require_once('custom-field-images.admin.php');
+	require_once('inc/admin.php');
 else
 	$cfImg = new cfImg();
 
