@@ -22,13 +22,13 @@ class cfImgAdmin extends cfImg {
 		?>
 		<div style="text-align:right">
 		<p><strong>Image URL</strong>
-			<input name="cfi-url" id="cfi-url" type="text" style="width: 46em" value="<?= $this->data['cfi-url']; ?>" />
+			<input name="cfi-url" id="cfi-url" type="text" style="width: 46em" value="<?php echo $this->data['cfi-url']; ?>" />
 		</p>
 		<p>Alt. Text
-			<input name="cfi-alt" id="cfi-alt" type="text" style="width: 46em" value="<?= $this->data['cfi-alt']; ?>" />
+			<input name="cfi-alt" id="cfi-alt" type="text" style="width: 46em" value="<?php echo $this->data['cfi-alt']; ?>" />
 		</p>
 		<p>Link to
-			<input name="cfi-link" id="cfi-link" type="text" style="width: 46em" value="<?= $this->data['cfi-link']; ?>" />
+			<input name="cfi-link" id="cfi-link" type="text" style="width: 46em" value="<?php echo $this->data['cfi-link']; ?>" />
 		</p>
 		<p style="text-align:left; margin-left:4.5em;">Align
 			<?php foreach ($this->styles as $align => $style) {
@@ -73,10 +73,10 @@ class cfImgAdmin extends cfImg {
 
 			update_option('cfi-show-in', $this->show_in);
 			echo '<div class="updated"><p>Display options saved.</p></div>';
-		}
 
-		unset($this->show_in);
-		$this->show_in = get_option('cfi-show-in');
+			unset($this->show_in);
+			$this->show_in = get_option('cfi-show-in');
+		}
 
 		// Rename cf keys
 		if ( $_POST['submit-key-rename'] ) {
@@ -109,36 +109,37 @@ class cfImgAdmin extends cfImg {
 <div class="wrap">
 <h2>Custom Field Images Options</h2>
 
-<form id="cfi-display" name="cfi-display" method="post" action="<?= str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+<form id="cfi-display" name="cfi-display" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
 	<table class="form-table">
-	 <tr>
-	<th scope="row" valign="top">Display in</th>
-	<td><?php foreach ($this->show_in as $name => $value) { ?>
-		<input type="checkbox" <?php if ($value == TRUE) echo 'checked="checked"'; ?> name="<?= $name; ?>" value="TRUE" />
-		 	<label>post <?= $name; ?></label>
-		<br class="clear" />
-	<?php } ?>
-	</td>
-	 </tr>
+		<tr>
+			<th scope="row" valign="top">Display in</th>
+			<td>
+			<?php foreach ($this->show_in as $name => $value) { ?>
+				<input type="checkbox" <?php if ($value == TRUE) echo 'checked="checked"'; ?> name="<?php echo $name; ?>" value="TRUE" />
+			 	<label>post <?php echo $name; ?></label>
+				<br class="clear" />
+			<?php } ?>
+			</td>
+		 </tr>
 	</table>
 
 	<p class="submit">
-	<input name="submit-display" value="Save Options" type="submit" />
+		<input name="submit-display" value="Save Options" type="submit" />
 	</p>
 </form>
 
 <br class="clear" />
 
 <h2>Rename custom field keys</h2>
-<form name="rename-key" method="post" action="<?= str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+<form name="rename-key" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
 	<table class="form-table">
 	<tr>
 	<th scope="row" valign="top">Rename key</th>
 	<td>
 	<?php foreach ($this->data as $name => $value) { ?>
-		<input type="text" name="<?= $name; ?>" size="25" />
+		<input type="text" name="<?php echo $name; ?>" size="25" />
 		to
-		<input type="text" value="<?= $name; ?>" size="25" disabled="disabled" />
+		<input type="text" value="<?php echo $name; ?>" size="25" disabled="disabled" />
 		<br />
 	<?php } ?>
 		If you already use custom field images, you can rename the custom field keys so that they can be used by this plugin.
@@ -157,7 +158,7 @@ class cfImgAdmin extends cfImg {
 
 <h2>Delete all data</h2>
 <p>This will delete all custom keys asociated with Custom Field Images.</p>
-<form name="cfiDelete" method="post" action="<?= str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+<form name="cfiDelete" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
 	<p class="submit">
 		<input name="submit-delete" type="submit" onClick="return confirm('Are you sure you want to do this?\nIt cannot be undone.')" value="Delete" />
 	</p>

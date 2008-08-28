@@ -111,14 +111,17 @@ class cfImg {
 
 		// Set alignment
 		$align = $this->data['cfi-align'];
+
 		if (is_feed())
 			$image .= 'style="' . $this->styles[$align] .'" ';
 		else
-			$image .= 'class="align'. $align .'" ';
+			$image .= 'class="cfi align'. $align .'" ';
 
 		// Set alt text
 		$alt = $this->data['cfi-alt'];
+
 		$image .= 'alt="';
+
 		if ($alt)
 			$image .= $alt .'" ';
 		else
