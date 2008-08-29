@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.2.8
+Version: 1.3
 Description: (<a href="options-general.php?page=custom-field-images"><strong>Settings</strong></a>) Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -31,7 +31,8 @@ class cfImg {
 /*** BEGIN Editable options ***/
 /******************************/
 
-	var $new_window = FALSE;		// Set to TRUE if you want links to open in a new window
+	var $new_window = FALSE;	// Set to TRUE if you want links to open in a new window
+	var $default_align = 'right';	// Set to 'left', 'center' or 'right'
 
 	var $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
@@ -43,6 +44,12 @@ class cfImg {
 /**** END Editable options ****/
 /******************************/
 
+	var $show_in = array(
+		'content' => TRUE,
+		'feed' => TRUE,
+		'excerpt' => TRUE,
+	);
+
 	var $data = array(
 		'cfi-url' => '',
 		'cfi-align' => '',
@@ -50,15 +57,11 @@ class cfImg {
 		'cfi-link' => ''
 	);
 
-	var $show_in = array(
-		'content' => TRUE,
-		'feed' => TRUE,
-		'excerpt' => TRUE,
-	);
+	var $field = '_cfi_image';
 
 	function __construct() {
-		$this->show_in = get_option('cfi-show-in');
-		
+		$this->show_in = get_option('cfi_options');
+
 		if ($this->show_in['content']) {
 			add_filter('the_content', array(&$this, 'display'));
 		}
@@ -66,7 +69,7 @@ class cfImg {
 		if ($this->show_in['excerpt']) {
 			add_filter('the_excerpt', array(&$this, 'display'));
 		}
-		
+
 		if ($this->show_in['feed'])
 			//add_filter('the_content_rss', array(&$this, 'display'));
 			add_filter('the_content', array(&$this, 'display'));	// hack
@@ -83,7 +86,13 @@ class cfImg {
 	}
 
 	function load() {
-		// Loads cfi data for current post
+		global $post;
+
+		$this->data = unserialize(get_post_meta($post->ID, $this->field, TRUE));
+	}
+
+	function _load() {
+		// Loads cfi data for current post (OLD)
 
 		global $post;
 
@@ -92,8 +101,8 @@ class cfImg {
 		foreach ($this->data as $key => $value)
 			$this->data[$key] = stripslashes($custom_fields[$key][0]);
 
-		if ($this->data['cfi-align'] == '')
-			$this->data['cfi-align'] = 'right';
+		if ( !$this->data['cfi-align'] )
+			$this->data['cfi-align'] = $this->default_align;
 	}
 
 	function generate() {
@@ -110,7 +119,7 @@ class cfImg {
 		$image.= '<img src="'. $url .'" ';
 
 		// Set alignment
-		$align = $this->data['cfi-align'];
+		$align = $this->data['cfi-align'] ? $this->data['cfi-align'] : 'right';
 
 		if (is_feed())
 			$image .= 'style="' . $this->styles[$align] .'" ';
