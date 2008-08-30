@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.2.6.1
-Description: Easily display images anywhere using custom fields.
+Version: 1.4
+Description: (<a href="options-general.php?page=custom-field-images"><strong>Settings</strong></a>) Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/projects/custom-field-images.html
@@ -27,9 +27,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 class cfImg {
 
-/****************************/
-/***** Editable options *****/
-/****************************/
+/******************************/
+/*** BEGIN Editable options ***/
+/******************************/
 
 	var $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
@@ -37,9 +37,9 @@ class cfImg {
 		'right' => 'float:right; margin: 0 0 .5em 1em;'
 	);
 
-/****************************/
-/* Do not modify anything below */
-/****************************/
+/******************************/
+/**** END Editable options ****/
+/******************************/
 
 	var $data = array(
 		'cfi-url' => '',
@@ -48,88 +48,104 @@ class cfImg {
 		'cfi-link' => ''
 	);
 
-	var $show_in = array(
+	var $options = array(
+		'default_align' => 'right',
+		'extra_attr' => '',
+
 		'content' => TRUE,
 		'feed' => TRUE,
-		'excerpt' => TRUE,
+		'excerpt' => TRUE
 	);
 
-	function __construct() {
-		$this->show_in = get_option('cfi-show-in');
-		
-		if ($this->show_in['content']) {
-			add_filter('the_content', array(&$this, 'display'));
-		}
+	var $field = '_cfi_image';
 
-		if ($this->show_in['excerpt']) {
+	function __construct() {
+		$this->options = get_option('cfi_options');
+
+		if ($this->options['content'])
+			add_filter('the_content', array(&$this, 'display'));
+
+		if ($this->options['excerpt'])
 			add_filter('the_excerpt', array(&$this, 'display'));
-		}
-		
-		if ($this->show_in['feed'])
-			//add_filter('the_content_rss', array(&$this, 'display'));
-			add_filter('the_content', array(&$this, 'display'));	// hack
+
+		if ($this->options['feed'])
+			//add_filter('the_content_rss', array(&$this, 'display')); // not working as of WP 2.5.1
+			add_filter('the_content', array(&$this, 'display'));
+	}
+
+	function display($content) {
+		$is_feed = is_feed();
+		if ( ($is_feed && $this->options['feed']) || (!$is_feed && $this->options['content']) )
+			return $this->generate() . $content;
+		else
+			return $content;
 	}
 
 	function load() {
 		global $post;
 
-		$custom_fields = get_post_custom($post->ID);
-
-		foreach ($this->data as $key => $value)
-			$this->data[$key] = stripslashes($custom_fields[$key][0]);
-
-		if ($this->data['cfi-align'] == '')
-			$this->data['cfi-align'] = 'right';
+		$this->data = unserialize(get_post_meta($post->ID, $this->field, TRUE));
 	}
 
 	function generate() {
 		$this->load();
 
 		$url = $this->data['cfi-url'];
-		if ($url) {
-			// Begin img tag
-			$image.= '<img src="'. $url .'" ';
 
-			// Set alignment
-			$align = $this->data['cfi-align'];
-			if (is_feed())
-				$image .= 'style="' . $this->styles[$align] .'" ';
-			else
-				$image .= 'class="align'. $align .'" ';
+		if (!$url)
+			return;
 
-			// Set alt text
-			$alt = $this->data['cfi-alt'];
-			$image .= 'alt="';
-			if ($alt)
-				$image .= $alt .'" ';
-			else
-				$image .= get_the_title() .'" ';
+		// Begin img tag
+		$image.= '<img src="'. $url .'" ';
 
-			// End img tag
-			$image .= '/>';
+		// Set alignment
+		$align = $this->data['cfi-align'] ? $this->data['cfi-align'] : 'right';
 
-			// Set link
-			$link = $this->data['cfi-link'];
-			if ($link)
-			$image = '<a href="'. $link . '">' . $image . '</a>'."\n";
-			return $image;
-		}
+		if (is_feed())
+			$image .= 'style="' . $this->styles[$align] .'" ';
+		else
+			$image .= 'class="cfi align'. $align .'" ';
+
+		// Set alt text
+		$alt = $this->data['cfi-alt'];
+
+		$image .= 'alt="';
+
+		if ($alt)
+			$image .= $alt .'" ';
+		else
+			$image .= get_the_title() .'" ';
+
+		// End img tag
+		$image .= '/>';
+
+		return $this->add_link($image);
 	}
 
-	function display($content) {
-		$is_feed = is_feed();
-		if ( ($is_feed && $this->show_in['feed']) || (!$is_feed && $this->show_in['content']) )
-			return $this->generate() . $content;
-		else
-			return $content;
+	function add_link($image) {
+		// Sets the link for the image
+
+		$link = $this->data['cfi-link'];
+
+		if (!$link)
+			return $image;
+
+		$output = '<a href="'. $link . '"';
+		$output .= ' ' . stripslashes($this->options['extra_attr']);
+		$output .= '>' . $image . '</a>'."\n";
+
+		return $output;
 	}
 }
 
 // Init
 if ( is_admin() )
-	require_once ('custom-field-images.admin.php');
+	require_once('inc/admin.php');
 else
 	$cfImg = new cfImg();
+
+// Activate
+register_activation_hook(__FILE__, create_function('', '$admin = new cfImgAdmin(); $admin->activate();') );
 
 // Functions
 function custom_field_image() {
