@@ -205,7 +205,7 @@ class cfImgAdmin extends cfImg {
 		<tr>
 			<th scope="row" valign="top">Extra attributes</th>
 			<td>
-				<input type="text" name="extra_attr" value="<?php echo htmlentities(stripslashes($this->options['extra_attr'])); ?>" />
+				<input type="text" name="extra_attr" value="<?php echo htmlentities(stripslashes($this->options['extra_attr'])); ?>" style="width: 250px" />
 				<label>Example: <em>target="_blank" rel="nofollow"</em></label>
 				<p>This is for adding extra attributes to the links added to images.</p>
 			</td>
