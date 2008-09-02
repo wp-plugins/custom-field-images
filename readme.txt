@@ -1,10 +1,10 @@
 === Custom Field Images ===
 Contributors: scribu
 Donate link: http://scribu.net/projects
-Tags: custom-fields, images, thumbs
+Tags: custom fields, images, thumbs
 Requires at least: 2.5
 Tested up to: 2.6+
-Stable tag: 1.4
+Stable tag: trunk
 
 Display images at the top of your post content, excerpt and feed using custom fields.
 
@@ -38,4 +38,3 @@ This is due to your theme's CSS. Check if you have something like this in style.
 `img.alignleft { float:left; margin: 0 1em .5em 0; }
 img.alignright { float:right; margin: 0 0 .5em 1em; }
 img.aligncenter { display:block; margin:0 auto .5em auto; }`
-

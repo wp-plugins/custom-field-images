@@ -19,9 +19,13 @@ class cfImgAdmin extends cfImg {
 	function activate() {
 		$ver = 	get_option('cfi_version');
 
-		if ($ver === '1.3')
+		if ($ver === '1.4')
+			return;
+
+		if ($ver === '1.3') {
 			$show_in = get_option('cfi_options');
-		else {
+			update_option('cfi_version', '1.4');
+		} else {
 			$show_in = get_option('cfi-show-in');
 			delete_option('cfi-show-in');
 		}
@@ -31,8 +35,6 @@ class cfImgAdmin extends cfImg {
 
 		   add_option('cfi_options', $this->options) or
 		update_option('cfi_options', $this->options);
-
-		update_option('cfi_version', '1.4');
 	}
 
 	function upgrade() {
