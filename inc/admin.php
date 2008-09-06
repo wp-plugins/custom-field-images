@@ -4,10 +4,9 @@ class cfImgAdmin extends cfImg {
 		if ( !get_option('cfi_version') )
 			add_action('admin_notices', array(&$this, 'warning'));
 
-		add_action('admin_menu', array(&$this, 'box_init'));
-		add_action('save_post', array(&$this, 'save'));
-
 		add_action('admin_menu', array(&$this, 'page_init'));
+		add_action('admin_menu', array(&$this, 'box_init'));
+		add_action('save_post', array(&$this, 'save'), 1, 2);
 	}
 
 	var $nonce = 'cfi-admin-key';
@@ -107,12 +106,15 @@ class cfImgAdmin extends cfImg {
 		</div>
 <?php	}
 
-	function save($post_id) {
+	function save($post_id, $post) {
+		if ($post->post_type == 'revision')
+			return;
+
 		foreach ($this->data as $name => $value)
 			$this->data[$name] = $_POST[$name];
 
-		   add_post_meta($post_id, $this->field, serialize($this->data), TRUE) or
-		update_post_meta($post_id, $this->field, serialize($this->data));
+		   add_post_meta($post_id, $this->field, $this->data, TRUE) or
+		update_post_meta($post_id, $this->field, $this->data);
 	}
 
 	// Options Page
@@ -156,7 +158,7 @@ class cfImgAdmin extends cfImg {
 
 			$wpdb->query("
 				DELETE FROM $wpdb->postmeta
-				WHERE meta_key = $this->field
+				WHERE meta_key = '$this->field'
 			");
 
 			echo '<div class="updated"><p>All data <strong>deleted</strong>.</p></div>';
