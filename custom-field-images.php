@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.4.2.1
+Version: 1.4.2.2
 Description: (<a href="options-general.php?page=custom-field-images"><strong>Settings</strong></a>) Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -81,7 +81,7 @@ class cfImg {
 	function load() {
 		global $post;
 
-		$this->data = get_post_meta($post->ID, $this->field, TRUE);
+		$this->data = unserialize(get_post_meta($post->ID, $this->field, TRUE));
 	}
 
 	function generate() {

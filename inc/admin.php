@@ -110,11 +110,16 @@ class cfImgAdmin extends cfImg {
 		if ($post->post_type == 'revision')
 			return;
 
+		if ($_POST['cfi-url'] == '') {
+			delete_post_meta($post_id, $this->field);
+			return;
+		}
+
 		foreach ($this->data as $name => $value)
 			$this->data[$name] = $_POST[$name];
 
-		   add_post_meta($post_id, $this->field, $this->data, TRUE) or
-		update_post_meta($post_id, $this->field, $this->data);
+		   add_post_meta($post_id, $this->field, serialize($this->data), TRUE) or
+		update_post_meta($post_id, $this->field, serialize($this->data));
 	}
 
 	// Options Page
