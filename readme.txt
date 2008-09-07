@@ -38,3 +38,6 @@ This is due to your theme's CSS. Check if you have something like this in style.
 `img.alignleft { float:left; margin: 0 1em .5em 0; }
 img.alignright { float:right; margin: 0 0 .5em 1em; }
 img.aligncenter { display:block; margin:0 auto .5em auto; }`
+
+= How can I delete a custom field image from a post? =
+Just delete the URL and save the post.
