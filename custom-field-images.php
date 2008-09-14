@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.4
+Version: 1.4.2.2
 Description: (<a href="options-general.php?page=custom-field-images"><strong>Settings</strong></a>) Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -27,20 +27,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 class cfImg {
 
-/******************************/
-/*** BEGIN Editable options ***/
-/******************************/
-
+	// Styles for the feed images. Feel free to customize
 	var $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
 		'center' => 'display:block; margin:0 auto .5em auto;',
 		'right' => 'float:right; margin: 0 0 .5em 1em;'
 	);
 
-/******************************/
-/**** END Editable options ****/
-/******************************/
-
+	// Data fields for each image
 	var $data = array(
 		'cfi-url' => '',
 		'cfi-align' => '',
@@ -48,6 +42,10 @@ class cfImg {
 		'cfi-link' => ''
 	);
 
+	// wp_postmeta -> meta_key
+	var $field = '_cfi_image';
+
+	// Various display options
 	var $options = array(
 		'default_align' => 'right',
 		'extra_attr' => '',
@@ -57,28 +55,27 @@ class cfImg {
 		'excerpt' => TRUE
 	);
 
-	var $field = '_cfi_image';
-
 	function __construct() {
 		$this->options = get_option('cfi_options');
 
-		if ($this->options['content'])
-			add_filter('the_content', array(&$this, 'display'));
-
-		if ($this->options['excerpt'])
-			add_filter('the_excerpt', array(&$this, 'display'));
-
-		if ($this->options['feed'])
-			//add_filter('the_content_rss', array(&$this, 'display')); // not working as of WP 2.5.1
-			add_filter('the_content', array(&$this, 'display'));
+		add_filter('the_content', array(&$this, 'to_content'));
+		add_filter('the_excerpt', array(&$this, 'to_excerpt'));
 	}
 
-	function display($content) {
+	function to_content($content) {
 		$is_feed = is_feed();
 		if ( ($is_feed && $this->options['feed']) || (!$is_feed && $this->options['content']) )
 			return $this->generate() . $content;
-		else
-			return $content;
+
+		return $content;
+	}
+
+	function to_excerpt($excerpt) {
+		$is_feed = is_feed();
+		if ( ($is_feed && $this->options['feed']) || (!$is_feed && $this->options['excerpt']) )
+			return $this->generate() . $excerpt;
+
+		return $excerpt;
 	}
 
 	function load() {

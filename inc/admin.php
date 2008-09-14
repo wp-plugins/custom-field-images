@@ -4,10 +4,9 @@ class cfImgAdmin extends cfImg {
 		if ( !get_option('cfi_version') )
 			add_action('admin_notices', array(&$this, 'warning'));
 
-		add_action('admin_menu', array(&$this, 'box_init'));
-		add_action('save_post', array(&$this, 'save'));
-
 		add_action('admin_menu', array(&$this, 'page_init'));
+		add_action('admin_menu', array(&$this, 'box_init'));
+		add_action('save_post', array(&$this, 'save'), 1, 2);
 	}
 
 	var $nonce = 'cfi-admin-key';
@@ -19,9 +18,13 @@ class cfImgAdmin extends cfImg {
 	function activate() {
 		$ver = 	get_option('cfi_version');
 
-		if ($ver === '1.3')
+		if ($ver === '1.4')
+			return;
+
+		if ($ver === '1.3') {
 			$show_in = get_option('cfi_options');
-		else {
+			update_option('cfi_version', '1.4');
+		} else {
 			$show_in = get_option('cfi-show-in');
 			delete_option('cfi-show-in');
 		}
@@ -31,8 +34,6 @@ class cfImgAdmin extends cfImg {
 
 		   add_option('cfi_options', $this->options) or
 		update_option('cfi_options', $this->options);
-
-		update_option('cfi_version', '1.4');
 	}
 
 	function upgrade() {
@@ -105,7 +106,15 @@ class cfImgAdmin extends cfImg {
 		</div>
 <?php	}
 
-	function save($post_id) {
+	function save($post_id, $post) {
+		if ($post->post_type == 'revision')
+			return;
+
+		if ($_POST['cfi-url'] == '') {
+			delete_post_meta($post_id, $this->field);
+			return;
+		}
+
 		foreach ($this->data as $name => $value)
 			$this->data[$name] = $_POST[$name];
 
@@ -154,7 +163,7 @@ class cfImgAdmin extends cfImg {
 
 			$wpdb->query("
 				DELETE FROM $wpdb->postmeta
-				WHERE meta_key = $this->field
+				WHERE meta_key = '$this->field'
 			");
 
 			echo '<div class="updated"><p>All data <strong>deleted</strong>.</p></div>';
