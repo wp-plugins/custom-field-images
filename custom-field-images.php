@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.5b
+Version: 1.5b:1
 Description: (<a href="edit.php?page=custom-field-images">Manage</a> | <a href="options-general.php?page=custom-field-images">Settings</a>) Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -133,7 +133,7 @@ class cfImg {
 
 		$output = '<a href="'. $link . '"';
 		$output .= ' ' . stripslashes($this->options['extra_attr']);
-		$output .= '>' . $image . '</a>'."\n";
+		$output .= '>' . $image . '</a>';
 
 		return $output;
 	}

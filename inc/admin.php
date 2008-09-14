@@ -4,7 +4,7 @@ class cfImgAdmin extends cfImg {
 	var $nonce = 'cfi-admin-key';
 
 	function __construct() {
-		if ( get_option('cfi_version') != $this->version)
+		if ( get_option('cfi_version') != $this->version )
 			add_action('admin_notices', array(&$this, 'warning'));
 
 		add_action('admin_menu', array(&$this, 'page_init'));
@@ -18,7 +18,7 @@ class cfImgAdmin extends cfImg {
 		if ( strstr($_SERVER['REQUEST_URI'], $manage_url) )
 			return;
 
-		echo '<div class="updated fade"><p><strong>Custom Field Images</strong>: Please visit the <a href="' . $manage_url . '">Management page</a>.</p></div>';
+		echo '<div class="updated fade"><p><strong>Custom Field Images</strong>: Data upgrade required. Please visit the <a href="' . $manage_url . '">management page</a>.</p></div>';
 	}
 
 	// Upgrade options on activation
@@ -126,49 +126,73 @@ class cfImgAdmin extends cfImg {
 		return TRUE;
 	}
 
+// Import/Export methods
+
 	function import() {
 		$posts = $this->get_posts();
 
-		foreach ($posts as $post) {
-			if ( preg_match("/<img.*?>/i", $post->content, $matches) == 0)
+		foreach ( $posts as $post )
+			$count += $this->import_single($post);
+
+		return (int) $count;
+	}
+
+	function import_single($post) {
+		if ( 0 == preg_match('#^\s*(<a[^\<]+>)?\s*(<img[^\<]+>)\s*(?:</a>)?#i', $post->content, $matches) )
+			return;
+
+		$img = $this->get_attributes($matches[2]);
+
+		$element['url'] = $img['src'];
+		$element['alt'] = $img['alt'];
+
+		// Set align
+		$img_clases = explode(' ', $img['class']);
+
+		foreach ( $img_clases as $class ) {
+			if ( !in_array(substr($class, 5), array_keys($this->styles)) )
 				continue;
 
-			$img = explode(' ', $matches[0]);
-
-			foreach($img as $att) {
-				$att = explode('=', $att);
-				$img_att[$att[0]] = trim($att[1], '"\'');
-			}
-
-			$element['url'] = $img_att['src'];
-			$element['alt'] = $img_att['alt'];
-			$element['link'] = '';
-
-			if ( 'align' == substr($img_att['class'], 0, 5) )
-				$element['align'] = substr($img_att['class'], 5);
-			else
-				$element['align'] = '';
-
-			add_post_meta($post->ID, $this->key, $element, TRUE);
-
-			// Delete from post
-			$new_content = str_replace($matches[0], '', $post->content);
-
-			if ( $new_content == $post->content )
-				return;
-
-			$this->update_post($new_content, $post->ID);
-
-			$count++;
+			$align = substr($class, 5);
+			break;
 		}
 
-		return $count;
+		$element['align'] = $align;
+
+		// Set link
+		$element['link'] = '';
+
+		if ( $matches[1] ) {
+			$link = $this->get_attributes($matches[1]);
+			$element['link'] = $link['href'];
+		}
+
+		add_post_meta($post->ID, $this->key, $element, TRUE);
+
+		// Delete from post
+		$new_content = str_replace($matches[0], '', $post->content);
+
+		if ( $new_content == $post->content )
+			return;
+
+		$this->update_post($new_content, $post->ID);
+
+		return 1;
+	}
+
+	function get_attributes($string) {
+		preg_match_all('#(\w+)="\s*((?:[^"]+\s*)+)\s*"#i', $string, $matches, PREG_SET_ORDER);
+
+		foreach( $matches as $att )
+			$attributes[$att[1]] = $att[2];
+
+		return $attributes;
 	}
 
 	function export() {
 		$posts = $this->get_posts();
 
-		foreach ($posts as $post) {
+		foreach ( $posts as $post ) {
 			$new_content = $this->generate($post->ID) . $post->content;
 
 			if ( $new_content == $post->content )
@@ -181,7 +205,7 @@ class cfImgAdmin extends cfImg {
 			$count++;
 		}
 
-		return $count;
+		return (int) $count;
 	}
 
 	function get_posts() {
@@ -231,7 +255,7 @@ class cfImgAdmin extends cfImg {
 			<input name="link" id="link" type="text" style="width: 46em" value="<?php echo $this->data['link']; ?>" />
 		</p>
 		<p style="text-align:left; margin-left:4.5em;">Align
-			<?php foreach ($this->styles as $align => $style) {
+			<?php foreach ( $this->styles as $align => $style ) {
 				echo '<input name="align" id="align" type="radio" value="' . $align . '" ';
 				if ( $this->data['align'] == $align)
 					echo 'checked="checked" ';
@@ -242,15 +266,15 @@ class cfImgAdmin extends cfImg {
 <?php	}
 
 	function save($post_id, $post) {
-		if ( $post->post_type == 'revision')
+		if ( $post->post_type == 'revision' )
 			return;
 
-		if ( $_POST['url'] == '') {
+		if ( $_POST['url'] == '' ) {
 			delete_post_meta($post_id, $this->key);
 			return;
 		}
 
-		foreach ($this->data as $name => $value)
+		foreach ( $this->data as $name => $value )
 			$this->data[$name] = $_POST[$name];
 
 		   add_post_meta($post_id, $this->key, $this->data, TRUE) or
@@ -269,7 +293,7 @@ class cfImgAdmin extends cfImg {
 		$this->options = get_option('cfi_options');
 
 		// Update options
-		if ( isset($_POST['submit']) && 'update' == $_POST['action']) {
+		if ( 'Save' == $_POST['action'] ) {
 			check_admin_referer($this->nonce);
 
 			foreach ( $this->options as $name => $value )
@@ -292,7 +316,7 @@ class cfImgAdmin extends cfImg {
 		<tr>
 			<th scope="row" valign="top">Display in</th>
 			<td>
-			<?php foreach (array('content', 'excerpt', 'feed') as $name) { ?>
+			<?php foreach ( array('content', 'excerpt', 'feed') as $name ) { ?>
 				<input type="checkbox" name="<?php echo $name; ?>" value="TRUE" <?php if ( $this->options[$name] == TRUE) echo 'checked="checked"'; ?> />
 			 	<label>post <?php echo $name; ?></label>
 				<br class="clear" />
@@ -302,7 +326,7 @@ class cfImgAdmin extends cfImg {
 		<tr>
 			<th scope="row" valign="top">Default alignment</th>
 			<td>
-			<?php foreach ($this->styles as $align => $style) { ?>
+			<?php foreach ( $this->styles as $align => $style ) { ?>
 				<input type="radio" name="default_align" value="<?php echo $align; ?>" <?php if ( $this->options['default_align'] == $align) echo 'checked="checked" ';?> />
 				<label><?php echo $align; ?></label>
 			<?php } ?>
@@ -326,10 +350,9 @@ class cfImgAdmin extends cfImg {
 	</table>
 
 	<?php wp_nonce_field($this->nonce); ?>
-	<input name="action" type="hidden" value="update" />
 
 	<p class="submit">
-		<input name="submit" type="submit" value="Save Options" />
+		<input name="action" type="submit" value="Save" />
 	</p>
 </form>
 </div>
