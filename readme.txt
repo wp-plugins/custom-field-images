@@ -10,11 +10,15 @@ Display images at the top of your post content, excerpt and feed using custom fi
 
 == Description ==
 
-Custom Field Images gives you increased flexibility in displaying images on specific page types of your blog, like Categories, Tag pages and even feeds.
+Custom Field Images gives you increased flexibility in displaying images on specific page types, post excerpts and even feeds.
 
-It adds a simple box under the post editing screen for easy handling and also has a Settings page.
+**Features**
 
-Credits go to [Justin Tadlock](http://justintadlock.com/archives/2007/10/27/wordpress-custom-fields-adding-images-to-posts), where I got the ideea from.
+* Simple box under the post editing screen for easy handling
+* One click import and export of existing images
+* Customizable defaults so that the only thing you need to add is the image URL.
+
+Credits go to [Justin Tadlock](http://justintadlock.com/archives/2007/10/27/wordpress-custom-fields-adding-images-to-posts), where I got the original ideea from.
 
 == Installation ==
 
@@ -40,4 +44,5 @@ img.alignright { float:right; margin: 0 0 .5em 1em; }
 img.aligncenter { display:block; margin:0 auto .5em auto; }`
 
 = How can I delete a custom field image from a post? =
-Just delete the URL and save the post.
+
+Just clear the URL field and save the post.

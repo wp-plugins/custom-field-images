@@ -1,7 +1,10 @@
 <?php
 class cfImgAdmin extends cfImg {
+	var $version = '1.5';
+	var $nonce = 'cfi-admin-key';
+
 	function __construct() {
-		if ( !get_option('cfi_version') )
+		if ( get_option('cfi_version') != $this->version)
 			add_action('admin_notices', array(&$this, 'warning'));
 
 		add_action('admin_menu', array(&$this, 'page_init'));
@@ -9,71 +12,203 @@ class cfImgAdmin extends cfImg {
 		add_action('save_post', array(&$this, 'save'), 1, 2);
 	}
 
-	var $nonce = 'cfi-admin-key';
-
 	function warning() {
-		echo '<div class="updated fade"><p><strong>Custom Field Images</strong>: Please visit the <a href="options-general.php?page=custom-field-images">Settings page</a>.</p></div>';
+		$manage_url = 'edit.php?page=custom-field-images';
+
+		if ( strstr($_SERVER['REQUEST_URI'], $manage_url) )
+			return;
+
+		echo '<div class="updated fade"><p><strong>Custom Field Images</strong>: Please visit the <a href="' . $manage_url . '">Management page</a>.</p></div>';
 	}
 
+	// Upgrade options on activation
 	function activate() {
 		$ver = 	get_option('cfi_version');
 
-		if ($ver === '1.4')
+		if ( $ver == $this->version )
 			return;
 
-		if ($ver === '1.3') {
-			$show_in = get_option('cfi_options');
-			update_option('cfi_version', '1.4');
-		} else {
-			$show_in = get_option('cfi-show-in');
-			delete_option('cfi-show-in');
+		switch ($ver) {
+			case '1.4':
+			case '1.3':
+				$old_options = get_option('cfi_options');
+				break;
+			case '':
+				$old_options = get_option('cfi-show-in');
+				delete_option('cfi-show-in');
 		}
 
-		foreach ($show_in as $name => $value)
+		foreach ( $old_options as $name => $value )
 			$this->options[$name] = $value;
 
 		   add_option('cfi_options', $this->options) or
 		update_option('cfi_options', $this->options);
 	}
 
+	// Upgrade data
 	function upgrade() {
 		global $wpdb;
 
-		add_option('cfi_version', '1.4', '', 'no');
+		$ver = get_option('cfi_version');
 
-		// Set data fields
-		foreach ($this->data as $name => $value)
-			$fields[] = "'$name'";
-		$fields = implode(',', $fields);
+		if ( !$ver )
+			return $this->upgrade_1_2();
 
 		// Get old data
-		$query = "
-			SELECT post_id, meta_key, meta_value
+		$query = $wpdb->prepare("
+			SELECT post_id, meta_value
 			FROM $wpdb->postmeta
-			WHERE meta_key IN($fields)
-		";
+			WHERE meta_key = '%s'
+		", $this->key);
 
 		$old_data = $wpdb->get_results($query, 'ARRAY_A');
 
-		if (!$old_data)
+		if ( !$old_data )
 			return 'none';
 
 		// Convert old data
-		foreach ($old_data as $row)
-			$new_data[$row['post_id']][$row['meta_key']] = $row['meta_value'];
+		foreach ($old_data as $row) {
+			$id = $row['post_id'];
 
-		// Add new data (don't overwrite newer data)
-		foreach ($new_data as $id => $element)
-			add_post_meta($id, $this->field, serialize($element), TRUE);
+			$old_element = unserialize(unserialize($row['meta_value']));
 
-		// Delete old data
-		$wpdb->query("
-			DELETE FROM $wpdb->postmeta
-			WHERE meta_key IN($fields)
-		");
+			foreach($this->data as $field => $value)
+				$new_element[$field] = $old_element["cfi-$field"];
+
+			update_post_meta($id, $this->key, $new_element);
+		}
 
 		return TRUE;
 	}
+
+	// Upgrade data from version 1.2 and lower
+	function upgrade_1_2() {
+		global $wpdb;
+
+		// Set data fields
+		foreach ($this->data as $name => $value)
+			$fields[] = "'cfi-$name'";
+
+		$fields = implode(',', $fields);
+
+		// Get old data
+		$query = $wpdb->prepare("
+			SELECT post_id, meta_key, meta_value
+			FROM $wpdb->postmeta
+			WHERE meta_key IN(%s)
+		", $fields);
+
+		$old_data = $wpdb->get_results($query, 'ARRAY_A');
+
+		if ( !$old_data )
+			return 'none';
+
+		// Convert old data
+		foreach ($old_data as $row) {
+			$id = $row['post_id'];
+			$new_field = substr($row['meta_key'], 4);
+
+			$new_data[$id][$new_field] = $row['meta_value'];
+		}
+
+		// Add new data (don't overwrite newer data)
+		foreach ($new_data as $id => $element)
+			add_post_meta($id, $this->key, $element, TRUE);
+
+		// Delete old data
+		$query = $wpdb->prepare("
+			DELETE FROM $wpdb->postmeta
+			WHERE meta_key IN(%s)
+		", $fields);
+
+		$wpdb->query($query);
+
+		return TRUE;
+	}
+
+	function import() {
+		$posts = $this->get_posts();
+
+		foreach ($posts as $post) {
+			if ( preg_match("/<img.*?>/i", $post->content, $matches) == 0)
+				continue;
+
+			$img = explode(' ', $matches[0]);
+
+			foreach($img as $att) {
+				$att = explode('=', $att);
+				$img_att[$att[0]] = trim($att[1], '"\'');
+			}
+
+			$element['url'] = $img_att['src'];
+			$element['alt'] = $img_att['alt'];
+			$element['link'] = '';
+
+			if ( 'align' == substr($img_att['class'], 0, 5) )
+				$element['align'] = substr($img_att['class'], 5);
+			else
+				$element['align'] = '';
+
+			add_post_meta($post->ID, $this->key, $element, TRUE);
+
+			// Delete from post
+			$new_content = str_replace($matches[0], '', $post->content);
+
+			if ( $new_content == $post->content )
+				return;
+
+			$this->update_post($new_content, $post->ID);
+
+			$count++;
+		}
+
+		return $count;
+	}
+
+	function export() {
+		$posts = $this->get_posts();
+
+		foreach ($posts as $post) {
+			$new_content = $this->generate($post->ID) . $post->content;
+
+			if ( $new_content == $post->content )
+				continue;
+
+			$this->update_post($new_content, $post->ID);
+
+			delete_post_meta($post->ID, $this->key);
+
+			$count++;
+		}
+
+		return $count;
+	}
+
+	function get_posts() {
+		global $wpdb;
+
+		$query = $wpdb->prepare("
+			SELECT ID, post_content AS content
+			FROM $wpdb->posts
+			WHERE post_status IN('publish', 'draft')
+		");
+
+		return $wpdb->get_results($query);
+	}
+
+	function update_post($content, $id) {
+		global $wpdb;
+
+		$query = $wpdb->prepare("
+				UPDATE $wpdb->posts
+				SET post_content = %s
+				WHERE ID = %d
+		", $content, $id);
+
+		return $wpdb->query($query);
+	}
+
+// Box methods
 
 	function box_init() {
 		add_meta_box('cfi-box', 'Custom Field Image', array(&$this, 'box'), 'post', 'normal');
@@ -87,18 +222,18 @@ class cfImgAdmin extends cfImg {
 
 		<div style="text-align:right">
 		<p><strong>Image URL</strong>
-			<input name="cfi-url" id="cfi-url" type="text" style="width: 46em" value="<?php echo $this->data['cfi-url']; ?>" />
+			<input name="url" id="url" type="text" style="width: 46em" value="<?php echo $this->data['url']; ?>" />
 		</p>
 		<p>Alt. Text
-			<input name="cfi-alt" id="cfi-alt" type="text" style="width: 46em" value="<?php echo $this->data['cfi-alt']; ?>" />
+			<input name="alt" id="alt" type="text" style="width: 46em" value="<?php echo $this->data['alt']; ?>" />
 		</p>
 		<p>Link to
-			<input name="cfi-link" id="cfi-link" type="text" style="width: 46em" value="<?php echo $this->data['cfi-link']; ?>" />
+			<input name="link" id="link" type="text" style="width: 46em" value="<?php echo $this->data['link']; ?>" />
 		</p>
 		<p style="text-align:left; margin-left:4.5em;">Align
 			<?php foreach ($this->styles as $align => $style) {
-				echo '<input name="cfi-align" id="cfi-align" type="radio" value="' . $align . '" ';
-				if ($this->data['cfi-align'] == $align)
+				echo '<input name="align" id="align" type="radio" value="' . $align . '" ';
+				if ( $this->data['align'] == $align)
 					echo 'checked="checked" ';
 				echo '/>'. $align ."\n";
 			} ?>
@@ -107,33 +242,36 @@ class cfImgAdmin extends cfImg {
 <?php	}
 
 	function save($post_id, $post) {
-		if ($post->post_type == 'revision')
+		if ( $post->post_type == 'revision')
 			return;
 
-		if ($_POST['cfi-url'] == '') {
-			delete_post_meta($post_id, $this->field);
+		if ( $_POST['url'] == '') {
+			delete_post_meta($post_id, $this->key);
 			return;
 		}
 
 		foreach ($this->data as $name => $value)
 			$this->data[$name] = $_POST[$name];
 
-		   add_post_meta($post_id, $this->field, serialize($this->data), TRUE) or
-		update_post_meta($post_id, $this->field, serialize($this->data));
+		   add_post_meta($post_id, $this->key, $this->data, TRUE) or
+		update_post_meta($post_id, $this->key, $this->data);
 	}
 
-	// Options Page
+// Options and management page methods
+
 	function page_init() {
 		if ( current_user_can('manage_options') )
-			add_options_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'page'));
+			add_options_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'options_page'));
+			add_management_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'manage_page'));
 	}
 
-	function page() {
+	function options_page() {
 		$this->options = get_option('cfi_options');
 
 		// Update options
-		if (isset($_POST['submit']) && 'update' == $_POST['action']) {
+		if ( isset($_POST['submit']) && 'update' == $_POST['action']) {
 			check_admin_referer($this->nonce);
+
 			foreach ( $this->options as $name => $value )
 				$new_options[$name] = $_POST[$name];
 
@@ -142,75 +280,41 @@ class cfImgAdmin extends cfImg {
 				update_option('cfi_options', $this->options);
 			}
 
-			echo '<div class="updated"><p>Options <strong>saved</strong>.</p></div>';
-		}
-
-		// Upgrade data
-		if (isset($_POST['submit']) && 'upgrade' == $_POST['action']) {
-			$result = $this->upgrade();
-
-			if ($result === TRUE)
-				echo '<div class="updated"><p>All data <strong>upgraded</strong>.</p></div>';
-			elseif ($result === 'none')
-				echo '<div class="updated"><p>No data to upgrade.</p></div>';
-			else
-				echo '<div class="error"><p>An error has occured.</p></div>';
-		}
-
-		// Delete data
-		if (isset($_POST['submit']) && 'delete' == $_POST['action']) {
-			global $wpdb;
-
-			$wpdb->query("
-				DELETE FROM $wpdb->postmeta
-				WHERE meta_key = '$this->field'
-			");
-
-			echo '<div class="updated"><p>All data <strong>deleted</strong>.</p></div>';
+			echo '<div class="updated fade"><p>Options <strong>saved</strong>.</p></div>';
 		}
 ?>
 <div class="wrap">
 
-<?php if ( !get_option('cfi_version') ) { ?>
-<h2>Upgrade custom field keys</h2>
-
-<p>This operation is required only once, in order to use older data. Please make a backup of your database first.</p>
-
-<form name="cfi-upgrade" method="post" action="">
-	<?php wp_nonce_field($this->nonce); ?>
-	<input name="action" type="hidden" value="upgrade" />
-
-	<p class="submit">
-	<input name="submit" type="submit" value="Upgrade" />
-	</p>
-</form>
-
-<br class="clear" />
-<?php } ?>
-
 <h2>Custom Field Images Options</h2>
 
-<form name="cfi-display" method="post" action="">
+<form method="post" action="">
 	<table class="form-table">
 		<tr>
 			<th scope="row" valign="top">Display in</th>
 			<td>
 			<?php foreach (array('content', 'excerpt', 'feed') as $name) { ?>
-				<input type="checkbox" name="<?php echo $name; ?>" value="TRUE" <?php if ($this->options[$name] == TRUE) echo 'checked="checked"'; ?> />
+				<input type="checkbox" name="<?php echo $name; ?>" value="TRUE" <?php if ( $this->options[$name] == TRUE) echo 'checked="checked"'; ?> />
 			 	<label>post <?php echo $name; ?></label>
 				<br class="clear" />
 			<?php } ?>
 			</td>
-		 </tr>
+		</tr>
 		<tr>
 			<th scope="row" valign="top">Default alignment</th>
 			<td>
 			<?php foreach ($this->styles as $align => $style) { ?>
-				<input type="radio" name="default_align" value="<?php echo $align; ?>" <?php if ($this->options['default_align'] == $align)	echo 'checked="checked" ';?> />
+				<input type="radio" name="default_align" value="<?php echo $align; ?>" <?php if ( $this->options['default_align'] == $align) echo 'checked="checked" ';?> />
 				<label><?php echo $align; ?></label>
 			<?php } ?>
 			</td>
-		 </tr>
+		</tr>
+		<tr>
+			<th scope="row" valign="top">Link image to the current post</th>
+			<td>
+				<input type="checkbox" name="default_link" value="TRUE" <?php if ( $this->options['default_link']) echo 'checked="checked" ';?> />
+				<label>If an image has no link specified, it will be linked to the post or page it is associated with.</label>
+			</td>
+		</tr>
 		<tr>
 			<th scope="row" valign="top">Extra attributes</th>
 			<td>
@@ -218,7 +322,7 @@ class cfImgAdmin extends cfImg {
 				<label>Example: <em>target="_blank" rel="nofollow"</em></label>
 				<p>This is for adding extra attributes to the links added to images.</p>
 			</td>
-		 </tr>
+		</tr>
 	</table>
 
 	<?php wp_nonce_field($this->nonce); ?>
@@ -228,19 +332,125 @@ class cfImgAdmin extends cfImg {
 		<input name="submit" type="submit" value="Save Options" />
 	</p>
 </form>
+</div>
+<?php
+	}
 
-<br class="clear" />
+	function manage_page() {
 
-<h2>Delete all data</h2>
+		// Upgrade data
+		if ( 'Upgrade' == $_POST['action'] ) {
+			check_admin_referer($this->nonce);
 
-<p>This will delete all custom keys asociated with Custom Field Images.</p>
+			$r = $this->upgrade();
 
-<form name="cfi-delete" method="post" action="">
+			if( $r )
+				   add_option('cfi_version', $this->version, '', 'no') or
+				update_option('cfi_version', $this->version);
+
+			if ( $r === TRUE )
+				echo '<div class="updated fade"><p>All data <strong>upgraded</strong>.</p></div>';
+			elseif ( $r == 'none')
+				echo '<div class="updated fade"><p>No data to upgrade.</p></div>';
+			else
+				echo '<div class="error"><p>An error has occured.</p></div>';
+		}
+
+		// Import data
+		if ( 'Import' == $_POST['action'] ) {
+			check_admin_referer($this->nonce);
+
+			$r = $this->import();
+
+			if ( isset($r) )
+				echo '<div class="updated fade"><p>Imported <strong>' . $r . '</strong> images.</p></div>';
+			else
+				echo '<div class="error"><p>An error has occured.</p></div>';
+		}
+
+		// Export data
+		if ( 'Export' == $_POST['action'] ) {
+			check_admin_referer($this->nonce);
+
+			$r = $this->export();
+
+			if ( isset($r) )
+				echo '<div class="updated fade"><p>Exported <strong>' . $r . '</strong> images.</p></div>';
+			else
+				echo '<div class="error"><p>An error has occured.</p></div>';
+		}
+
+		// Delete data
+		if ( 'Delete' == $_POST['action'] ) {
+			check_admin_referer($this->nonce);
+
+			global $wpdb;
+
+			$r = $wpdb->query($wpdb->prepare("
+				DELETE FROM $wpdb->postmeta
+				WHERE meta_key = '%s'
+			", $this->key));
+
+			if ( $r === FALSE )
+				echo '<div class="error"><p>An error has occured.</p></div>';
+			else
+				echo '<div class="updated fade"><p>Deleted <strong>' . $r . '</strong> images.</p></div>';
+		}
+?>
+<div class="wrap">
+
+<p>Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed.</p>
+
+<?php if ( get_option('cfi_version') != $this->version ) { ?>
+<h2>Upgrade custom field keys</h2>
+
+<p>This operation is required only once, in order to use older data.</p>
+
+<form method="post" action="">
 	<?php wp_nonce_field($this->nonce); ?>
-	<input name="action" type="hidden" value="delete" />
 
 	<p class="submit">
-		<input name="submit" type="submit" onClick="return confirm('Are you sure you want to do this?\nIt cannot be undone.')" value="Delete" />
+	<input name="action" type="submit" value="Upgrade" />
+	</p>
+</form>
+<br />
+<?php } ?>
+
+<h2>Import images</h2>
+
+<p>This will scan for images at beginning of posts, insert them into custom field keys and then remove them from the posts.</p>
+
+<form method="post" action="">
+	<?php wp_nonce_field($this->nonce); ?>
+
+	<p class="submit">
+		<input name="action" type="submit" onClick="return confirm('Are you sure you want to do this?\nIt cannot be undone.')" value="Import" />
+	</p>
+</form>
+<br />
+
+<h2>Export images</h2>
+
+<p>This will insert all custom field images at the beginning of their respective posts and then delete the custom field keys.</p>
+
+<form method="post" action="">
+	<?php wp_nonce_field($this->nonce); ?>
+
+	<p class="submit">
+		<input name="action" type="submit" onClick="return confirm('Are you sure you want to do this?\nIt cannot be undone.')" value="Export" />
+	</p>
+</form>
+<br />
+
+<h2>Delete images</h2>
+
+<p>This will delete all custom field images.</p>
+
+<form method="post" action="">
+	<?php wp_nonce_field($this->nonce); ?>
+
+	<p class="submit">
+		<input name="action" type="submit" onClick="return confirm('Are you sure you want to do this?\nIt cannot be undone.')" value="Delete" />
 	</p>
 </form>
 
@@ -249,5 +459,3 @@ class cfImgAdmin extends cfImg {
 	}
 }
 
-$cfImgAdmin = new cfImgAdmin();
-?>
