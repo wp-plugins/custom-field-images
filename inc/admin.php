@@ -21,7 +21,8 @@ class cfImgAdmin extends cfImg {
 		echo '<div class="updated fade"><p><strong>Custom Field Images</strong>: Data upgrade required. Please visit the <a href="' . $manage_url . '">management page</a>.</p></div>';
 	}
 
-	// Upgrade options on activation
+// Upgrade options on activation
+
 	function activate() {
 		$ver = 	get_option('cfi_version');
 
@@ -45,7 +46,26 @@ class cfImgAdmin extends cfImg {
 		update_option('cfi_options', $this->options);
 	}
 
-	// Upgrade data
+// Management page methods
+
+	function process_posts($action) {
+		$action = strtolower($action);
+
+		$actions = array('upgrade', 'import', 'export', 'delete');
+
+		if ( !in_array($action, $actions) ) {
+			echo '<div class="error"><p>Unknown action!</p></div>';
+			return;
+		}
+
+		$r = call_user_func(array(&$this, $action));
+
+		if ( $r !== NULL)
+			echo '<div class="updated fade"><p>' . ucfirst(rtrim($action, 'e')) . 'ed <strong>' . $r . '</strong> image(s).</p></div>';
+		else
+			echo '<div class="error"><p>An error has occured.</p></div>';
+	}
+
 	function upgrade() {
 		global $wpdb;
 
@@ -53,6 +73,8 @@ class cfImgAdmin extends cfImg {
 
 		if ( !$ver )
 			return $this->upgrade_1_2();
+
+		update_option('cfi_version', $this->version);
 
 		// Get old data
 		$query = $wpdb->prepare("
@@ -64,7 +86,7 @@ class cfImgAdmin extends cfImg {
 		$old_data = $wpdb->get_results($query, 'ARRAY_A');
 
 		if ( !$old_data )
-			return 'none';
+			return 0;
 
 		// Convert old data
 		foreach ($old_data as $row) {
@@ -75,18 +97,19 @@ class cfImgAdmin extends cfImg {
 			foreach($this->data as $field => $value)
 				$new_element[$field] = $old_element["cfi-$field"];
 
-			update_post_meta($id, $this->key, $new_element);
+			$count += update_post_meta($id, $this->key, $new_element);
 		}
 
-		return TRUE;
+		return (int) $count;
 	}
 
-	// Upgrade data from version 1.2 and lower
 	function upgrade_1_2() {
 		global $wpdb;
 
+		add_option('cfi_version', $this->version, '', 'no');
+
 		// Set data fields
-		foreach ($this->data as $name => $value)
+		foreach ( $this->data as $name => $value )
 			$fields[] = "'cfi-$name'";
 
 		$fields = implode(',', $fields);
@@ -101,7 +124,7 @@ class cfImgAdmin extends cfImg {
 		$old_data = $wpdb->get_results($query, 'ARRAY_A');
 
 		if ( !$old_data )
-			return 'none';
+			return 0;
 
 		// Convert old data
 		foreach ($old_data as $row) {
@@ -113,7 +136,7 @@ class cfImgAdmin extends cfImg {
 
 		// Add new data (don't overwrite newer data)
 		foreach ($new_data as $id => $element)
-			add_post_meta($id, $this->key, $element, TRUE);
+			$count += add_post_meta($id, $this->key, $element, TRUE);
 
 		// Delete old data
 		$query = $wpdb->prepare("
@@ -123,13 +146,11 @@ class cfImgAdmin extends cfImg {
 
 		$wpdb->query($query);
 
-		return TRUE;
+		return (int) $count;
 	}
 
-// Import/Export methods
-
 	function import() {
-		$posts = $this->get_posts();
+		$posts = $this->get_posts(('!='));
 
 		foreach ( $posts as $post )
 			$count += $this->import_single($post);
@@ -139,7 +160,7 @@ class cfImgAdmin extends cfImg {
 
 	function import_single($post) {
 		if ( 0 == preg_match('#^\s*(<a[^\<]+>)?\s*(<img[^\<]+>)\s*(?:</a>)?#i', $post->content, $matches) )
-			return;
+			return 0;
 
 		$img = $this->get_attributes($matches[2]);
 
@@ -173,7 +194,7 @@ class cfImgAdmin extends cfImg {
 		$new_content = str_replace($matches[0], '', $post->content);
 
 		if ( $new_content == $post->content )
-			return;
+			return 0;
 
 		$this->update_post($new_content, $post->ID);
 
@@ -190,7 +211,7 @@ class cfImgAdmin extends cfImg {
 	}
 
 	function export() {
-		$posts = $this->get_posts();
+		$posts = $this->get_posts('=');
 
 		foreach ( $posts as $post ) {
 			$new_content = $this->generate($post->ID) . $post->content;
@@ -200,22 +221,20 @@ class cfImgAdmin extends cfImg {
 
 			$this->update_post($new_content, $post->ID);
 
-			delete_post_meta($post->ID, $this->key);
-
-			$count++;
+			$count += delete_post_meta($post->ID, $this->key);
 		}
 
 		return (int) $count;
 	}
 
-	function get_posts() {
+	function get_posts($operator) {
 		global $wpdb;
 
 		$query = $wpdb->prepare("
 			SELECT DISTINCT ID, post_content AS content
 			FROM $wpdb->posts NATURAL JOIN $wpdb->postmeta
 			WHERE post_status IN('publish', 'draft')
-			AND meta_key != %s
+			AND meta_key $operator '%s'
 		", $this->key);
 
 		return $wpdb->get_results($query);
@@ -229,6 +248,17 @@ class cfImgAdmin extends cfImg {
 				SET post_content = %s
 				WHERE ID = %d
 		", $content, $id);
+
+		return $wpdb->query($query);
+	}
+
+	function delete() {
+		global $wpdb;
+
+		$query = $wpdb->prepare("
+			DELETE FROM $wpdb->postmeta
+			WHERE meta_key = '%s'
+		", $this->key);
 
 		return $wpdb->query($query);
 	}
@@ -287,7 +317,7 @@ class cfImgAdmin extends cfImg {
 	function page_init() {
 		if ( current_user_can('manage_options') )
 			add_options_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'options_page'));
-			add_management_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'manage_page'));
+			add_management_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'management_page'));
 	}
 
 	function options_page() {
@@ -360,65 +390,10 @@ class cfImgAdmin extends cfImg {
 <?php
 	}
 
-	function manage_page() {
-
-		// Upgrade data
-		if ( 'Upgrade' == $_POST['action'] ) {
+	function management_page() {
+		if ( isset($_POST['action']) ) {
 			check_admin_referer($this->nonce);
-
-			$r = $this->upgrade();
-
-			if( $r )
-				   add_option('cfi_version', $this->version, '', 'no') or
-				update_option('cfi_version', $this->version);
-
-			if ( $r === TRUE )
-				echo '<div class="updated fade"><p>All data <strong>upgraded</strong>.</p></div>';
-			elseif ( $r == 'none')
-				echo '<div class="updated fade"><p>No data to upgrade.</p></div>';
-			else
-				echo '<div class="error"><p>An error has occured.</p></div>';
-		}
-
-		// Import data
-		if ( 'Import' == $_POST['action'] ) {
-			check_admin_referer($this->nonce);
-
-			$r = $this->import();
-
-			if ( isset($r) )
-				echo '<div class="updated fade"><p>Imported <strong>' . $r . '</strong> images.</p></div>';
-			else
-				echo '<div class="error"><p>An error has occured.</p></div>';
-		}
-
-		// Export data
-		if ( 'Export' == $_POST['action'] ) {
-			check_admin_referer($this->nonce);
-
-			$r = $this->export();
-
-			if ( isset($r) )
-				echo '<div class="updated fade"><p>Exported <strong>' . $r . '</strong> images.</p></div>';
-			else
-				echo '<div class="error"><p>An error has occured.</p></div>';
-		}
-
-		// Delete data
-		if ( 'Delete' == $_POST['action'] ) {
-			check_admin_referer($this->nonce);
-
-			global $wpdb;
-
-			$r = $wpdb->query($wpdb->prepare("
-				DELETE FROM $wpdb->postmeta
-				WHERE meta_key = '%s'
-			", $this->key));
-
-			if ( $r === FALSE )
-				echo '<div class="error"><p>An error has occured.</p></div>';
-			else
-				echo '<div class="updated fade"><p>Deleted <strong>' . $r . '</strong> images.</p></div>';
+			$this->process_posts($_POST['action']);
 		}
 ?>
 <div class="wrap">
