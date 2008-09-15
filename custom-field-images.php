@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.5b
+Version: 1.5b:3
 Description: (<a href="edit.php?page=custom-field-images">Manage</a> | <a href="options-general.php?page=custom-field-images">Settings</a>) Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 class cfImg {
 
-	// Styles for the feed images. Feel free to customize
+	// Styles for images in feeds
 	var $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
 		'center' => 'display:block; margin:0 auto .5em auto;',
@@ -62,24 +62,18 @@ class cfImg {
 	function __construct() {
 		$this->options = get_option('cfi_options');
 
-		add_filter('the_content', array(&$this, 'to_content'));
-		add_filter('the_excerpt', array(&$this, 'to_excerpt'));
+		add_filter('the_excerpt', array(&$this, 'filter'));
+		add_filter('the_content', array(&$this, 'filter'));
 	}
 
-	function to_content($content) {
+	function filter($content) {
+		$type = substr(current_filter(), 4);
 		$is_feed = is_feed();
-		if ( ($is_feed && $this->options['feed']) || (!$is_feed && $this->options['content']) )
+
+		if ( ($is_feed && $this->options['feed']) || (!$is_feed && $this->options[$type]) )
 			return $this->generate() . $content;
 
 		return $content;
-	}
-
-	function to_excerpt($excerpt) {
-		$is_feed = is_feed();
-		if ( ($is_feed && $this->options['feed']) || (!$is_feed && $this->options['excerpt']) )
-			return $this->generate() . $excerpt;
-
-		return $excerpt;
 	}
 
 	function load($post_id = '') {

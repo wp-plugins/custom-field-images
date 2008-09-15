@@ -1,10 +1,13 @@
 <?php
 class cfImgAdmin extends cfImg {
 	var $version = '1.5';
+	var $vercomp;
 	var $nonce = 'cfi-admin-key';
 
 	function __construct() {
-		if ( get_option('cfi_version') != $this->version )
+		$this->vercomp = version_compare(get_option('cfi_version'), $this->version);
+
+		if ( $this->vercomp < 0 )
 			add_action('admin_notices', array(&$this, 'warning'));
 
 		add_action('admin_menu', array(&$this, 'page_init'));
@@ -24,10 +27,10 @@ class cfImgAdmin extends cfImg {
 // Upgrade options on activation
 
 	function activate() {
-		$ver = 	get_option('cfi_version');
-
-		if ( $ver == $this->version )
+		if ( $this->vercomp >= 0 )
 			return;
+
+		$ver = 	get_option('cfi_version');
 
 		switch ($ver) {
 			case '1.4':
@@ -51,20 +54,22 @@ class cfImgAdmin extends cfImg {
 	function process_posts($action) {
 		$action = strtolower($action);
 
-		$actions = array('upgrade', 'import', 'export', 'delete');
-
-		if ( !in_array($action, $actions) ) {
-			echo '<div class="error"><p>Unknown action!</p></div>';
-			return;
+		switch ($action) {
+			case 'import':
+			case 'export':
+				$r = call_user_func(array(&$this, 'impex'), $action);
+				break;
+			default:
+				$r = call_user_func(array(&$this, $action));
 		}
-
-		$r = call_user_func(array(&$this, $action));
 
 		if ( $r !== NULL)
 			echo '<div class="updated fade"><p>' . ucfirst(rtrim($action, 'e')) . 'ed <strong>' . $r . '</strong> image(s).</p></div>';
 		else
 			echo '<div class="error"><p>An error has occured.</p></div>';
 	}
+
+// Upgrade methods
 
 	function upgrade() {
 		global $wpdb;
@@ -149,11 +154,18 @@ class cfImgAdmin extends cfImg {
 		return (int) $count;
 	}
 
-	function import() {
-		$posts = $this->get_posts(('!='));
+// Import/Export methods
+
+	function impex($action) {
+		$operators = array(
+			'import' => '!=',
+			'export' => '='
+		);
+
+		$posts = $this->get_posts($operators[$action]);
 
 		foreach ( $posts as $post )
-			$count += $this->import_single($post);
+			$count += call_user_func(array(&$this, $action . '_single'), $post);
 
 		return (int) $count;
 	}
@@ -201,6 +213,19 @@ class cfImgAdmin extends cfImg {
 		return 1;
 	}
 
+	function export_single($post) {
+		$new_content = $this->generate($post->ID) . $post->content;
+
+		if ( $new_content == $post->content )
+			return 0;
+
+		$this->update_post($new_content, $post->ID);
+
+		delete_post_meta($post->ID, $this->key);
+
+		return 1;
+	}
+
 	function get_attributes($string) {
 		preg_match_all('#(\w+)="\s*((?:[^"]+\s*)+)\s*"#i', $string, $matches, PREG_SET_ORDER);
 
@@ -208,23 +233,6 @@ class cfImgAdmin extends cfImg {
 			$attributes[$att[1]] = $att[2];
 
 		return $attributes;
-	}
-
-	function export() {
-		$posts = $this->get_posts('=');
-
-		foreach ( $posts as $post ) {
-			$new_content = $this->generate($post->ID) . $post->content;
-
-			if ( $new_content == $post->content )
-				continue;
-
-			$this->update_post($new_content, $post->ID);
-
-			$count += delete_post_meta($post->ID, $this->key);
-		}
-
-		return (int) $count;
 	}
 
 	function get_posts($operator) {
@@ -251,6 +259,8 @@ class cfImgAdmin extends cfImg {
 
 		return $wpdb->query($query);
 	}
+
+// Delete methods
 
 	function delete() {
 		global $wpdb;
@@ -400,7 +410,7 @@ class cfImgAdmin extends cfImg {
 
 <p>Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed.</p>
 
-<?php if ( get_option('cfi_version') != $this->version ) { ?>
+<?php if ( $this->vercomp < 0 ) { ?>
 <h2>Upgrade custom field keys</h2>
 
 <p>This operation is required only once, in order to use older data.</p>
