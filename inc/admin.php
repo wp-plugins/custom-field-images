@@ -169,7 +169,7 @@ class cfImgAdmin extends cfImg {
 
 		add_post_meta($post->ID, $this->key, $element, TRUE);
 
-		// Delete from post
+		// Delete image from post
 		$new_content = str_replace($matches[0], '', $post->content);
 
 		if ( $new_content == $post->content )
@@ -212,10 +212,11 @@ class cfImgAdmin extends cfImg {
 		global $wpdb;
 
 		$query = $wpdb->prepare("
-			SELECT ID, post_content AS content
-			FROM $wpdb->posts
+			SELECT DISTINCT ID, post_content AS content
+			FROM $wpdb->posts NATURAL JOIN $wpdb->postmeta
 			WHERE post_status IN('publish', 'draft')
-		");
+			AND meta_key != %s
+		", $this->key);
 
 		return $wpdb->get_results($query);
 	}
