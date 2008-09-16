@@ -1,18 +1,16 @@
 <?php
 class cfImgAdmin extends cfImg {
 	var $version = '1.5';
-	var $vercomp;
+	var $upgrade_from;
 	var $nonce = 'cfi-admin-key';
 
 	function __construct() {
-		$this->vercomp = version_compare(get_option('cfi_version'), $this->version);
-
-		if ( $this->vercomp < 0 )
-			add_action('admin_notices', array(&$this, 'warning'));
-
 		add_action('admin_menu', array(&$this, 'page_init'));
 		add_action('admin_menu', array(&$this, 'box_init'));
 		add_action('save_post', array(&$this, 'save'), 1, 2);
+
+		if ( $this->upgrade_from = get_option('cfi_upgrade_from') )
+			add_action('admin_notices', array(&$this, 'warning'));
 	}
 
 	function warning() {
@@ -24,29 +22,32 @@ class cfImgAdmin extends cfImg {
 		echo '<div class="updated fade"><p><strong>Custom Field Images</strong>: Data upgrade required. Please visit the <a href="' . $manage_url . '">management page</a>.</p></div>';
 	}
 
-// Upgrade options on activation
+// Upgrade options and set upgrade flag
 
 	function activate() {
-		if ( $this->vercomp >= 0 )
-			return;
+		$old_ver = get_option('cfi_version');
 
-		$ver = 	get_option('cfi_version');
+		if ( $old_ver == $this->version)
+			return;	// Already done
 
-		switch ($ver) {
-			case '1.4':
-			case '1.3':
-				$old_options = get_option('cfi_options');
-				break;
-			case '':
-				$old_options = get_option('cfi-show-in');
-				delete_option('cfi-show-in');
-		}
+		if ( $old_ver == '' ) {
+			$old_options = get_option('cfi-show-in');
+			delete_option('cfi-show-in');
+			$old_ver = '1.2';
+		} else
+			$old_options = get_option('cfi_options');
 
 		foreach ( $old_options as $name => $value )
 			$this->options[$name] = $value;
 
 		   add_option('cfi_options', $this->options) or
 		update_option('cfi_options', $this->options);
+
+		   add_option('cfi_version', $this->version, '', 'no') or
+		update_option('cfi_version', $this->version);
+		
+		if ( $old_options )	// If not fresh install
+			add_option('cfi_upgrade_from', $old_ver, '', 'no');
 	}
 
 // Management page methods
@@ -74,12 +75,12 @@ class cfImgAdmin extends cfImg {
 	function upgrade() {
 		global $wpdb;
 
-		$ver = get_option('cfi_version');
+		delete_option('cfi_upgrade_from');
 
-		if ( !$ver )
+		if ( $this->upgrade_from == '1.2')
 			return $this->upgrade_1_2();
 
-		update_option('cfi_version', $this->version);
+		$this->upgrade_from = NULL;
 
 		// Get old data
 		$query = $wpdb->prepare("
@@ -110,8 +111,6 @@ class cfImgAdmin extends cfImg {
 
 	function upgrade_1_2() {
 		global $wpdb;
-
-		add_option('cfi_version', $this->version, '', 'no');
 
 		// Set data fields
 		foreach ( $this->data as $name => $value )
@@ -410,7 +409,7 @@ class cfImgAdmin extends cfImg {
 
 <p>Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed.</p>
 
-<?php if ( $this->vercomp < 0 ) { ?>
+<?php if ( $this->upgrade_from ) { ?>
 <h2>Upgrade custom field keys</h2>
 
 <p>This operation is required only once, in order to use older data.</p>
