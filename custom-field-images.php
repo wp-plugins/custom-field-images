@@ -1,14 +1,12 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.5b:3
+Version: 1.5
 Description: (<a href="edit.php?page=custom-field-images">Manage</a> | <a href="options-general.php?page=custom-field-images">Settings</a>) Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/projects/custom-field-images.html
-*/
 
-/*
 Copyright (C) 2008 scribu.net (scribu AT gmail DOT com)
 
 This program is free software; you can redistribute it and/or modify

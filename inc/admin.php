@@ -45,7 +45,7 @@ class cfImgAdmin extends cfImg {
 
 		   add_option('cfi_version', $this->version, '', 'no') or
 		update_option('cfi_version', $this->version);
-		
+
 		if ( $old_options )	// If not fresh install
 			add_option('cfi_upgrade_from', $old_ver, '', 'no');
 	}
