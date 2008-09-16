@@ -1,14 +1,12 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.4
-Description: (<a href="options-general.php?page=custom-field-images"><strong>Settings</strong></a>) Easily display images anywhere using custom fields.
+Version: 1.5
+Description: (<a href="edit.php?page=custom-field-images">Manage</a> | <a href="options-general.php?page=custom-field-images">Settings</a>) Easily display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/projects/custom-field-images.html
-*/
 
-/*
 Copyright (C) 2008 scribu.net (scribu AT gmail DOT com)
 
 This program is free software; you can redistribute it and/or modify
@@ -27,29 +25,31 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 class cfImg {
 
-/******************************/
-/*** BEGIN Editable options ***/
-/******************************/
-
+	// Styles for images in feeds
 	var $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
 		'center' => 'display:block; margin:0 auto .5em auto;',
 		'right' => 'float:right; margin: 0 0 .5em 1em;'
 	);
 
-/******************************/
-/**** END Editable options ****/
-/******************************/
+	// $post->ID
+	var $id;
 
+	// wp_postmeta -> meta_key
+	var $key = '_cfi_image';
+
+	// Data fields for each image
 	var $data = array(
-		'cfi-url' => '',
-		'cfi-align' => '',
-		'cfi-alt' => '',
-		'cfi-link' => ''
+		'url' => '',
+		'align' => '',
+		'alt' => '',
+		'link' => ''
 	);
 
+	// Display options
 	var $options = array(
 		'default_align' => 'right',
+		'default_link' => TRUE,
 		'extra_attr' => '',
 
 		'content' => TRUE,
@@ -57,64 +57,54 @@ class cfImg {
 		'excerpt' => TRUE
 	);
 
-	var $field = '_cfi_image';
-
 	function __construct() {
 		$this->options = get_option('cfi_options');
 
-		if ($this->options['content'])
-			add_filter('the_content', array(&$this, 'display'));
-
-		if ($this->options['excerpt'])
-			add_filter('the_excerpt', array(&$this, 'display'));
-
-		if ($this->options['feed'])
-			//add_filter('the_content_rss', array(&$this, 'display')); // not working as of WP 2.5.1
-			add_filter('the_content', array(&$this, 'display'));
+		add_filter('the_excerpt', array(&$this, 'filter'));
+		add_filter('the_content', array(&$this, 'filter'));
 	}
 
-	function display($content) {
+	function filter($content) {
+		$type = substr(current_filter(), 4);
 		$is_feed = is_feed();
-		if ( ($is_feed && $this->options['feed']) || (!$is_feed && $this->options['content']) )
+
+		if ( ($is_feed && $this->options['feed']) || (!$is_feed && $this->options[$type]) )
 			return $this->generate() . $content;
-		else
-			return $content;
+
+		return $content;
 	}
 
-	function load() {
+	function load($post_id = '') {
 		global $post;
 
-		$this->data = unserialize(get_post_meta($post->ID, $this->field, TRUE));
+		$this->id = $post_id ? $post_id : $post->ID;
+
+		$this->data = get_post_meta($this->id, $this->key, TRUE);
 	}
 
-	function generate() {
-		$this->load();
+	function generate($post_id = '') {
+		$this->load($post_id);
 
-		$url = $this->data['cfi-url'];
+		$url = $this->data['url'];
 
-		if (!$url)
+		if ( !$url )
 			return;
 
 		// Begin img tag
 		$image.= '<img src="'. $url .'" ';
 
 		// Set alignment
-		$align = $this->data['cfi-align'] ? $this->data['cfi-align'] : 'right';
+		$align = $this->data['align'] ? $this->data['align'] : $this->options['default_align'];
 
-		if (is_feed())
+		if ( is_feed() )
 			$image .= 'style="' . $this->styles[$align] .'" ';
 		else
 			$image .= 'class="cfi align'. $align .'" ';
 
 		// Set alt text
-		$alt = $this->data['cfi-alt'];
+		$alt = $this->data['alt'] ? $this->data['alt'] : get_the_title();
 
-		$image .= 'alt="';
-
-		if ($alt)
-			$image .= $alt .'" ';
-		else
-			$image .= get_the_title() .'" ';
+		$image .= 'alt="' . $alt . '" ';
 
 		// End img tag
 		$image .= '/>';
@@ -125,31 +115,35 @@ class cfImg {
 	function add_link($image) {
 		// Sets the link for the image
 
-		$link = $this->data['cfi-link'];
+		$link = $this->data['link'];
 
-		if (!$link)
-			return $image;
+		if ( !$link )
+			if ( !$this->options['default_link'] )
+				return $image;
+			else
+				$link = get_permalink($this->id);
 
 		$output = '<a href="'. $link . '"';
 		$output .= ' ' . stripslashes($this->options['extra_attr']);
-		$output .= '>' . $image . '</a>'."\n";
+		$output .= '>' . $image . '</a>';
 
 		return $output;
 	}
 }
 
 // Init
-if ( is_admin() )
+if ( is_admin() ) {
 	require_once('inc/admin.php');
-else
+
+	$cfImgAdmin = new cfImgAdmin();
+
+	register_activation_hook(__FILE__, array(&$cfImgAdmin, 'activate'));
+} else
 	$cfImg = new cfImg();
 
-// Activate
-register_activation_hook(__FILE__, create_function('', '$admin = new cfImgAdmin(); $admin->activate();') );
-
-// Functions
+// Template tag
 function custom_field_image() {
 	global $cfImg;
 	echo $cfImg->generate();
 }
-?>
+
