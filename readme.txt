@@ -39,9 +39,9 @@ For example, if you want them to appear only when viewing posts by category, add
 
 This is due to your theme's CSS. Check if you have something like this in style.css:
 
-`img.alignleft { float:left; margin: 0 1em .5em 0; }
-img.alignright { float:right; margin: 0 0 .5em 1em; }
-img.aligncenter { display:block; margin:0 auto .5em auto; }`
+`img.alignleft {float:left; margin: 0 1em .5em 0}
+img.alignright {float:right; margin: 0 0 .5em 1em}
+img.aligncenter {display:block; margin:0 auto .5em auto}`
 
 = How can I delete a custom field image from a post? =
 
