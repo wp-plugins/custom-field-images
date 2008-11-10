@@ -281,29 +281,34 @@ class cfImgAdmin extends cfImg {
 
 	function box() {
 		$this->load();
-
-		?>
-
-		<div style="text-align:right">
-		<p><strong>Image URL</strong>
-			<input name="url" id="url" type="text" style="width: 46em" value="<?php echo $this->data['url']; ?>" />
-		</p>
-		<p>Alt. Text
-			<input name="alt" id="alt" type="text" style="width: 46em" value="<?php echo $this->data['alt']; ?>" />
-		</p>
-		<p>Link to
-			<input name="link" id="link" type="text" style="width: 46em" value="<?php echo $this->data['link']; ?>" />
-		</p>
-		<p style="text-align:left; margin-left:4.5em;">Align
-			<?php foreach ( $this->styles as $align => $style ) {
-				echo '<input name="align" id="align" type="radio" value="' . $align . '" ';
-				if ( $this->data['align'] == $align)
-					echo 'checked="checked" ';
-				echo '/>'. $align ."\n";
-			} ?>
-		</p>
-		</div>
-<?php	}
+?>
+		<table style="width: 100%;">
+		    <tr>
+		        <td style="width: 10%; text-align: right"><strong>Image URL</strong></td>
+		        <td><input tabindex="3" name="url" id="url" type="text" style="width: 100%" value="<?php echo $this->data['url']; ?>" /></td>
+		    </tr>
+		    <tr>
+		        <td style="width: 10%; text-align: right">Alt. Text</td>
+		        <td><input tabindex="3" name="alt" id="alt" type="text" style="width: 100%" value="<?php echo $this->data['alt']; ?>" /></td>
+		    </tr>
+		    <tr>
+		        <td style="width: 10%; text-align: right">Link to</td>
+		        <td><input tabindex="3" name="url" id="url" type="text" style="width: 100%" value="<?php echo $this->data['link']; ?>" /></td>
+		    </tr>
+		    <tr>
+		        <td style="width: 10%; text-align: right">Align</td>
+		        <td><?php
+		        	foreach ( $this->styles as $align => $style ) {
+						echo '<input tabindex="3" name="align" id="align" type="radio" value="' . $align . '" ';
+						if ( $this->data['align'] == $align )
+							echo 'checked="checked" ';
+						echo '/>'. $align ."\n";
+					}
+				?></td>
+		    </tr>
+		</table>
+<?php
+	}
 
 	function save($post_id, $post) {
 		if ( $post->post_type == 'revision' )
