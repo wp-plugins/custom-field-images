@@ -4,7 +4,7 @@ Donate link: http://scribu.net/projects
 Tags: custom fields, images, thumbs
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 1.5
+Stable tag: trunk
 
 Display images at the top of your post content, excerpt and feed using custom fields.
 
