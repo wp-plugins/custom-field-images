@@ -334,8 +334,11 @@ class cfImgAdmin extends cfImg {
 			add_management_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'management_page'));
 	}
 
-	function options_page() {
+	function update_options() {
 		$this->options = get_option('cfi_options');
+
+		if ( !isset($_POST['action']) )
+			return;
 
 		// Update options
 		if ( 'Save' == $_POST['action'] ) {
@@ -351,6 +354,10 @@ class cfImgAdmin extends cfImg {
 
 			echo '<div class="updated fade"><p>Options <strong>saved</strong>.</p></div>';
 		}
+	}
+
+	function options_page() {
+		$this->update_options();
 ?>
 <div class="wrap">
 
