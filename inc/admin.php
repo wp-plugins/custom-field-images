@@ -404,7 +404,7 @@ class cfImgAdmin extends cfImg {
 	<?php wp_nonce_field($this->nonce); ?>
 
 	<p class="submit">
-		<input name="action" type="submit" value="Save" />
+		<input name="action" type="submit" class="button-primary" value="Save Changes" />
 	</p>
 </form>
 </div>
