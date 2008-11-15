@@ -341,7 +341,7 @@ class cfImgAdmin extends cfImg {
 			return;
 
 		// Update options
-		if ( 'Save' == $_POST['action'] ) {
+		if ( 'Save Changes' == $_POST['action'] ) {
 			check_admin_referer($this->nonce);
 
 			foreach ( $this->options as $name => $value )
