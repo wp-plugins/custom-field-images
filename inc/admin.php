@@ -285,21 +285,21 @@ class cfImgAdmin extends cfImg {
 		<table style="width: 100%;">
 		    <tr>
 		        <td style="width: 10%; text-align: right"><strong>Image URL</strong></td>
-		        <td><input tabindex="3" name="url" id="url" type="text" style="width: 100%" value="<?php echo $this->data['url']; ?>" /></td>
+		        <td><input tabindex="3" name="url" type="text" style="width: 100%" value="<?php echo $this->data['url']; ?>" /></td>
 		    </tr>
 		    <tr>
 		        <td style="width: 10%; text-align: right">Alt. Text</td>
-		        <td><input tabindex="3" name="alt" id="alt" type="text" style="width: 100%" value="<?php echo $this->data['alt']; ?>" /></td>
+		        <td><input tabindex="3" name="alt" type="text" style="width: 100%" value="<?php echo $this->data['alt']; ?>" /></td>
 		    </tr>
 		    <tr>
 		        <td style="width: 10%; text-align: right">Link to</td>
-		        <td><input tabindex="3" name="url" id="url" type="text" style="width: 100%" value="<?php echo $this->data['link']; ?>" /></td>
+		        <td><input tabindex="3" name="link" type="text" style="width: 100%" value="<?php echo $this->data['link']; ?>" /></td>
 		    </tr>
 		    <tr>
 		        <td style="width: 10%; text-align: right">Align</td>
 		        <td><?php
 		        	foreach ( $this->styles as $align => $style ) {
-						echo '<input tabindex="3" name="align" id="align" type="radio" value="' . $align . '" ';
+						echo '<input tabindex="3" name="align" type="radio" value="' . $align . '" ';
 						if ( $this->data['align'] == $align )
 							echo 'checked="checked" ';
 						echo '/>'. $align ."\n";
