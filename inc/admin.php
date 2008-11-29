@@ -1,53 +1,21 @@
 <?php
 class cfImgAdmin extends cfImg {
-	var $version = '1.5';
-	var $upgrade_from;
 	var $nonce = 'cfi-admin-key';
 
 	function __construct() {
 		add_action('admin_menu', array(&$this, 'page_init'));
 		add_action('admin_menu', array(&$this, 'box_init'));
 		add_action('save_post', array(&$this, 'save'), 1, 2);
-
-		if ( $this->upgrade_from = get_option('cfi_upgrade_from') )
-			add_action('admin_notices', array(&$this, 'warning'));
 	}
 
-	function warning() {
-		$manage_url = 'edit.php?page=custom-field-images';
-
-		if ( FALSE === strpos($_SERVER['REQUEST_URI'], $manage_url) )
-			return;
-
-		echo '<div class="updated fade"><p><strong>Custom Field Images</strong>: Data upgrade required. Please visit the <a href="' . $manage_url . '">management page</a>.</p></div>';
-	}
-
-// Upgrade options and set upgrade flag
+// Upgrade options
 
 	function activate() {
-		$old_ver = get_option('cfi_version');
-
-		if ( $old_ver == $this->version)
-			return;	// Already done
-
-		if ( $old_ver == '' ) {
-			$old_options = get_option('cfi-show-in');
-			delete_option('cfi-show-in');
-			$old_ver = '1.2';
-		} else
-			$old_options = get_option('cfi_options');
-
-		foreach ( $old_options as $name => $value )
-			$this->options[$name] = $value;
+		if ( $old_options = get_option('cfi_options') )
+			$this->options = array_merge($this->options, $old_options);
 
 		   add_option('cfi_options', $this->options) or
 		update_option('cfi_options', $this->options);
-
-		   add_option('cfi_version', $this->version, '', 'no') or
-		update_option('cfi_version', $this->version);
-
-		if ( $old_options )	// If not fresh install
-			add_option('cfi_upgrade_from', $old_ver, '', 'no');
 	}
 
 // Management page methods
@@ -68,89 +36,6 @@ class cfImgAdmin extends cfImg {
 			printf('<div class="updated fade"><p>%sed <strong>%d</strong> image(s).</p></div>', ucfirst(rtrim($action, 'e')), $r);
 		else
 			echo '<div class="error"><p>An error has occured.</p></div>';
-	}
-
-// Upgrade methods
-
-	function upgrade() {
-		global $wpdb;
-
-		delete_option('cfi_upgrade_from');
-
-		if ( $this->upgrade_from == '1.2')
-			return $this->upgrade_1_2();
-
-		$this->upgrade_from = NULL;
-
-		// Get old data
-		$query = $wpdb->prepare("
-			SELECT post_id, meta_value
-			FROM $wpdb->postmeta
-			WHERE meta_key = '%s'
-		", $this->key);
-
-		$old_data = $wpdb->get_results($query, 'ARRAY_A');
-
-		if ( !$old_data )
-			return 0;
-
-		// Convert old data
-		foreach ($old_data as $row) {
-			$id = $row['post_id'];
-
-			$old_element = unserialize(unserialize($row['meta_value']));
-
-			foreach($this->data as $field => $value)
-				$new_element[$field] = $old_element["cfi-$field"];
-
-			$count += update_post_meta($id, $this->key, $new_element);
-		}
-
-		return (int) $count;
-	}
-
-	function upgrade_1_2() {
-		global $wpdb;
-
-		// Set data fields
-		foreach ( $this->data as $name => $value )
-			$fields[] = "'cfi-$name'";
-
-		$fields = implode(',', $fields);
-
-		// Get old data
-		$query = $wpdb->prepare("
-			SELECT post_id, meta_key, meta_value
-			FROM $wpdb->postmeta
-			WHERE meta_key IN(%s)
-		", $fields);
-
-		$old_data = $wpdb->get_results($query, 'ARRAY_A');
-
-		if ( !$old_data )
-			return 0;
-
-		// Convert old data
-		foreach ($old_data as $row) {
-			$id = $row['post_id'];
-			$new_field = substr($row['meta_key'], 4);
-
-			$new_data[$id][$new_field] = $row['meta_value'];
-		}
-
-		// Add new data (don't overwrite newer data)
-		foreach ($new_data as $id => $element)
-			$count += add_post_meta($id, $this->key, $element, TRUE);
-
-		// Delete old data
-		$query = $wpdb->prepare("
-			DELETE FROM $wpdb->postmeta
-			WHERE meta_key IN(%s)
-		", $fields);
-
-		$wpdb->query($query);
-
-		return (int) $count;
 	}
 
 // Import/Export methods
@@ -426,21 +311,6 @@ class cfImgAdmin extends cfImg {
 <div class="wrap">
 
 <p>Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed.</p>
-
-<?php if ( $this->upgrade_from ) { ?>
-<h2>Upgrade custom field keys</h2>
-
-<p>This operation is required only once in order to use older data.</p>
-
-<form method="post" action="">
-	<?php wp_nonce_field($this->nonce); ?>
-
-	<p class="submit">
-	<input name="action" type="submit" value="Upgrade" />
-	</p>
-</form>
-<br />
-<?php } ?>
 
 <h2>Import images</h2>
 
