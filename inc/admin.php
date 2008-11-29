@@ -16,7 +16,7 @@ class cfImgAdmin extends cfImg {
 	function warning() {
 		$manage_url = 'edit.php?page=custom-field-images';
 
-		if ( strstr($_SERVER['REQUEST_URI'], $manage_url) )
+		if ( FALSE === strpos($_SERVER['REQUEST_URI'], $manage_url) )
 			return;
 
 		echo '<div class="updated fade"><p><strong>Custom Field Images</strong>: Data upgrade required. Please visit the <a href="' . $manage_url . '">management page</a>.</p></div>';
@@ -65,7 +65,7 @@ class cfImgAdmin extends cfImg {
 		}
 
 		if ( $r !== NULL)
-			echo '<div class="updated fade"><p>' . ucfirst(rtrim($action, 'e')) . 'ed <strong>' . $r . '</strong> image(s).</p></div>';
+			printf('<div class="updated fade"><p>%sed <strong>%d</strong> image(s).</p></div>', ucfirst(rtrim($action, 'e')), $r);
 		else
 			echo '<div class="error"><p>An error has occured.</p></div>';
 	}
@@ -181,6 +181,7 @@ class cfImgAdmin extends cfImg {
 		// Set align
 		$img_clases = explode(' ', $img['class']);
 
+		// Search for known classes
 		foreach ( $img_clases as $class ) {
 			if ( !in_array(substr($class, 5), array_keys($this->styles)) )
 				continue;
@@ -251,9 +252,9 @@ class cfImgAdmin extends cfImg {
 		global $wpdb;
 
 		$query = $wpdb->prepare("
-				UPDATE $wpdb->posts
-				SET post_content = %s
-				WHERE ID = %d
+			UPDATE $wpdb->posts
+			SET post_content = %s
+			WHERE ID = %d
 		", $content, $id);
 
 		return $wpdb->query($query);
@@ -329,16 +330,14 @@ class cfImgAdmin extends cfImg {
 // Options and management page methods
 
 	function page_init() {
-		if ( current_user_can('manage_options') )
-			add_options_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'options_page'));
-			add_management_page('Custom Field Images', 'Custom Field Images', 8, 'custom-field-images', array(&$this, 'management_page'));
+		if ( current_user_can('manage_options') ) {
+			add_options_page('CFI Settings', 'CFI Settings', 8, 'custom-field-images', array(&$this, 'options_page'));
+			add_management_page('CFI Management', 'CFI Management', 8, 'custom-field-images', array(&$this, 'management_page'));
+		}
 	}
 
 	function update_options() {
 		$this->options = get_option('cfi_options');
-
-		if ( !isset($_POST['action']) )
-			return;
 
 		// Update options
 		if ( 'Save Changes' == $_POST['action'] ) {
@@ -385,14 +384,21 @@ class cfImgAdmin extends cfImg {
 			</td>
 		</tr>
 		<tr>
-			<th scope="row" valign="top">Link image to the current post</th>
+			<th scope="row" valign="top">Duplicate Alt. Text as Title</th>
 			<td>
-				<input type="checkbox" name="default_link" value="TRUE" <?php if ( $this->options['default_link']) echo 'checked="checked" ';?> />
-				<label>If an image has no link specified, it will be linked to the post or page it is associated with.</label>
+				<input type="checkbox" name="add_title" value="TRUE" <?php if ( $this->options['add_title']) echo 'checked="checked" ';?> />
+				<label>If the <em>Alt. Text</em> field is not empty, it will also be added as the image title.</label>
 			</td>
 		</tr>
 		<tr>
-			<th scope="row" valign="top">Extra attributes</th>
+			<th scope="row" valign="top">Link image to post</th>
+			<td>
+				<input type="checkbox" name="default_link" value="TRUE" <?php if ( $this->options['default_link']) echo 'checked="checked" ';?> />
+				<label>If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.</label>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row" valign="top">Extra link attributes</th>
 			<td>
 				<input type="text" name="extra_attr" value="<?php echo htmlentities(stripslashes($this->options['extra_attr'])); ?>" style="width: 250px" />
 				<label>Example: <em>target="_blank" rel="nofollow"</em></label>
@@ -424,7 +430,7 @@ class cfImgAdmin extends cfImg {
 <?php if ( $this->upgrade_from ) { ?>
 <h2>Upgrade custom field keys</h2>
 
-<p>This operation is required only once, in order to use older data.</p>
+<p>This operation is required only once in order to use older data.</p>
 
 <form method="post" action="">
 	<?php wp_nonce_field($this->nonce); ?>

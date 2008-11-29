@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.5.1.1
-Description: (<a href="edit.php?page=custom-field-images">Manage</a> | <a href="options-general.php?page=custom-field-images">Settings</a>) Easily display images anywhere using custom fields.
+Version: 1.5.2
+Description: Easily manage and display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/projects/custom-field-images.html
@@ -51,6 +51,7 @@ class cfImg {
 		'default_align' => 'right',
 		'default_link' => TRUE,
 		'extra_attr' => '',
+		'add_title' => TRUE,
 
 		'content' => TRUE,
 		'feed' => TRUE,
@@ -69,7 +70,10 @@ class cfImg {
 		$is_feed = is_feed();
 
 		if ( ($is_feed && $this->options['feed']) || (!$is_feed && $this->options[$type]) )
-			return $this->generate() . $content;
+			if ( $type != 'excerpt' && (FALSE !== strpos($content, '[cfi]')) )
+				return str_replace('[cfi]', $this->generate(), $content);
+			else
+				return $this->generate() . $content;
 
 		return $content;
 	}
@@ -97,14 +101,18 @@ class cfImg {
 		$align = $this->data['align'] ? $this->data['align'] : $this->options['default_align'];
 
 		if ( is_feed() )
-			$image .= 'style="' . $this->styles[$align] .'" ';
+			$image .= sprintf( 'style="%s" ', $this->styles[$align] );
 		else
-			$image .= 'class="cfi align'. $align .'" ';
+			$image .= sprintf( 'class="cfi align%s" ', $align );
 
 		// Set alt text
 		$alt = $this->data['alt'] ? $this->data['alt'] : get_the_title();
 
-		$image .= 'alt="' . $alt . '" ';
+		$image .= sprintf( 'alt="%s" ', $alt );
+
+		// Set title
+		if ( $this->options['add_title'] )
+			$image .= sprintf( 'title="%s" ', $alt );
 
 		// End img tag
 		$image .= '/>';
@@ -113,21 +121,15 @@ class cfImg {
 	}
 
 	function add_link($image) {
-		// Sets the link for the image
-
 		$link = $this->data['link'];
 
 		if ( !$link )
-			if ( !$this->options['default_link'] )
+			if ( !$this->options['default_link'] || is_single() || is_page() )
 				return $image;
 			else
 				$link = get_permalink($this->id);
 
-		$output = '<a href="'. $link . '"';
-		$output .= ' ' . stripslashes($this->options['extra_attr']);
-		$output .= '>' . $image . '</a>';
-
-		return $output;
+		return sprintf( '<a href="%s" %s>' . $image . '</a>', $link, stripslashes($this->options['extra_attr']) );
 	}
 }
 
@@ -135,9 +137,9 @@ class cfImg {
 if ( is_admin() ) {
 	require_once('inc/admin.php');
 
-	$cfImgAdmin = new cfImgAdmin();
+	$cfImg = new cfImgAdmin();
 
-	register_activation_hook(__FILE__, array(&$cfImgAdmin, 'activate'));
+	register_activation_hook(__FILE__, array(&$cfImg, 'activate'));
 } else
 	$cfImg = new cfImg();
 
