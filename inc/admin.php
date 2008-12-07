@@ -2,6 +2,11 @@
 class cfImgAdmin extends cfImg {
 	var $nonce = 'cfi-admin-key';
 
+	// PHP4 compatibility
+	function cfImgAdmin() {
+		$this->__construct();
+	}
+
 	function __construct() {
 		add_action('admin_menu', array(&$this, 'page_init'));
 		add_action('admin_menu', array(&$this, 'box_init'));

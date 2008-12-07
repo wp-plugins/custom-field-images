@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.6
+Version: 1.6.0.1
 Description: Easily manage and display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -57,6 +57,11 @@ class cfImg {
 		'feed' => TRUE,
 		'excerpt' => TRUE
 	);
+
+	// PHP4 compatibility
+	function cfImg() {
+		$this->__construct();
+	}
 
 	function __construct() {
 		$this->options = get_option('cfi_options');
