@@ -226,8 +226,11 @@ class cfImgAdmin extends cfImg {
 		}
 	}
 
-	function update_options() {
+	function handle_options() {
 		$this->options = get_option('cfi_options');
+
+		if ( !isset($_POST['action']) )
+			return;
 
 		// Update options
 		if ( 'Save Changes' == $_POST['action'] ) {
@@ -246,7 +249,7 @@ class cfImgAdmin extends cfImg {
 	}
 
 	function options_page() {
-		$this->update_options();
+		$this->handle_options();
 ?>
 <div class="wrap">
 
