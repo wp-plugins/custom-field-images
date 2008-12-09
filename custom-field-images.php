@@ -141,10 +141,10 @@ class displayCFI {
 // Init
 if ( is_admin() ) {
 	require_once('inc/admin.php');
-
-	$CFIobj = new adminCFI(__FILE__);
-} else
-	$CFIobj = new displayCFI();
+	new adminCFI(__FILE__);
+}
+	
+$CFIobj = new displayCFI();
 
 // Template tag
 function custom_field_image() {

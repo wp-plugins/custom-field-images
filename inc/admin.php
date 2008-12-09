@@ -98,12 +98,15 @@ class insertCFI {
 		add_action('admin_head_media_upload_type_url_form', array(&$this, 'button'));
 		add_action('admin_head_media_upload_library_form', array(&$this, 'button'));
 		add_action('admin_head_media_upload_gallery_form', array(&$this, 'button'));
+
+		add_filter('image_send_to_editor', array(&$this, 'insert'));
 	}
 
 	function button() {
-	//	$src = $this->get_plugin_url() . '/insert.js';
-	//	echo "<script type='text/javascript' src='{$src}'></script>\n";
+		$src = $this->get_plugin_url() . '/insert.js';
+		echo "<script type='text/javascript' src='{$src}'></script>\n";
 
+/*
 echo <<<EOD
 <script type="text/javascript">
 jQuery(function($) {
@@ -111,10 +114,21 @@ jQuery(function($) {
 			  '<label for="insert-cfi" title="Custom Field Image" style="font-weight:normal">as a CFI</label>';
 	
 	$('td.savesend .button').after(check);
+	
+	$('#insert-cfi').click(function(){
+		$('.post_title input').append('<!--cfi-->');
+	})
 });
 </script>
 EOD;
+*/
+	}
 
+	function insert($html) {
+		if ( FALSE === strpos($html, '[cfi]') )
+			return $html;
+		else
+			return '';
 	}
 
 	function get_plugin_url() {
