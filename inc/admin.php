@@ -1,29 +1,143 @@
 <?php
-class cfImgAdmin extends cfImg {
-	var $nonce = 'cfi-admin-key';
+
+class adminCFI {
 
 	// PHP4 compatibility
-	function cfImgAdmin() {
-		$this->__construct();
+	function adminCFI($file) {
+		$this->__construct($file);
 	}
 
-	function __construct() {
-		add_action('admin_menu', array(&$this, 'page_init'));
-		add_action('admin_menu', array(&$this, 'box_init'));
-		add_action('save_post', array(&$this, 'save'), 1, 2);
+	function __construct($file) {
+		new boxCFI();
+		new insertCFI();
+		new manageCFI();
+
+		register_activation_hook($file, array(&$this, 'install'));
 	}
 
-// Upgrade options
-
-	function activate() {
+	function install() {
 		if ( $old_options = get_option('cfi_options') )
 			$this->options = array_merge($this->options, $old_options);
 
 		   add_option('cfi_options', $this->options) or
 		update_option('cfi_options', $this->options);
 	}
+}
 
-// Management page methods
+
+class boxCFI extends displayCFI {
+
+	// PHP4 compatibility
+	function boxCFI() {
+		$this->__construct();
+	}
+
+	function __construct() {
+		add_action('admin_menu', array(&$this, 'box_init'));
+		add_action('save_post', array(&$this, 'save'), 1, 2);
+	}
+
+	function box_init() {
+		add_meta_box('cfi-box', 'Custom Field Image', array(&$this, 'box'), 'post', 'normal');
+		add_meta_box('cfi-box', 'Custom Field Image', array(&$this, 'box'), 'page', 'normal');
+	}
+
+	function box() {
+		$this->load();
+?>
+		<table style="width: 100%;">
+		    <tr>
+		        <td style="width: 10%; text-align: right"><strong>Image URL</strong></td>
+		        <td><input tabindex="3" name="url" type="text" style="width: 100%" value="<?php echo $this->data['url']; ?>" /></td>
+		    </tr>
+		    <tr>
+		        <td style="width: 10%; text-align: right">Alt. Text</td>
+		        <td><input tabindex="3" name="alt" type="text" style="width: 100%" value="<?php echo $this->data['alt']; ?>" /></td>
+		    </tr>
+		    <tr>
+		        <td style="width: 10%; text-align: right">Link to</td>
+		        <td><input tabindex="3" name="link" type="text" style="width: 100%" value="<?php echo $this->data['link']; ?>" /></td>
+		    </tr>
+		    <tr>
+		        <td style="width: 10%; text-align: right">Align</td>
+		        <td><?php
+		        	foreach ( $this->styles as $align => $style ) {
+						echo '<input tabindex="3" name="align" type="radio" value="' . $align . '" ';
+						if ( $this->data['align'] == $align )
+							echo 'checked="checked" ';
+						echo '/>'. $align ."\n";
+					}
+				?></td>
+		    </tr>
+		</table>
+<?php
+	}
+
+	function save($post_id, $post) {
+		if ( $post->post_type == 'revision' )
+			return;
+
+		if ( $_POST['url'] == '' ) {
+			delete_post_meta($post_id, $this->key);
+			return;
+		}
+
+		foreach ( $this->data as $name => $value )
+			$this->data[$name] = $_POST[$name];
+
+		   add_post_meta($post_id, $this->key, $this->data, TRUE) or
+		update_post_meta($post_id, $this->key, $this->data);
+	}
+}
+
+
+class insertCFI {
+
+	function __construct() {
+		add_action('admin_head_media_upload_type_form', array(&$this, 'button'));
+		add_action('admin_head_media_upload_type_url_form', array(&$this, 'button'));
+		add_action('admin_head_media_upload_library_form', array(&$this, 'button'));
+		add_action('admin_head_media_upload_gallery_form', array(&$this, 'button'));
+	}
+
+	function button() {
+	//	$src = $this->get_plugin_url() . '/insert.js';
+	//	echo "<script type='text/javascript' src='{$src}'></script>\n";
+
+echo <<<EOD
+<script type="text/javascript">
+jQuery(function($) {
+	check = ' <input type="checkbox" id="insert-cfi" name="insert-cfi" value="1" />' +
+			  '<label for="insert-cfi" title="Custom Field Image" style="font-weight:normal">as a CFI</label>';
+	
+	$('td.savesend .button').after(check);
+});
+</script>
+EOD;
+
+	}
+
+	function get_plugin_url() {
+		if ( function_exists('plugins_url') )
+			return plugins_url(plugin_basename(dirname(__FILE__)));
+		else
+			// Pre-2.6 compatibility
+			return get_option('siteurl') . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
+	}
+}
+
+
+class manageCFI extends displayCFI {
+	var $nonce = 'cfi-admin-key';
+
+	// PHP4 compatibility
+	function manageCFI() {
+		$this->__construct();
+	}
+
+	function __construct() {
+		add_action('admin_menu', array(&$this, 'page_init'));
+	}
 
 	function process_posts($action) {
 		$action = strtolower($action);
@@ -163,60 +277,6 @@ class cfImgAdmin extends cfImg {
 		return $wpdb->query($query);
 	}
 
-// Box methods
-
-	function box_init() {
-		add_meta_box('cfi-box', 'Custom Field Image', array(&$this, 'box'), 'post', 'normal');
-		add_meta_box('cfi-box', 'Custom Field Image', array(&$this, 'box'), 'page', 'normal');
-	}
-
-	function box() {
-		$this->load();
-?>
-		<table style="width: 100%;">
-		    <tr>
-		        <td style="width: 10%; text-align: right"><strong>Image URL</strong></td>
-		        <td><input tabindex="3" name="url" type="text" style="width: 100%" value="<?php echo $this->data['url']; ?>" /></td>
-		    </tr>
-		    <tr>
-		        <td style="width: 10%; text-align: right">Alt. Text</td>
-		        <td><input tabindex="3" name="alt" type="text" style="width: 100%" value="<?php echo $this->data['alt']; ?>" /></td>
-		    </tr>
-		    <tr>
-		        <td style="width: 10%; text-align: right">Link to</td>
-		        <td><input tabindex="3" name="link" type="text" style="width: 100%" value="<?php echo $this->data['link']; ?>" /></td>
-		    </tr>
-		    <tr>
-		        <td style="width: 10%; text-align: right">Align</td>
-		        <td><?php
-		        	foreach ( $this->styles as $align => $style ) {
-						echo '<input tabindex="3" name="align" type="radio" value="' . $align . '" ';
-						if ( $this->data['align'] == $align )
-							echo 'checked="checked" ';
-						echo '/>'. $align ."\n";
-					}
-				?></td>
-		    </tr>
-		</table>
-<?php
-	}
-
-	function save($post_id, $post) {
-		if ( $post->post_type == 'revision' )
-			return;
-
-		if ( $_POST['url'] == '' ) {
-			delete_post_meta($post_id, $this->key);
-			return;
-		}
-
-		foreach ( $this->data as $name => $value )
-			$this->data[$name] = $_POST[$name];
-
-		   add_post_meta($post_id, $this->key, $this->data, TRUE) or
-		update_post_meta($post_id, $this->key, $this->data);
-	}
-
 // Options and management page methods
 
 	function page_init() {
@@ -226,8 +286,11 @@ class cfImgAdmin extends cfImg {
 		}
 	}
 
-	function update_options() {
+	function handle_options() {
 		$this->options = get_option('cfi_options');
+
+		if ( !isset($_POST['action']) )
+			return;
 
 		// Update options
 		if ( 'Save Changes' == $_POST['action'] ) {
@@ -246,7 +309,7 @@ class cfImgAdmin extends cfImg {
 	}
 
 	function options_page() {
-		$this->update_options();
+		$this->handle_options();
 ?>
 <div class="wrap">
 

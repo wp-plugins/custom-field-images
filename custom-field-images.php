@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.6.0.1
+Version: 1.7a
 Description: Easily manage and display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -23,7 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-class cfImg {
+class displayCFI {
 
 	// Styles for images in feeds
 	var $styles = array(
@@ -59,7 +59,7 @@ class cfImg {
 	);
 
 	// PHP4 compatibility
-	function cfImg() {
+	function displayCFI() {
 		$this->__construct();
 	}
 
@@ -142,15 +142,13 @@ class cfImg {
 if ( is_admin() ) {
 	require_once('inc/admin.php');
 
-	$cfImg = new cfImgAdmin();
-
-	register_activation_hook(__FILE__, array(&$cfImg, 'activate'));
+	$CFIobj = new adminCFI(__FILE__);
 } else
-	$cfImg = new cfImg();
+	$CFIobj = new displayCFI();
 
 // Template tag
 function custom_field_image() {
-	global $cfImg;
-	echo $cfImg->generate();
+	global $CFIobj;
+	echo $CFIobj->generate();
 }
 
