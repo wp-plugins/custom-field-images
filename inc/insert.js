@@ -1,23 +1,29 @@
 jQuery(function($) {
-	button = ' <a class="insert-cfi" href="#">Insert CFI</a>';
-	$('.media-item :submit').after(button);
+	$('#add_image').click(function(){ 										// when invoking iframe
+		$('#TB_iframeContent').load(function() { 							// after each tab load,
+			button = ' <a class="insert-cfi" href="#" title="Insert into the Custom Field Image box" style="color:#006505;">Insert CFI</a>';			
+			frame = $(this).contents();
 
-	strpos = function ( haystack, needle, offset) {
-		var i = (haystack+'').indexOf( needle, offset ); 
-		return i===-1 ? false : i;
-	}
-	tk = '[cfi]';
-
-	$('.insert-cfi').each(function(){
-		$(this).click(function(){
-			parent = $(this).parents('.media-item');
-
-			title = parent.find('.post_title :text');
-
-			if ( strpos(title.val(),tk) == false )
-				title.val(title.val() + tk);
-
-			parent.find(':submit').click();
+			frame.find('.media-item :submit').after(button);				// add button for each item
+			frame.find('.insert-cfi').bind('click', insertCfi);				// bind function to button click
 		});
 	});
+
+	insertCfi = function() {
+		item = $(this).parents('.media-item');
+
+		url = item.find('.urlfile').attr('title');
+		$(document).find('#cfi-url').val(url);
+
+		alt = item.find('.post_title :text').val();
+		$(document).find('#cfi-alt').val(alt);
+
+		link = item.find('.url :text').val();
+		$(document).find('#cfi-link').val(link);
+
+		align = item.find('.align :checked').val();
+		$(document).find('#cfi-align [value="'+align+'"]').attr('checked',true);
+
+		$(document).find('#TB_closeWindowButton').click();		// close iframe
+	}
 });

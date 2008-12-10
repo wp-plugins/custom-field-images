@@ -1,6 +1,6 @@
 <?php
 
-class adminCFI {
+class adminCFI extends displayCFI {
 
 	// PHP4 compatibility
 	function adminCFI($file) {
@@ -48,21 +48,21 @@ class boxCFI extends displayCFI {
 		<table style="width: 100%;">
 		    <tr>
 		        <td style="width: 10%; text-align: right"><strong>Image URL</strong></td>
-		        <td><input tabindex="3" name="url" type="text" style="width: 100%" value="<?php echo $this->data['url']; ?>" /></td>
+		        <td><input tabindex="3" name="cfi-url" id="cfi-url" type="text" style="width: 100%" value="<?php echo $this->data['url']; ?>" /></td>
 		    </tr>
 		    <tr>
 		        <td style="width: 10%; text-align: right">Alt. Text</td>
-		        <td><input tabindex="3" name="alt" type="text" style="width: 100%" value="<?php echo $this->data['alt']; ?>" /></td>
+		        <td><input tabindex="3" name="cfi-alt" id="cfi-alt" type="text" style="width: 100%" value="<?php echo $this->data['alt']; ?>" /></td>
 		    </tr>
 		    <tr>
 		        <td style="width: 10%; text-align: right">Link to</td>
-		        <td><input tabindex="3" name="link" type="text" style="width: 100%" value="<?php echo $this->data['link']; ?>" /></td>
+		        <td><input tabindex="3" name="cfi-link" id="cfi-link" type="text" style="width: 100%" value="<?php echo $this->data['link']; ?>" /></td>
 		    </tr>
 		    <tr>
 		        <td style="width: 10%; text-align: right">Align</td>
-		        <td><?php
+		        <td id="cfi-align"><?php
 		        	foreach ( $this->styles as $align => $style ) {
-						echo '<input tabindex="3" name="align" type="radio" value="' . $align . '" ';
+						echo '<input tabindex="3" name="cfi-align" type="radio" value="' . $align . '" ';
 						if ( $this->data['align'] == $align )
 							echo 'checked="checked" ';
 						echo '/>'. $align ."\n";
@@ -77,13 +77,13 @@ class boxCFI extends displayCFI {
 		if ( $post->post_type == 'revision' )
 			return;
 
-		if ( $_POST['url'] == '' ) {
+		if ( $_POST['cfi-url'] == '' ) {
 			delete_post_meta($post_id, $this->key);
 			return;
 		}
 
 		foreach ( $this->data as $name => $value )
-			$this->data[$name] = $_POST[$name];
+			$this->data[$name] = $_POST['cfi-'.$name];
 
 		   add_post_meta($post_id, $this->key, $this->data, TRUE) or
 		update_post_meta($post_id, $this->key, $this->data);
@@ -91,44 +91,20 @@ class boxCFI extends displayCFI {
 }
 
 
-class insertCFI {
+class insertCFI{
 
 	function __construct() {
-		add_action('admin_head_media_upload_type_form', array(&$this, 'button'));
-		add_action('admin_head_media_upload_type_url_form', array(&$this, 'button'));
-		add_action('admin_head_media_upload_library_form', array(&$this, 'button'));
-		add_action('admin_head_media_upload_gallery_form', array(&$this, 'button'));
-
-		add_filter('image_send_to_editor', array(&$this, 'insert'));
+		add_action('admin_head', array(&$this, 'insert'));
 	}
 
-	function button() {
+	function insert() {
+		if ( FALSE === strpos($_SERVER['REQUEST_URI'], 'post-new.php') &&
+			 FALSE === strpos($_SERVER['REQUEST_URI'], 'page-new.php') &&
+			 FALSE === strpos($_SERVER['REQUEST_URI'], 'post.php?action=edit')
+		) return;
+
 		$src = $this->get_plugin_url() . '/insert.js';
 		echo "<script type='text/javascript' src='{$src}'></script>\n";
-
-/*
-echo <<<EOD
-<script type="text/javascript">
-jQuery(function($) {
-	check = ' <input type="checkbox" id="insert-cfi" name="insert-cfi" value="1" />' +
-			  '<label for="insert-cfi" title="Custom Field Image" style="font-weight:normal">as a CFI</label>';
-	
-	$('td.savesend .button').after(check);
-	
-	$('#insert-cfi').click(function(){
-		$('.post_title input').append('<!--cfi-->');
-	})
-});
-</script>
-EOD;
-*/
-	}
-
-	function insert($html) {
-		if ( FALSE === strpos($html, '[cfi]') )
-			return $html;
-		else
-			return '';
 	}
 
 	function get_plugin_url() {
@@ -223,12 +199,18 @@ class manageCFI extends displayCFI {
 		// Delete image from post
 		$new_content = str_replace($matches[0], '', $post->content);
 
-		if ( $new_content == $post->content )
-			return 0;
-
 		$this->update_post($new_content, $post->ID);
 
 		return 1;
+	}
+
+	function get_attributes($string) {
+		preg_match_all('#(\w+)="\s*((?:[^"]+\s*)+)\s*"#i', $string, $matches, PREG_SET_ORDER);
+
+		foreach( $matches as $att )
+			$attributes[$att[1]] = $att[2];
+
+		return $attributes;
 	}
 
 	function export_single($post) {
@@ -244,22 +226,13 @@ class manageCFI extends displayCFI {
 		return 1;
 	}
 
-	function get_attributes($string) {
-		preg_match_all('#(\w+)="\s*((?:[^"]+\s*)+)\s*"#i', $string, $matches, PREG_SET_ORDER);
-
-		foreach( $matches as $att )
-			$attributes[$att[1]] = $att[2];
-
-		return $attributes;
-	}
-
 	function get_posts($operator) {
 		global $wpdb;
 
 		$query = $wpdb->prepare("
 			SELECT DISTINCT ID, post_content AS content
 			FROM $wpdb->posts NATURAL JOIN $wpdb->postmeta
-			WHERE post_status IN('publish', 'draft')
+			WHERE post_type IN ('post', 'page')
 			AND meta_key $operator '%s'
 		", $this->key);
 
