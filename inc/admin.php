@@ -91,16 +91,17 @@ class boxCFI extends displayCFI {
 }
 
 
-class insertCFI{
+class insertCFI {
 
 	function __construct() {
 		add_action('admin_head', array(&$this, 'insert'));
 	}
 
 	function insert() {
-		if ( FALSE === strpos($_SERVER['REQUEST_URI'], 'post-new.php') &&
-			 FALSE === strpos($_SERVER['REQUEST_URI'], 'page-new.php') &&
-			 FALSE === strpos($_SERVER['REQUEST_URI'], 'post.php?action=edit')
+		if ( FALSE === strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/post-new.php') &&
+			 FALSE === strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/page-new.php') &&
+			 FALSE === strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/post.php') &&
+			 FALSE === strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/page.php')
 		) return;
 
 		$src = $this->get_plugin_url() . '/insert.js';
