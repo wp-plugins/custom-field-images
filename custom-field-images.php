@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.7b3
+Version: 1.7
 Description: Easily manage and display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
-Plugin URI: http://scribu.net/projects/custom-field-images.html
+Plugin URI: http://scribu.net/projects/custom-field-images
 
 Copyright (C) 2008 scribu.net (scribu AT gmail DOT com)
 
