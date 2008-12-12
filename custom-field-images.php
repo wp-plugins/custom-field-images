@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.7b2
+Version: 1.7b3
 Description: Easily manage and display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -47,7 +47,7 @@ class displayCFI {
 	);
 
 	// Display options
-	var $options = array();
+	var $options;
 
 	// PHP4 compatibility
 	function displayCFI() {

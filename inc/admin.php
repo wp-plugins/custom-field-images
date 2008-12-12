@@ -8,9 +8,13 @@ class adminCFI {
 	}
 
 	function __construct($file) {
+		global $CFIoptions;
+
 		new boxCFI();
-		new insertCFI();
 		new manageCFI();
+
+		if ( $CFIoptions->get('insert_button') )
+			new insertCFI();
 
 		register_activation_hook($file, array(&$this, 'install'));
 	}
@@ -23,6 +27,7 @@ class adminCFI {
 			'add_title' => TRUE,
 			'default_link' => TRUE,
 			'extra_attr' => '',
+			'insert_button' => TRUE,
 
 			'content' => TRUE,
 			'feed' => TRUE,
@@ -109,11 +114,15 @@ class insertCFI {
 	}
 
 	function insert() {
-		if ( FALSE === strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/post-new.php') &&
-			 FALSE === strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/page-new.php') &&
-			 FALSE === strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/post.php') &&
-			 FALSE === strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/page.php')
-		) return;
+		$urls = array('post-new.php', 'page-new.php', 'post.php', 'page.php');
+
+		$f = false;
+		foreach ( $urls as $url )
+			if ( FALSE !== strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/'.$url) ) {
+				$f = true;
+				break;
+			}
+		if ( !$f ) return;
 
 		$src = $this->get_plugin_url() . '/insert.js';
 		echo "<script type='text/javascript' src='{$src}'></script>\n";
@@ -285,6 +294,58 @@ class manageCFI extends displayCFI {
 		}
 	}
 
+	function form_row($title, $desc, $type, $names, $values) {
+
+		$f1 = is_array($names);
+		$f2 = is_array($values);
+
+		if ( $f1 || $f2 ) {
+			if ( $f1 && $f2 )
+				$a = array_combine($names, $values);
+			elseif ( $f1 && !$f2 )
+				$a = array_fill_keys($names, $values);
+			elseif ( !$f1 && $f2)
+				$a = array_fill_keys($values, $names);
+
+			if ( $f1 ) {
+				$i1 = 'name';
+				$i2 = 'val';
+			}
+
+			if ( $f2 ) {	
+				$i1 = 'val';
+				$i2 = 'name';
+			}
+	
+			$l1 = 'name';
+
+		} else {
+			$a = array($names => $values);
+
+			$i1 = 'name';
+			$i2 = 'val';
+
+			$l1 = 'desc';
+		}
+
+		foreach ( $a as $name => $val ) {
+			if ( in_array($type, array('checkbox', 'radio')) )
+				$extra = ($this->options[$$i1] == $$i2) ? "checked='checked' " : '';
+
+			$inputs .= sprintf("\n<input type='%s' name='%s' value='%s' %s/> ", $type, $$i1, $$i2, $extra);
+			$inputs .= sprintf("<label for='%s'>%s</label> ", $$i1, $$l1);
+		}
+
+		return '
+		<tr>
+			<th scope="row" valign="top">'.$title.'</th>
+			<td>
+'.$inputs.'
+			</td>
+		</tr>
+';
+	}
+
 	function handle_options() {
 		global $CFIoptions;
 
@@ -314,47 +375,55 @@ class manageCFI extends displayCFI {
 
 <form method="post" action="">
 	<table class="form-table">
-		<tr>
-			<th scope="row" valign="top">Display in</th>
-			<td>
-			<?php foreach ( array('content', 'excerpt', 'feed') as $name ) { ?>
-				<input type="checkbox" name="<?php echo $name; ?>" value="TRUE" <?php if ($this->options[$name] == TRUE) echo 'checked="checked"'; ?> />
-			 	<label>post <?php echo $name; ?></label>
-				<br class="clear" />
-			<?php } ?>
-			</td>
-		</tr>
-		<tr>
-			<th scope="row" valign="top">Default alignment</th>
-			<td>
-			<?php foreach ( $this->styles as $align => $style ) { ?>
-				<input type="radio" name="default_align" value="<?php echo $align ?>" <?php if ($this->options['default_align'] == $align) echo 'checked="checked" ';?> />
-				<label><?php echo $align; ?></label>
-			<?php } ?>
-			</td>
-		</tr>
-		<tr>
-			<th scope="row" valign="top">Duplicate Alt. Text as Title</th>
-			<td>
-				<input type="checkbox" name="add_title" value="TRUE" <?php if ($this->options['add_title']) echo 'checked="checked" ' ?> />
-				<label>If the <em>Alt. Text</em> field is not empty, it will also be added as the image title.</label>
-			</td>
-		</tr>
-		<tr>
-			<th scope="row" valign="top">Link image to post</th>
-			<td>
-				<input type="checkbox" name="default_link" value="TRUE" <?php if ($this->options['default_link']) echo 'checked="checked" ' ?> />
-				<label>If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.</label>
-			</td>
-		</tr>
-		<tr>
-			<th scope="row" valign="top">Extra link attributes</th>
-			<td>
-				<input type="text" name="extra_attr" value="<?php echo htmlentities(stripslashes($this->options['extra_attr'])); ?>" style="width: 250px" />
-				<label>Example: <em>target="_blank" rel="nofollow"</em></label>
-				<p>This is for adding extra attributes to the links added to images.</p>
-			</td>
-		</tr>
+<?php
+		echo $this->form_row(
+			'Display in',
+			'',
+			'checkbox',
+			array('content', 'excerpt',	'feed'),
+			'true'
+		);
+
+		echo $this->form_row(
+			'Default alignment',
+			'',
+			'radio',
+			'default_align',
+			array('left', 'center', 'right')
+		);
+
+		echo $this->form_row(
+			'Extra link attributes',
+			'Example: <em>target="_blank" rel="nofollow"</em>',
+			'text',
+			'extra_attr',
+			htmlentities(stripslashes($this->options['extra_attr']))
+		);
+
+		echo $this->form_row(
+			'Link image to post',
+			'If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.',
+			'checkbox',
+			'default_link',
+			'true'
+		);
+
+		echo $this->form_row(
+			'Duplicate Alt. Text as Title',
+			'If the <em>Alt. Text</em> field is not empty, it will also be added as the image title.',
+			'checkbox',
+			'add_title',
+			'true'
+		);
+		
+		echo $this->form_row(
+			'Insert CFI button',
+			'Add button in the Insert Image form',
+			'checkbox',
+			'insert_button',
+			'true'
+		);
+?>
 	</table>
 
 	<?php wp_nonce_field($this->nonce); ?>
