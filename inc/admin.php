@@ -1,6 +1,6 @@
 <?php
 
-class adminCFI extends displayCFI {
+class adminCFI {
 
 	// PHP4 compatibility
 	function adminCFI($file) {
@@ -16,14 +16,20 @@ class adminCFI extends displayCFI {
 	}
 
 	function install() {
-		if ( $old_options = get_option('cfi_options') )
-			$this->options = array_merge($this->options, $old_options);
+		global $CFIoptions;
 
-		   add_option('cfi_options', $this->options) or
-		update_option('cfi_options', $this->options);
+		$CFIoptions->update(array(
+			'default_align' => 'right',
+			'add_title' => TRUE,
+			'default_link' => TRUE,
+			'extra_attr' => '',
+
+			'content' => TRUE,
+			'feed' => TRUE,
+			'excerpt' => TRUE
+		), false);
 	}
 }
-
 
 class boxCFI extends displayCFI {
 
@@ -92,6 +98,11 @@ class boxCFI extends displayCFI {
 
 
 class insertCFI {
+
+	// PHP4 compatibility
+	function insertCFI() {
+		$this->__construct();
+	}
 
 	function __construct() {
 		add_action('admin_head', array(&$this, 'insert'));
@@ -275,10 +286,9 @@ class manageCFI extends displayCFI {
 	}
 
 	function handle_options() {
-		$this->options = get_option('cfi_options');
+		global $CFIoptions;
 
-		if ( !isset($_POST['action']) )
-			return;
+		$this->options = $CFIoptions->get();
 
 		// Update options
 		if ( 'Save Changes' == $_POST['action'] ) {
@@ -287,10 +297,9 @@ class manageCFI extends displayCFI {
 			foreach ( $this->options as $name => $value )
 				$new_options[$name] = $_POST[$name];
 
-			if ( $this->options != $new_options ) {
-				$this->options = $new_options;
-				update_option('cfi_options', $this->options);
-			}
+			$CFIoptions->update($new_options);
+
+			$this->options = $CFIoptions->get();	// reload options
 
 			echo '<div class="updated fade"><p>Options <strong>saved</strong>.</p></div>';
 		}
@@ -309,7 +318,7 @@ class manageCFI extends displayCFI {
 			<th scope="row" valign="top">Display in</th>
 			<td>
 			<?php foreach ( array('content', 'excerpt', 'feed') as $name ) { ?>
-				<input type="checkbox" name="<?php echo $name; ?>" value="TRUE" <?php if ( $this->options[$name] == TRUE) echo 'checked="checked"'; ?> />
+				<input type="checkbox" name="<?php echo $name; ?>" value="TRUE" <?php if ($this->options[$name] == TRUE) echo 'checked="checked"'; ?> />
 			 	<label>post <?php echo $name; ?></label>
 				<br class="clear" />
 			<?php } ?>
@@ -319,7 +328,7 @@ class manageCFI extends displayCFI {
 			<th scope="row" valign="top">Default alignment</th>
 			<td>
 			<?php foreach ( $this->styles as $align => $style ) { ?>
-				<input type="radio" name="default_align" value="<?php echo $align; ?>" <?php if ( $this->options['default_align'] == $align) echo 'checked="checked" ';?> />
+				<input type="radio" name="default_align" value="<?php echo $align ?>" <?php if ($this->options['default_align'] == $align) echo 'checked="checked" ';?> />
 				<label><?php echo $align; ?></label>
 			<?php } ?>
 			</td>
@@ -327,14 +336,14 @@ class manageCFI extends displayCFI {
 		<tr>
 			<th scope="row" valign="top">Duplicate Alt. Text as Title</th>
 			<td>
-				<input type="checkbox" name="add_title" value="TRUE" <?php if ( $this->options['add_title']) echo 'checked="checked" ';?> />
+				<input type="checkbox" name="add_title" value="TRUE" <?php if ($this->options['add_title']) echo 'checked="checked" ' ?> />
 				<label>If the <em>Alt. Text</em> field is not empty, it will also be added as the image title.</label>
 			</td>
 		</tr>
 		<tr>
 			<th scope="row" valign="top">Link image to post</th>
 			<td>
-				<input type="checkbox" name="default_link" value="TRUE" <?php if ( $this->options['default_link']) echo 'checked="checked" ';?> />
+				<input type="checkbox" name="default_link" value="TRUE" <?php if ($this->options['default_link']) echo 'checked="checked" ' ?> />
 				<label>If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.</label>
 			</td>
 		</tr>
