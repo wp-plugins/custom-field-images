@@ -10,19 +10,19 @@ class adminCFI {
 	function __construct($file) {
 		global $CFIoptions;
 
+		$this->options = $CFIoptions;
+
 		new boxCFI();
 		new manageCFI();
 
-		if ( $CFIoptions->get('insert_button') )
+		if ( $this->options->get('insert_button') )
 			new insertCFI();
 
 		register_activation_hook($file, array(&$this, 'install'));
 	}
 
 	function install() {
-		global $CFIoptions;
-
-		$CFIoptions->update(array(
+		$this->options->update(array(
 			'default_align' => 'right',
 			'add_title' => TRUE,
 			'default_link' => TRUE,
@@ -147,6 +147,10 @@ class manageCFI extends displayCFI {
 	}
 
 	function __construct() {
+		global $CFIoptions;
+
+		$this->options = $CFIoptions;
+
 		add_action('admin_menu', array(&$this, 'page_init'));
 	}
 
@@ -294,7 +298,7 @@ class manageCFI extends displayCFI {
 		}
 	}
 
-	function form_row($title, $desc, $type, $names, $values) {
+	function form_row($title, $desc, $type, $names, $values, $label = true) {
 
 		$f1 = is_array($names);
 		$f2 = is_array($values);
@@ -330,37 +334,24 @@ class manageCFI extends displayCFI {
 
 		foreach ( $a as $name => $val ) {
 			if ( in_array($type, array('checkbox', 'radio')) )
-				$extra = ($this->options[$$i1] == $$i2) ? "checked='checked' " : '';
+				$extra = ($this->options->get($$i1) == $$i2) ? "checked='checked' " : '';
 
-			$inputs .= sprintf("\n<input type='%s' name='%s' value='%s' %s/> ", $type, $$i1, $$i2, $extra);
-			$inputs .= sprintf("<label for='%s'>%s</label> ", $$i1, $$l1);
+			$inputs[] = sprintf('<input name="%1$s" id="%1$s" value="%2$s" type="%3$s" %4$s/> ', $$i1, $$i2, $type, $extra );
+			if ( $label )
+				$inputs[] = sprintf("<label for='%1\$s'>%2\$s</label> ", $$i1, $$l1);
 		}
 
-		return '
-		<tr>
-			<th scope="row" valign="top">'.$title.'</th>
-			<td>
-'.$inputs.'
-			</td>
-		</tr>
-';
+		return "\n<tr>\n\t<th scope='row' valign='top'>$title</th>\n\t<td>\n\t\t". implode($inputs, "\n") ."</td>\n\n</tr>";
 	}
 
 	function handle_options() {
-		global $CFIoptions;
-
-		$this->options = $CFIoptions->get();
-
-		// Update options
 		if ( 'Save Changes' == $_POST['action'] ) {
 			check_admin_referer($this->nonce);
 
-			foreach ( $this->options as $name => $value )
+			foreach ( $this->options->get() as $name => $value )
 				$new_options[$name] = $_POST[$name];
 
-			$CFIoptions->update($new_options);
-
-			$this->options = $CFIoptions->get();	// reload options
+			$this->options->update($new_options);
 
 			echo '<div class="updated fade"><p>Options <strong>saved</strong>.</p></div>';
 		}
@@ -368,6 +359,7 @@ class manageCFI extends displayCFI {
 
 	function options_page() {
 		$this->handle_options();
+		extract($this->options->get());
 ?>
 <div class="wrap">
 
@@ -397,7 +389,7 @@ class manageCFI extends displayCFI {
 			'Example: <em>target="_blank" rel="nofollow"</em>',
 			'text',
 			'extra_attr',
-			htmlentities(stripslashes($this->options['extra_attr']))
+			htmlentities(stripslashes($extra_attr))
 		);
 
 		echo $this->form_row(

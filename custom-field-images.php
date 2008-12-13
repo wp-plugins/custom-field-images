@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.7
+Version: 1.7.1a
 Description: Easily manage and display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -46,7 +46,7 @@ class displayCFI {
 		'link' => ''
 	);
 
-	// Display options
+	// Options object
 	var $options;
 
 	// PHP4 compatibility
@@ -57,7 +57,7 @@ class displayCFI {
 	function __construct() {
 		global $CFIoptions;
 
-		$this->options = $CFIoptions->get();
+		$this->options = $CFIoptions;
 
 		add_filter('the_excerpt', array(&$this, 'filter'));
 		add_filter('the_content', array(&$this, 'filter'));
@@ -67,7 +67,7 @@ class displayCFI {
 		$type = substr(current_filter(), 4);
 		$is_feed = is_feed();
 
-		if ( ($is_feed && $this->options['feed']) || (!$is_feed && $this->options[$type]) )
+		if ( ($is_feed && $this->options->get('feed')) || (!$is_feed && $this->options->get($type)) )
 			if ( $type != 'excerpt' && (FALSE !== strpos($content, '[cfi]')) )
 				return str_replace('[cfi]', $this->generate(), $content);
 			else
@@ -93,10 +93,10 @@ class displayCFI {
 			return;
 
 		// Begin img tag
-		$image.= '<img src="'. $url .'" ';
+		$image .= '<img src="'. $url .'" ';
 
 		// Set alignment
-		$align = $this->data['align'] ? $this->data['align'] : $this->options['default_align'];
+		$align = $this->data['align'] ? $this->data['align'] : $this->options->get('default_align');
 
 		if ( is_feed() )
 			$image .= sprintf( 'style="%s" ', $this->styles[$align] );
@@ -109,7 +109,7 @@ class displayCFI {
 		$image .= sprintf( 'alt="%s" ', $alt );
 
 		// Set title
-		if ( $this->options['add_title'] )
+		if ( $this->options->get('add_title') )
 			$image .= sprintf( 'title="%s" ', $alt );
 
 		// End img tag
@@ -122,12 +122,12 @@ class displayCFI {
 		$link = $this->data['link'];
 
 		if ( !$link )
-			if ( !$this->options['default_link'] || is_single() || is_page() )
+			if ( !$this->options->get('default_link') || is_single() || is_page() )
 				return $image;
 			else
 				$link = get_permalink($this->id);
 
-		return sprintf( '<a href="%s" %s>' . $image . '</a>', $link, stripslashes($this->options['extra_attr']) );
+		return sprintf( "<a href='$link' %s>$image</a>", stripslashes($this->options->get('extra_attr')) );
 	}
 }
 
