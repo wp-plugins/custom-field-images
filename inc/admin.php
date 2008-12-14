@@ -298,52 +298,6 @@ class manageCFI extends displayCFI {
 		}
 	}
 
-	function form_row($title, $desc, $type, $names, $values, $label = true) {
-
-		$f1 = is_array($names);
-		$f2 = is_array($values);
-
-		if ( $f1 || $f2 ) {
-			if ( $f1 && $f2 )
-				$a = array_combine($names, $values);
-			elseif ( $f1 && !$f2 )
-				$a = array_fill_keys($names, $values);
-			elseif ( !$f1 && $f2)
-				$a = array_fill_keys($values, $names);
-
-			if ( $f1 ) {
-				$i1 = 'name';
-				$i2 = 'val';
-			}
-
-			if ( $f2 ) {	
-				$i1 = 'val';
-				$i2 = 'name';
-			}
-	
-			$l1 = 'name';
-
-		} else {
-			$a = array($names => $values);
-
-			$i1 = 'name';
-			$i2 = 'val';
-
-			$l1 = 'desc';
-		}
-
-		foreach ( $a as $name => $val ) {
-			if ( in_array($type, array('checkbox', 'radio')) )
-				$extra = ($this->options->get($$i1) == $$i2) ? "checked='checked' " : '';
-
-			$inputs[] = sprintf('<input name="%1$s" id="%1$s" value="%2$s" type="%3$s" %4$s/> ', $$i1, $$i2, $type, $extra );
-			if ( $label )
-				$inputs[] = sprintf("<label for='%1\$s'>%2\$s</label> ", $$i1, $$l1);
-		}
-
-		return "\n<tr>\n\t<th scope='row' valign='top'>$title</th>\n\t<td>\n\t\t". implode($inputs, "\n") ."</td>\n\n</tr>";
-	}
-
 	function handle_options() {
 		if ( 'Save Changes' == $_POST['action'] ) {
 			check_admin_referer($this->nonce);
@@ -368,7 +322,7 @@ class manageCFI extends displayCFI {
 <form method="post" action="">
 	<table class="form-table">
 <?php
-		echo $this->form_row(
+		echo $this->options->form_row(
 			'Display in',
 			'',
 			'checkbox',
@@ -376,7 +330,7 @@ class manageCFI extends displayCFI {
 			'true'
 		);
 
-		echo $this->form_row(
+		echo $this->options->form_row(
 			'Default alignment',
 			'',
 			'radio',
@@ -384,7 +338,7 @@ class manageCFI extends displayCFI {
 			array('left', 'center', 'right')
 		);
 
-		echo $this->form_row(
+		echo $this->options->form_row(
 			'Extra link attributes',
 			'Example: <em>target="_blank" rel="nofollow"</em>',
 			'text',
@@ -392,7 +346,7 @@ class manageCFI extends displayCFI {
 			htmlentities(stripslashes($extra_attr))
 		);
 
-		echo $this->form_row(
+		echo $this->options->form_row(
 			'Link image to post',
 			'If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.',
 			'checkbox',
@@ -400,7 +354,7 @@ class manageCFI extends displayCFI {
 			'true'
 		);
 
-		echo $this->form_row(
+		echo $this->options->form_row(
 			'Duplicate Alt. Text as Title',
 			'If the <em>Alt. Text</em> field is not empty, it will also be added as the image title.',
 			'checkbox',
@@ -408,7 +362,7 @@ class manageCFI extends displayCFI {
 			'true'
 		);
 		
-		echo $this->form_row(
+		echo $this->options->form_row(
 			'Insert CFI button',
 			'Add button in the Insert Image form',
 			'checkbox',
