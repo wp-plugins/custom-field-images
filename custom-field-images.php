@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.7.1
+Version: 1.7.2b
 Description: Easily manage and display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -49,12 +49,7 @@ class displayCFI {
 	// Options object
 	var $options;
 
-	// PHP4 compatibility
-	function displayCFI() {
-		$this->__construct();
-	}
-
-	function __construct() {
+	public function __construct() {
 		global $CFIoptions;
 
 		$this->options = $CFIoptions;
@@ -63,7 +58,7 @@ class displayCFI {
 		add_filter('the_content', array(&$this, 'filter'));
 	}
 
-	function filter($content) {
+	public function filter($content) {
 		$type = substr(current_filter(), 4);
 		$is_feed = is_feed();
 
@@ -76,15 +71,7 @@ class displayCFI {
 		return $content;
 	}
 
-	function load($post_id = '') {
-		global $post;
-
-		$this->id = $post_id ? $post_id : $post->ID;
-
-		$this->data = get_post_meta($this->id, $this->key, TRUE);
-	}
-
-	function generate($post_id = '') {
+	public function generate($post_id = '') {
 		$this->load($post_id);
 
 		$url = $this->data['url'];
@@ -118,7 +105,7 @@ class displayCFI {
 		return $this->add_link($image);
 	}
 
-	function add_link($image) {
+	protected function add_link($image) {
 		$link = $this->data['link'];
 
 		if ( !$link )
@@ -129,19 +116,27 @@ class displayCFI {
 
 		return sprintf( "<a href='$link' %s>$image</a>", stripslashes($this->options->get('extra_attr')) );
 	}
+
+	protected function load($post_id = '') {
+		global $post;
+
+		$this->id = $post_id ? $post_id : $post->ID;
+
+		$this->data = get_post_meta($this->id, $this->key, TRUE);
+	}
 }
 
 // Init
 global $CFIoptions, $CFIdisplay;
 
-if ( !class_exists('scribuOptions') )
-	require_once('inc/options.php');
+if ( !class_exists('scbOptions') )
+	require_once('inc/scbOptions.php');
 
-$CFIoptions = new scribuOptions('cfi_options');
+$CFIoptions = new scbOptions('cfi_options');
 $CFIdisplay = new displayCFI();
 
 if ( is_admin() ) {
-	require_once('inc/admin.php');
+	require_once(dirname(__FILE__).'/admin.php');
 	new adminCFI(__FILE__);
 }
 
