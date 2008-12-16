@@ -16,21 +16,26 @@ class boxCFI extends displayCFI {
 	public function box() {
 		$this->load();
 ?>
-		<table style="width: 100%;">
+<style type="text/css">
+		#cfi-box table {width:100%}
+		#cfi-box th {width:10%; text-align:right; font-weight: normal}
+</style>
+
+		<table>
 		    <tr>
-		        <td style="width: 10%; text-align: right"><strong>Image URL</strong></td>
+		        <th><strong>Image URL</strong></th>
 		        <td><input tabindex="3" name="cfi-url" id="cfi-url" type="text" style="width: 100%" value="<?php echo $this->data['url']; ?>" /></td>
 		    </tr>
 		    <tr>
-		        <td style="width: 10%; text-align: right">Alt. Text</td>
+		        <th>Alt. Text</th>
 		        <td><input tabindex="3" name="cfi-alt" id="cfi-alt" type="text" style="width: 100%" value="<?php echo $this->data['alt']; ?>" /></td>
 		    </tr>
 		    <tr>
-		        <td style="width: 10%; text-align: right">Link to</td>
+		        <th>Link to</th>
 		        <td><input tabindex="3" name="cfi-link" id="cfi-link" type="text" style="width: 100%" value="<?php echo $this->data['link']; ?>" /></td>
 		    </tr>
 		    <tr>
-		        <td style="width: 10%; text-align: right">Align</td>
+		        <th>Align</th>
 		        <td id="cfi-align"><?php
 		        	foreach ( $this->styles as $align => $style ) {
 						echo '<input tabindex="3" name="cfi-align" type="radio" value="' . $align . '" ';
