@@ -23,7 +23,7 @@ class scbOptions {
 	}
 
 	public function update($data, $override = true) {
-		if ( is_array($this->data) && is_array($data) && !$override)
+		if ( is_array($this->data) && is_array($data) && !$override )
 			$newdata = array_merge($this->data, $data);
 		else
 			$newdata = $data;

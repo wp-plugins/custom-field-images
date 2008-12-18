@@ -1,9 +1,12 @@
 <?php
+
+// Version 1.0
+
 abstract class scbOptionsPage {
 	var $args = array();
 	var $options = array();
 	var $actions = array();
-	var $nonce = 'update_options';
+	var $nonce = 'update_settings';
 
 	protected function init() {
 		add_action('admin_menu', array(&$this, 'page_init'));
@@ -20,8 +23,7 @@ abstract class scbOptionsPage {
 	abstract public function page_content();
 
 	protected function form_handler() {
-//		if ( !in_array($_POST['action'], $this->actions) ) // Doesn't work because the actions array is filled after this
-		if ( 'Save Changes' !== $_POST['action'] )
+		if ( 'Save Changes' != $_POST['action'] )
 			return false;
 
 		check_admin_referer($this->nonce);
@@ -31,7 +33,7 @@ abstract class scbOptionsPage {
 
 		$this->options->update($new_options);
 
-		echo '<div class="updated fade"><p>Options <strong>saved</strong>.</p></div>';
+		echo '<div class="updated fade"><p>Settings <strong>saved</strong>.</p></div>';
 	}
 
 	protected function page_header() {
@@ -51,7 +53,7 @@ abstract class scbOptionsPage {
 
 	protected function submit_button($action = 'Save Changes') {
 		if ( in_array($action, $this->actions) )
-			return false;
+			trigger_error('Duplicate action for submit button: '.$action, E_USER_WARNING);
 
 		$this->actions[] = $action;
 		$output .= "<p class='submit'>\n";
@@ -85,11 +87,14 @@ abstract class scbOptionsPage {
 	protected function form_row($args) {
 		extract($args);
 
-		if ( $type == 'text' )
-			$values = htmlentities(stripslashes($this->options->get($names)));
-
 		$f1 = is_array($names);
 		$f2 = is_array($values);
+
+		$this->check_names($names);
+
+		// TODO: make it work with more text fields
+		if ( $type == 'text' && !$f1 && !$f2 )
+			$values = htmlentities(stripslashes($this->options->get($names)));
 
 		if ( $f1 || $f2 ) {
 			if ( $f1 && $f2 )
@@ -124,11 +129,19 @@ abstract class scbOptionsPage {
 			if ( in_array($type, array('checkbox', 'radio')) )
 				$extra = ($this->options->get($$i1) == $$i2) ? "checked='checked' " : '';
 
-			$inputs[] = sprintf('<input name="%1$s" id="%1$s" value="%2$s" type="%3$s" %4$s/> ', $$i1, $$i2, $type, $extra );
+			$inputs[] = sprintf('<input name="%1$s" value="%2$s" type="%3$s" %4$s/> ', $$i1, $$i2, $type, $extra );
 			$inputs[] = sprintf("<label for='%1\$s'>%2\$s</label> ", $$i1, $$l1);
 		}
 
 		return "\n<tr>\n\t<th scope='row' valign='top'>$title</th>\n\t<td>\n\t\t". implode($inputs, "\n") ."</td>\n\n</tr>";
+	}
+
+	protected function check_names($names) {
+		if ( !is_array($names) )
+			$names = array($names);
+
+		foreach ( array_diff($names, array_keys($this->options->get())) as $key )
+			trigger_error('Option not defined: '.$key, E_USER_WARNING);
 	}
 }
 

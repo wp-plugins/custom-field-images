@@ -68,7 +68,7 @@ class boxCFI extends displayCFI {
 
 class insertCFI {
 	public function __construct() {
-		add_action('admin_head', array($this, 'insert'));
+		add_action('admin_print_scripts', array($this, 'insert'));
 	}
 
 	public function insert() {
@@ -82,11 +82,11 @@ class insertCFI {
 			}
 		if ( !$f ) return;
 
-		$src = $this->get_plugin_url() . '/insert.js';
-		echo "<script type='text/javascript' src='{$src}'></script>\n";
+		$src = $this->get_plugin_url() . '/inc/insert.js';
+		wp_enqueue_script('cfi-insert', $src, array('jquery'));
 	}
 
-	public function get_plugin_url() {
+	private function get_plugin_url() {
 		if ( function_exists('plugins_url') )
 			return plugins_url(plugin_basename(dirname(__FILE__)));
 		else
@@ -95,7 +95,7 @@ class insertCFI {
 	}
 }
 
-class optionsCFI extends scbOptionsPage {
+class settingsCFI extends scbOptionsPage {
 	public function __construct(scbOptions $options) {
 		$this->options = $options;
 
@@ -105,7 +105,7 @@ class optionsCFI extends scbOptionsPage {
 			'page_slug' => 'cfi-settings'
 		);
 
-		$this->nonce = 'options-cfi';
+		$this->nonce = 'cfi-settings';
 		$this->init();
 	}
 
@@ -116,7 +116,7 @@ class optionsCFI extends scbOptionsPage {
 				'title' => 'Display in',
 				'type' => 'checkbox',
 				'names' => array('content', 'excerpt',	'feed'),
-				'values' => 'true'
+				'values' => true
 			),
 
 			array(
@@ -138,7 +138,7 @@ class optionsCFI extends scbOptionsPage {
 				'desc' => 'If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.',
 				'type' => 'checkbox',
 				'names' => 'default_link',
-				'values' => 'true'
+				'values' => true
 			),
 
 			array(
@@ -146,7 +146,7 @@ class optionsCFI extends scbOptionsPage {
 				'desc' => 'If the <em>Alt. Text</em> field is not empty, it will also be added as the image title.',
 				'type' => 'checkbox',
 				'names' => 'add_title',
-				'values' => 'true'
+				'values' => true
 			),
 		
 			array(
@@ -154,10 +154,9 @@ class optionsCFI extends scbOptionsPage {
 				'desc' => 'Add button in the Insert Image form',
 				'type' => 'checkbox',
 				'names' => 'insert_button',
-				'values' => 'true'
+				'values' => true
 			)
 		);
-
 		echo $this->form_table($rows);
 		echo $this->page_footer();
 	}
@@ -354,7 +353,7 @@ class adminCFI {
 		global $CFIoptions, $CFIdisplay;
 
 		new boxCFI();
-		new optionsCFI($CFIoptions);
+		new settingsCFI($CFIoptions);
 		new manageCFI($CFIdisplay);
 
 		if ( $CFIoptions->get('insert_button') )

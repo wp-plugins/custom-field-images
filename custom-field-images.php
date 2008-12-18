@@ -49,10 +49,8 @@ class displayCFI {
 	// Options object
 	var $options;
 
-	public function __construct() {
-		global $CFIoptions;
-
-		$this->options = $CFIoptions;
+	public function __construct(scbOptions $options) {
+		$this->options = $options;
 
 		add_filter('the_excerpt', array(&$this, 'filter'));
 		add_filter('the_content', array(&$this, 'filter'));
@@ -133,7 +131,7 @@ if ( !class_exists('scbOptions') )
 	require_once('inc/scbOptions.php');
 
 $CFIoptions = new scbOptions('cfi_options');
-$CFIdisplay = new displayCFI();
+$CFIdisplay = new displayCFI($CFIoptions);
 
 if ( is_admin() ) {
 	require_once(dirname(__FILE__).'/admin.php');
