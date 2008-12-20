@@ -5,12 +5,13 @@ jQuery(function($) {
 			frame = $(this).contents();
 
 			frame.find('.media-item :submit').after(button);				// add button for each item
-			frame.find('.insert-cfi').bind('click', insertCfi);				// bind function to button click
+			frame.find('.insert-cfi').click(insertCfi);						// bind function to button click
 		});
 	});
 
 	insertCfi = function() {
 		item = $(this).parents('.media-item');
+		box = $(document).find('#cfi-box');
 
 		// Set cfi-url
 		url = item.find('.urlfile').attr('title');
@@ -21,22 +22,22 @@ jQuery(function($) {
 			url = url.replace(/(.*)\./, '$1-'+size+'.');
 		}
 
-		$(document).find('#cfi-url').val(url);
+		box.find('[name=cfi-url]').val(url);
 
 		// Set cfi-align
 		align = item.find('.align :checked').val();
 		if ( align != 'none' )
-			$(document).find('#cfi-align [value="'+align+'"]').attr('checked',true);
+			box.find('tr:last [value="'+align+'"]').attr('checked',true);
 		else
-			$(document).find('#cfi-align :checked').attr('checked', false);	// uncheck all buttons
+			box.find('tr:last :checked').attr('checked', false);	// uncheck all buttons
 
 		// Set cfi-alt
 		alt = item.find('.post_title :text').val();
-		$(document).find('#cfi-alt').val(alt);
+		box.find('[name=cfi-alt]').val(alt);
 
 		// Set cfi-link
 		link = item.find('.url :text').val();
-		$(document).find('#cfi-link').val(link);
+		box.find('[name=cfi-link]').val(link);
 
 		$(document).find('#TB_closeWindowButton').click();		// close iframe
 	}

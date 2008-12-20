@@ -14,39 +14,51 @@ class boxCFI extends displayCFI {
 	}
 
 	public function box() {
-		$this->load();
 ?>
 <style type="text/css">
-		#cfi-box table {width:100%}
-		#cfi-box th {width:10%; text-align:right; font-weight: normal}
+		#cfi-box table, #cfi-box input {width:100%}
+		#cfi-box th {width:7%; text-align:right; font-weight: normal}
 </style>
+<?php $rows = array(
+			array(
+				'title' => 'Image URL',
+				'type' => 'text',
+				'names' => 'cfi-url',
+			),
 
-		<table>
-		    <tr>
-		        <th><strong>Image URL</strong></th>
-		        <td><input tabindex="3" name="cfi-url" id="cfi-url" type="text" style="width: 100%" value="<?php echo $this->data['url']; ?>" /></td>
-		    </tr>
-		    <tr>
-		        <th>Alt. Text</th>
-		        <td><input tabindex="3" name="cfi-alt" id="cfi-alt" type="text" style="width: 100%" value="<?php echo $this->data['alt']; ?>" /></td>
-		    </tr>
-		    <tr>
-		        <th>Link to</th>
-		        <td><input tabindex="3" name="cfi-link" id="cfi-link" type="text" style="width: 100%" value="<?php echo $this->data['link']; ?>" /></td>
-		    </tr>
-		    <tr>
-		        <th>Align</th>
-		        <td id="cfi-align"><?php
-		        	foreach ( $this->styles as $align => $style ) {
-						echo '<input tabindex="3" name="cfi-align" type="radio" value="' . $align . '" ';
-						if ( $this->data['align'] == $align )
-						echo 'checked="checked" ';
-						echo '/>'. $align ."\n";
-					}
-				?></td>
-		    </tr>
-		</table>
-<?php
+			array(
+				'title' => 'Alt. Text',
+				'type' => 'text',
+				'names' => 'cfi-alt',
+			),
+
+			array(
+				'title' => 'Link to',
+				'type' => 'text',
+				'names' => 'cfi-link',
+			),
+
+			array(
+				'title' => 'Align',
+				'type' => 'radio',
+				'names' => 'cfi-align',
+				'values' => array('left', 'center', 'right')
+			)
+		);
+
+		$this->load();
+
+		if ( $this->data ) {
+			// Prepend 'cfi-' to data keys
+			$options = array();
+			foreach ( $this->data as $key => $value )
+				$options['cfi-'.$key] = $value;
+		}
+
+		foreach ( $rows as $row )
+			$table .= scbOptionsPage::form_row($row, $options, false);
+
+		echo "<table>\n".str_replace('Image URL', '<strong>Image URL</strong>', $table)."</table>\n";
 	}
 
 	public function save($post_id, $post) {
@@ -349,23 +361,26 @@ class manageCFI extends scbOptionsPage {
 }
 
 class adminCFI {
-	function __construct($file) {
-		global $CFIoptions, $CFIdisplay;
+	var $options;
+
+	public function __construct($file) {
+		global $CFI_options, $CFI_display;
+
+		$this->options = $CFI_options;
 
 		new boxCFI();
-		new settingsCFI($CFIoptions);
-		new manageCFI($CFIdisplay);
+		new settingsCFI($CFI_options);
+		new manageCFI($CFI_display);
 
-		if ( $CFIoptions->get('insert_button') )
+		if ( $this->options->get('insert_button') )
 			new insertCFI();
 
-		register_activation_hook($file, array($this, 'install'));
+		register_activation_hook($file, array($this, 'activate'));
+		register_uninstall_hook($file, array($this, 'uninstall'));
 	}
 
-	function install() {
-		global $CFIoptions;
-
-		$CFIoptions->update(array(
+	public function activate() {
+		$this->options->update(array(
 			'default_align' => 'right',
 			'add_title' => TRUE,
 			'default_link' => TRUE,
@@ -376,6 +391,10 @@ class adminCFI {
 			'feed' => TRUE,
 			'excerpt' => TRUE
 		), false);
+	}
+
+	public function uninstall() {
+		$this->options->delete();
 	}
 }
 

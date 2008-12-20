@@ -75,8 +75,9 @@ abstract class scbOptionsPage {
 	protected function form_table($rows, $action = 'Save Changes') {
 		$output .= "<table class='form-table'>\n";
 
+		$options = $this->options->get();
 		foreach ( $rows as $row )
-			$output .= $this->form_row($row);
+			$output .= $this->form_row($row, $options);
 
 		$output .= "</table>\n";
 		$output .= $this->submit_button($action);
@@ -84,17 +85,17 @@ abstract class scbOptionsPage {
 		return $this->form_wrap($output);
 	}
 
-	protected function form_row($args) {
+	public function form_row($args, $options, $check=true) {
 		extract($args);
 
 		$f1 = is_array($names);
 		$f2 = is_array($values);
 
-		$this->check_names($names);
+		if ( $check )
+			self::check_names($names, $options);
 
-		// TODO: make it work with more text fields
 		if ( $type == 'text' && !$f1 && !$f2 )
-			$values = htmlentities(stripslashes($this->options->get($names)));
+			$values = htmlentities(stripslashes($options[$names]));
 
 		if ( $f1 || $f2 ) {
 			if ( $f1 && $f2 )
@@ -127,20 +128,20 @@ abstract class scbOptionsPage {
 
 		foreach ( $a as $name => $val ) {
 			if ( in_array($type, array('checkbox', 'radio')) )
-				$extra = ($this->options->get($$i1) == $$i2) ? "checked='checked' " : '';
+				$extra = ($options[$$i1] == $$i2) ? "checked='checked' " : '';
 
 			$inputs[] = sprintf('<input name="%1$s" value="%2$s" type="%3$s" %4$s/> ', $$i1, $$i2, $type, $extra );
 			$inputs[] = sprintf("<label for='%1\$s'>%2\$s</label> ", $$i1, $$l1);
 		}
 
-		return "\n<tr>\n\t<th scope='row' valign='top'>$title</th>\n\t<td>\n\t\t". implode($inputs, "\n") ."</td>\n\n</tr>";
+		return "\n<tr>\n\t<th scope='row'>$title</th>\n\t<td>\n\t\t". implode($inputs, "\n") ."</td>\n\n</tr>";
 	}
 
-	protected function check_names($names) {
+	public function check_names($names, $options) {
 		if ( !is_array($names) )
 			$names = array($names);
 
-		foreach ( array_diff($names, array_keys($this->options->get())) as $key )
+		foreach ( array_diff($names, array_keys($options)) as $key )
 			trigger_error('Option not defined: '.$key, E_USER_WARNING);
 	}
 }

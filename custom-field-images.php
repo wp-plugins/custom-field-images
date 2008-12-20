@@ -125,13 +125,13 @@ class displayCFI {
 }
 
 // Init
-global $CFIoptions, $CFIdisplay;
+global $CFI_options, $CFI_display;
 
 if ( !class_exists('scbOptions') )
 	require_once('inc/scbOptions.php');
 
-$CFIoptions = new scbOptions('cfi_options');
-$CFIdisplay = new displayCFI($CFIoptions);
+$CFI_options = new scbOptions('cfi_options');
+$CFI_display = new displayCFI($CFI_options);
 
 if ( is_admin() ) {
 	require_once(dirname(__FILE__).'/admin.php');
@@ -140,7 +140,7 @@ if ( is_admin() ) {
 
 // Template tag
 function custom_field_image() {
-	global $CFIdisplay;
-	echo $CFIdisplay->generate();
+	global $CFI_display;
+	echo $CFI_display->generate();
 }
 
