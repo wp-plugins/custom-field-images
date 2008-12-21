@@ -4,7 +4,7 @@ Donate link: http://scribu.net/projects
 Tags: custom fields, images, thumbs
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 1.7.2
+Stable tag: trunk
 
 Easily manage and display images in post excerpts, feeds etc. using custom fields.
 

@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.7.2
+Version: 1.7.2.1
 Description: Easily manage and display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
