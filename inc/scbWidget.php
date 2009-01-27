@@ -118,6 +118,7 @@ abstract class scbWidget_05 extends scbForms_05 {
 
 	// Wraps the content with default widget args
 	public function display($args) {
+		extract($this->options->get());
 		extract($args);
 
 		$content = $this->content();

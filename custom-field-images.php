@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.8a
+Version: 1.8b
 Description: Easily manage and display images anywhere using custom fields.
 Author: scribu
 Author URI: http://scribu.net/
@@ -36,7 +36,7 @@ class displayCFI {
 	var $id;
 
 	// wp_postmeta -> meta_key
-	var $key = '_cfi_image';
+	public $key = '_cfi_image';
 
 	// Data fields for each image
 	var $data = array(
@@ -64,11 +64,15 @@ class displayCFI {
 
 		if ( ($is_feed && $this->options->get('feed')) || (!$is_feed && $this->options->get($type)) )
 			if ( $type != 'excerpt' && (FALSE !== strpos($content, '[cfi]')) )
-				return str_replace('[cfi]', $this->generate(), $content);
+				return str_replace('[cfi]', $this->get(), $content);
 			else
-				return $this->generate() . $content;
+				return $this->get() . $content;
 
 		return $content;
+	}
+
+	public function get($post_id = '') {
+		return $this->add_link($this->generate($post_id));
 	}
 
 	public function generate($post_id = '') {
@@ -102,14 +106,15 @@ class displayCFI {
 		// End img tag
 		$image .= '/>';
 
-		return $this->add_link($image);
+		return $image;
 	}
 
-	protected function add_link($image) {
-		$link = $this->data['link'];
+	public function add_link($image, $link = '') {
+		if ( empty($link) )
+			$link = $this->data['link'];
 
 		if ( !$link )
-			if ( !$this->options->get('default_link') || is_single() || is_page() )
+			if ( !$this->options->get('default_link') )
 				return $image;
 			else
 				$link = get_permalink($this->id);
@@ -125,7 +130,6 @@ class displayCFI {
 		$this->data = get_post_meta($this->id, $this->key, TRUE);
 	}
 }
-
 
 // Init
 global $CFI_options, $CFI_display;
@@ -152,6 +156,6 @@ if ( is_admin() ) {
 // Template tag
 function custom_field_image() {
 	global $CFI_display;
-	echo $CFI_display->generate();
+	echo $CFI_display->get();
 }
 

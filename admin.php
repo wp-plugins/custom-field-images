@@ -154,7 +154,7 @@ class settingsCFI extends scbOptionsPage {
 			array(
 				'title' => 'Display in',
 				'type' => 'checkbox',
-				'names' => array('content', 'excerpt',	'feed')
+				'names' => array('content', 'excerpt', 'feed')
 			),
 
 			array(
@@ -184,7 +184,7 @@ class settingsCFI extends scbOptionsPage {
 				'type' => 'checkbox',
 				'names' => 'add_title',
 			),
-		
+
 			array(
 				'title' => 'Insert CFI button',
 				'desc' => 'Add button in the Insert Image form',
