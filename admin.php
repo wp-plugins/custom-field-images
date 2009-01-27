@@ -2,6 +2,7 @@
 if ( !class_exists('scbOptionsPage') )
 	require_once('inc/scbOptionsPage.php');
 
+// Adds the CFI metabox
 class boxCFI extends displayCFI {
 	public function __construct() {
 		add_action('admin_menu', array($this, 'box_init'));
@@ -78,24 +79,26 @@ class boxCFI extends displayCFI {
 	}
 }
 
+// Loads (Insert CFI) button script
 class insertCFI {
 	public function __construct() {
 		add_action('admin_print_scripts', array($this, 'insert'));
 	}
 
 	public function insert() {
-		$urls = array('post-new.php', 'page-new.php', 'post.php', 'page.php');
-
-		$f = false;
-		foreach ( $urls as $url )
-			if ( FALSE !== strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/'.$url) ) {
-				$f = true;
-				break;
-			}
-		if ( !$f ) return;
+		if ( !$this->is_admin_page(array('post-new.php', 'page-new.php', 'post.php', 'page.php')) )
+			return false;
 
 		$src = $this->get_plugin_url() . '/inc/insert.js';
 		wp_enqueue_script('cfi-insert', $src, array('jquery'));
+	}
+
+	private function is_admin_page($names) {
+		foreach ( $names as $url )
+			if ( FALSE !== stripos($_SERVER['SCRIPT_NAME'], '/wp-admin/'.$url) )
+				return true;
+
+		return false;
 	}
 
 	private function get_plugin_url() {
@@ -107,9 +110,12 @@ class insertCFI {
 	}
 }
 
+// Adds the CFI Settings page
 class settingsCFI extends scbOptionsPage {
-	public function __construct(scbOptions $options) {
-		$this->options = $options;
+	public function __construct($file) {
+		global $CFI_options;
+
+		$this->options = $CFI_options;
 
 		$this->args = array(
 			'page_title' => 'Custom Field Images Settings',
@@ -119,6 +125,27 @@ class settingsCFI extends scbOptionsPage {
 
 		$this->nonce = 'cfi-settings';
 		$this->init();
+
+		register_activation_hook($file, array($this, 'activate'));
+		register_uninstall_hook($file, array($this, 'uninstall'));
+	}
+
+	public function activate() {
+		$this->options->update(array(
+			'default_align' => 'right',
+			'add_title' => TRUE,
+			'default_link' => TRUE,
+			'extra_attr' => '',
+			'insert_button' => TRUE,
+
+			'content' => TRUE,
+			'feed' => TRUE,
+			'excerpt' => TRUE
+		), false);
+	}
+
+	public function uninstall() {
+		$this->options->delete();
 	}
 
 	public function page_content() {
@@ -127,8 +154,7 @@ class settingsCFI extends scbOptionsPage {
 			array(
 				'title' => 'Display in',
 				'type' => 'checkbox',
-				'names' => array('content', 'excerpt',	'feed'),
-				'values' => true
+				'names' => array('content', 'excerpt',	'feed')
 			),
 
 			array(
@@ -150,7 +176,6 @@ class settingsCFI extends scbOptionsPage {
 				'desc' => 'If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.',
 				'type' => 'checkbox',
 				'names' => 'default_link',
-				'values' => true
 			),
 
 			array(
@@ -158,7 +183,6 @@ class settingsCFI extends scbOptionsPage {
 				'desc' => 'If the <em>Alt. Text</em> field is not empty, it will also be added as the image title.',
 				'type' => 'checkbox',
 				'names' => 'add_title',
-				'values' => true
 			),
 		
 			array(
@@ -166,7 +190,6 @@ class settingsCFI extends scbOptionsPage {
 				'desc' => 'Add button in the Insert Image form',
 				'type' => 'checkbox',
 				'names' => 'insert_button',
-				'values' => true
 			)
 		);
 		echo $this->form_table($rows);
@@ -174,11 +197,14 @@ class settingsCFI extends scbOptionsPage {
 	}
 }
 
+// Adds the CFI Management page
 class manageCFI extends scbOptionsPage {
-	var $display;
+	private $display;
 
-	function __construct(displayCFI $display) {
-		$this->display = $display;
+	function __construct() {
+		global $CFI_display;
+
+		$this->display = $CFI_display;
 
 		$this->args = array(
 			'page_title' => 'Manage Custom Field Images',
@@ -186,6 +212,7 @@ class manageCFI extends scbOptionsPage {
 			'page_slug' => 'cfi-management'
 		);
 
+		$this->nonce = 'cfi-management';
 		$this->init();
 	}
 
@@ -206,15 +233,15 @@ class manageCFI extends scbOptionsPage {
 
 		echo "<h2>Import images</h2>\n";
 		echo "<p>This will scan for images at beginning of posts, insert them into custom field keys and then remove them from the posts.</p>\n";
-		echo $this->form_wrap(str_replace('<input ', '<input ' . $warning ,$this->submit_button('Import')));
+		echo $this->form_wrap(str_replace('<input ', '<input ' . $warning, $this->submit_button('Import')));
 
 		echo "<h2>Export images</h2>\n";
 		echo "<p>This will insert all custom field images at the beginning of their respective posts and then delete the custom field keys.</p>\n";
-		echo $this->form_wrap(str_replace('<input ', '<input ' . $warning ,$this->submit_button('Export')));
+		echo $this->form_wrap(str_replace('<input ', '<input ' . $warning, $this->submit_button('Export')));
 
 		echo "<h2>Delete images</h2>\n";
 		echo "<p>This will delete all custom field images.</p>\n";
-		echo $this->form_wrap(str_replace('<input ', '<input ' . $warning ,$this->submit_button('Delete')));
+		echo $this->form_wrap(str_replace('<input ', '<input ' . $warning, $this->submit_button('Delete')));
 
 		echo $this->page_footer();
 	}
@@ -360,45 +387,13 @@ class manageCFI extends scbOptionsPage {
 	}
 }
 
-class adminCFI {
-	var $options;
+function cfi_admin_init($file) {
+	global $CFI_options;
 
-	public function __construct($file) {
-		global $CFI_options, $CFI_display;
+	new boxCFI();
+	new settingsCFI($file);
+	new manageCFI();
 
-		$this->options = $CFI_options;
-
-		new boxCFI();
-		new settingsCFI($CFI_options);
-		new manageCFI($CFI_display);
-
-		if ( $this->options->get('insert_button') )
-			new insertCFI();
-
-		register_activation_hook($file, array($this, 'activate'));
-		register_uninstall_hook($file, array($this, 'uninstall'));
-	}
-
-	public function activate() {
-		$this->options->update(array(
-			'default_align' => 'right',
-			'add_title' => TRUE,
-			'default_link' => TRUE,
-			'extra_attr' => '',
-			'insert_button' => TRUE,
-
-			'content' => TRUE,
-			'feed' => TRUE,
-			'excerpt' => TRUE
-		), false);
-	}
-
-	public function uninstall() {
-		$this->options->delete();
-	}
+	if ( $CFI_options->get('insert_button') )
+		new insertCFI();
 }
-
-// < WP 2.7
-if ( !function_exists('register_uninstall_hook') ) :
-function register_uninstall_hook() {}
-endif;

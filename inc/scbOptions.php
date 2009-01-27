@@ -1,6 +1,7 @@
 <?php
 
 // Version 1.0
+// TODO: return the same instance if $key has been used before
 
 class scbOptions {
 	var $key;
