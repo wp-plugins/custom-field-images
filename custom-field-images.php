@@ -135,9 +135,9 @@ class displayCFI {
 global $CFI_options, $CFI_display;
 
 // Create options instance
-if ( !class_exists('scbOptions') )
+if ( !class_exists('scbOptions_05') )
 	require_once('inc/scbOptions.php');
-$CFI_options = new scbOptions('cfi_options');
+$CFI_options = new scbOptions_05('cfi_options');
 
 // Create display instance
 $CFI_display = new displayCFI();

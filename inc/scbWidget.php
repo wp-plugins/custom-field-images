@@ -32,14 +32,10 @@ abstract class scbWidget_05 extends scbForms_05 {
 			$this->slug = sanitize_title_with_dashes($this->name);
 
 		// Create options object
-		if ( ! class_exists('scbOptions') )
+		if ( ! class_exists('scbOptions_05') )
 			require_once('scbOptions.php');
 
-		$this->options = new scbOptions($this->slug);
-
-		// Add hooks
-		register_activation_hook($file, array($this, 'install'));
-		register_uninstall_hook($file, array($this, 'uninstall'));
+		$this->options = new scbOptions_05($this->slug, $this->defaults, $file);
 
 		add_action('plugins_loaded', array($this, 'init'));
 	}
@@ -97,16 +93,6 @@ abstract class scbWidget_05 extends scbForms_05 {
 //_____HELPER METHODS (SHOULD NOT BE CALLED DIRECTLY)_____
 
 
-	// Adds widget options
-	public function install() {
-		$this->options->update($this->defaults, false);
-	}
-
-	// Removes widget options
-	public function uninstall() {
-		$this->options->delete();
-	}
-
 	// Adds the widget hooks
 	public function init() {
 		if ( !function_exists('register_sidebar_widget') )
@@ -147,8 +133,3 @@ abstract class scbWidget_05 extends scbForms_05 {
 		return $this->slug . '-' . $field;
 	}
 }
-
-// < WP 2.7
-if ( !function_exists('register_uninstall_hook') ) :
-function register_uninstall_hook() {}
-endif;

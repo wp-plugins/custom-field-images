@@ -125,9 +125,6 @@ class settingsCFI extends scbOptionsPage {
 
 		$this->nonce = 'cfi-settings';
 		$this->init();
-
-		register_activation_hook($file, array($this, 'activate'));
-		register_uninstall_hook($file, array($this, 'uninstall'));
 	}
 
 	public function activate() {
