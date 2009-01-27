@@ -1,40 +1,43 @@
 <?php
 
-// Version 1.0.1 (compatible with 1.0)
+// Version 0.5b
 
 if ( ! class_exists('scbForms_05') )
 	require_once('scbForms.php');
 
-abstract class scbOptionsPage extends scbForms_05 {
+abstract class scbOptionsPage_05 extends scbForms_05 {
 	// Page args
-	var $args = array(
+	protected $args = array(
 		'page_title' => '',
 		'short_title' => '',
 		'page_slug' => ''
 	);
 
 	// scbOptions object holder
-	var $options = NULL;
+	protected $options = NULL;
 
 	// Form actions
-	var $actions = array();
+	protected $actions = array();
 
 	// Nonce string
-	var $nonce = 'update_settings';
+	protected $nonce = 'update_settings';
 
-	// Should be called from __construct
-	protected function init() {
+
+//_____MAIN METHODS_____
+
+
+	// Main constructor
+	public function __construct($file = '') {
+		$this->setup();
+
+		if ( isset($this->options) )
+			$this->options->setup($file, $this->defaults);
+
 		add_action('admin_menu', array(&$this, 'page_init'));
 	}
 
-	// Registers a page
-	public function page_init() {
-		if ( !current_user_can('manage_options') )
-			return false;
-
-		extract($this->args);
-		add_options_page($short_title, $short_title, 8, $page_slug, array(&$this, 'page_content'));
-	}
+	// This is where all the page args goes
+	abstract protected function setup();
 
 	// This is where the page content goes
 	abstract public function page_content();
@@ -95,7 +98,17 @@ abstract class scbOptionsPage extends scbForms_05 {
 		return $output;
 	}
 
-//_____HELPER FUNCTIONS (SHOULD NOT BE CALLED DIRECTLY)_____
+
+//_____HELPER METHODS (SHOULD NOT BE CALLED DIRECTLY)_____
+
+	// Registers a page
+	public function page_init() {
+		if ( !current_user_can('manage_options') )
+			return false;
+
+		extract($this->args);
+		add_options_page($short_title, $short_title, 8, $page_slug, array(&$this, 'page_content'));
+	}
 
 	// Update options
 	protected function form_handler() {
@@ -112,15 +125,3 @@ abstract class scbOptionsPage extends scbForms_05 {
 		echo '<div class="updated fade"><p>Settings <strong>saved</strong>.</p></div>';
 	}
 }
-
-// < PHP 5.2
-if ( !function_exists('array_fill_keys') ) :
-function array_fill_keys($keys, $value) {
-	$r = array();
-
-	foreach($keys as $key)
-		$r[$key] = $value;
-
-	return $r;
-}
-endif;

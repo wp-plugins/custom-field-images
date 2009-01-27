@@ -128,3 +128,15 @@ $options = array() [values with which to fill]
 			trigger_error("Option not defined: {$key}", E_USER_WARNING);
 	}
 }
+
+// < PHP 5.2
+if ( !function_exists('array_fill_keys') ) :
+function array_fill_keys($keys, $value) {
+	$r = array();
+
+	foreach($keys as $key)
+		$r[$key] = $value;
+
+	return $r;
+}
+endif;

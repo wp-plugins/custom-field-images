@@ -4,7 +4,7 @@
 // Advanced: Insert query
 
 if ( !class_exists('scbWidget_05') )
-	require_once('inc/scbWidget.php');
+	require_once(dirname(__FILE__) . '/inc/scbWidget.php');
 
 class widgetCFI extends scbWidget_05 {
 

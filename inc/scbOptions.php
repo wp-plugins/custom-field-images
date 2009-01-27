@@ -8,16 +8,15 @@ class scbOptions_05 {
 	public $defaults;
 	private $data;
 
-	public function __construct($key, $defaults = '', $file='') {
+	public function __construct($key) {
 		$this->key = $key;
-
 		$this->data = get_option($this->key);
+	}
 
-		if ( !empty($defaults) ) {
-			$this->defaults = $defaults;
-			register_activation_hook($file, array($this, 'reset'), false);
-			register_uninstall_hook($file, array($this, 'delete'));
-		}
+	public function setup($file, $defaults) {
+		$this->defaults = $defaults;
+		register_activation_hook($file, array($this, 'reset'), false);
+		register_uninstall_hook($file, array($this, 'delete'));
 	}
 
 	// Get all data or a certain field

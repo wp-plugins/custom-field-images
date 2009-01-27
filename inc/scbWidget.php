@@ -35,7 +35,8 @@ abstract class scbWidget_05 extends scbForms_05 {
 		if ( ! class_exists('scbOptions_05') )
 			require_once('scbOptions.php');
 
-		$this->options = new scbOptions_05($this->slug, $this->defaults, $file);
+		$this->options = new scbOptions_05($this->slug);
+		$this->options->setup($file, $this->defaults);
 
 		add_action('plugins_loaded', array($this, 'init'));
 	}

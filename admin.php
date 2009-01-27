@@ -111,24 +111,13 @@ class insertCFI {
 }
 
 // Adds the CFI Settings page
-class settingsCFI extends scbOptionsPage {
-	public function __construct($file) {
+class settingsCFI extends scbOptionsPage_05 {
+	protected function setup() {
 		global $CFI_options;
 
 		$this->options = $CFI_options;
 
-		$this->args = array(
-			'page_title' => 'Custom Field Images Settings',
-			'short_title' => 'CFI Settings',
-			'page_slug' => 'cfi-settings'
-		);
-
-		$this->nonce = 'cfi-settings';
-		$this->init();
-	}
-
-	public function activate() {
-		$this->options->update(array(
+		$this->defaults = array(
 			'default_align' => 'right',
 			'add_title' => TRUE,
 			'default_link' => TRUE,
@@ -138,11 +127,15 @@ class settingsCFI extends scbOptionsPage {
 			'content' => TRUE,
 			'feed' => TRUE,
 			'excerpt' => TRUE
-		), false);
-	}
+		);
 
-	public function uninstall() {
-		$this->options->delete();
+		$this->args = array(
+			'page_title' => 'Custom Field Images Settings',
+			'short_title' => 'CFI Settings',
+			'page_slug' => 'cfi-settings'
+		);
+
+		$this->nonce = 'cfi-settings';
 	}
 
 	public function page_content() {
@@ -195,12 +188,11 @@ class settingsCFI extends scbOptionsPage {
 }
 
 // Adds the CFI Management page
-class manageCFI extends scbOptionsPage {
+class manageCFI extends scbOptionsPage_05 {
 	private $display;
 
-	function __construct() {
+	protected function setup() {
 		global $CFI_display;
-
 		$this->display = $CFI_display;
 
 		$this->args = array(
@@ -210,7 +202,6 @@ class manageCFI extends scbOptionsPage {
 		);
 
 		$this->nonce = 'cfi-management';
-		$this->init();
 	}
 
 	public function page_init() {
