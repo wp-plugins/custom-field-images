@@ -40,7 +40,7 @@ class scbOptions_05 {
 
 	// Reset option to defaults
 	public function reset($override = true) {
-		if ( !$override )
+		if ( !$override && is_array($this->defaults) && is_array($this->data) )
 			$newdata = array_merge($this->defaults, $this->data);
 		else
 			$newdata = $this->defaults;

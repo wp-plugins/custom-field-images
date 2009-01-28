@@ -1,6 +1,6 @@
 <?php
-if ( !class_exists('scbOptionsPage') )
-	require_once('inc/scbOptionsPage.php');
+if ( !class_exists('scbOptionsPage_05') )
+	require_once(dirname(__FILE__) . '/inc/scbOptionsPage.php');
 
 // Adds the CFI metabox
 class boxCFI extends displayCFI {
@@ -259,7 +259,7 @@ class manageCFI extends scbOptionsPage_05 {
 
 // Import/Export methods
 
-	function impex($action) {
+	private function impex($action) {
 		$operators = array(
 			'import' => '!=',
 			'export' => '='
@@ -273,7 +273,7 @@ class manageCFI extends scbOptionsPage_05 {
 		return (int) $count;
 	}
 
-	function import_single($post) {
+	private function import_single($post) {
 		if ( 0 == preg_match('#^\s*(<a[^\<]+>)?\s*(<img[^\<]+>)\s*(?:</a>)?#i', $post->content, $matches) )
 			return 0;
 
@@ -314,7 +314,7 @@ class manageCFI extends scbOptionsPage_05 {
 		return 1;
 	}
 
-	function get_attributes($string) {
+	private function get_attributes($string) {
 		preg_match_all('#(\w+)="\s*((?:[^"]+\s*)+)\s*"#i', $string, $matches, PREG_SET_ORDER);
 
 		foreach( $matches as $att )
@@ -323,7 +323,7 @@ class manageCFI extends scbOptionsPage_05 {
 		return $attributes;
 	}
 
-	function export_single($post) {
+	private function export_single($post) {
 		$new_content = $this->display->generate($post->ID) . $post->content;
 
 		if ( $new_content == $post->content )
@@ -336,7 +336,7 @@ class manageCFI extends scbOptionsPage_05 {
 		return 1;
 	}
 
-	function get_posts($operator) {
+	private function get_posts($operator) {
 		global $wpdb;
 
 		$query = $wpdb->prepare("
@@ -344,17 +344,17 @@ class manageCFI extends scbOptionsPage_05 {
 			FROM $wpdb->posts NATURAL JOIN $wpdb->postmeta
 			WHERE post_type IN ('post', 'page')
 			AND meta_key $operator '%s'
-		", $this->key);
+		", $this->display->key);
 
 		return $wpdb->get_results($query);
 	}
 
-	function update_post($content, $id) {
+	private function update_post($content, $id) {
 		global $wpdb;
 
 		$query = $wpdb->prepare("
 			UPDATE $wpdb->posts
-			SET post_content = %s
+			SET post_content = '%s'
 			WHERE ID = %d
 		", $content, $id);
 
@@ -369,7 +369,7 @@ class manageCFI extends scbOptionsPage_05 {
 		$query = $wpdb->prepare("
 			DELETE FROM $wpdb->postmeta
 			WHERE meta_key = '%s'
-		", $this->key);
+		", $this->display->key);
 
 		return $wpdb->query($query);
 	}

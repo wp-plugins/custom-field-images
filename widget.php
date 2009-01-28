@@ -21,26 +21,7 @@ class widgetCFI extends scbWidget_05 {
 	protected function content() {
 		global $CFI_display;
 
-		extract($this->options->get());
-		ob_start();
-
-		echo "<ul id='cfi-loop'>";
-
-		$query= wp_parse_args($query, array(
-			'meta_key' => $CFI_display->key,
-			'post_type' => 'post',
-			'post_status' => 'publish'
-		));
-
-		$side_query = new WP_query($query);
-		while ( $side_query->have_posts() ) : $side_query->the_post();
-			echo "<li>";
-			echo $CFI_display->add_link($CFI_display->generate($post->ID), get_permalink($post->ID));
-			echo "</li>\n";
-		endwhile;
-		echo "</ul>\n";
-
-		return ob_get_clean();
+		return $CFI_display->loop($this->options->get('query'));
 	}
 
 	protected function control() {
