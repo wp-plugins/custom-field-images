@@ -4,7 +4,7 @@ Donate link: http://scribu.net/projects
 Tags: custom fields, images, thumbs
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 1.7.2.1
+Stable tag: trunk
 
 Easily manage and display images in post excerpts, feeds etc. using custom fields.
 
@@ -12,13 +12,17 @@ Easily manage and display images in post excerpts, feeds etc. using custom field
 
 Custom Field Images gives you increased flexibility in displaying images on specific page types, post excerpts and even feeds.
 
-**Features**
+**Easily insert image data**
 
-* Simple box for easy handling
-* One click import / export of existing images
-* Customizable defaults so that the only thing you need to add is the image URL.
+The custom meta box is designed specifically for image data, making it easier to use than the generic Custom Fields box. There is also a button for filling the box after an image is uploaded through WordPress.
 
-Credits go to [Justin Tadlock](http://justintadlock.com/archives/2007/10/27/wordpress-custom-fields-adding-images-to-posts), where I got the original ideea from.
+**Manage all images in one go**
+
+The plugin has a management page from which you can import / export / delete available images, all at once. Also, you can set defaults for all images, so you don't have to edit every image if you change your site's layout.
+
+**Show recent posts as images**
+
+Instead of displaying recent posts as a list of plain links, you can display them as a list of images, using the built-in widget.
 
 == Installation ==
 
@@ -37,6 +41,9 @@ You can also add `[cfi]` where you want the image to appear in the post content 
 
 == Frequently Asked Questions ==
 
+= Why are the images displayed two times? =
+Probably because you used the template tag and forgot to uncheck the content, excerpt or feed checkboxes from the Settings page.
+
 = Why aren't my images aligning properly? =
 
 This is due to your theme's CSS. Check if you have something like this in style.css:
@@ -44,6 +51,9 @@ This is due to your theme's CSS. Check if you have something like this in style.
 `img.alignleft {float:left; margin: 0 1em .5em 0}
 img.alignright {float:right; margin: 0 0 .5em 1em}
 img.aligncenter {display:block; margin:0 auto .5em auto}`
+
+= What if I don't want to use the widget? =
+You can add `<?php cfi_loop($query) ?>` directly to your theme files. $query is an optional parameter, which acts as a [query string](http://codex.wordpress.org/Template_Tags/query_posts).
 
 = How can I delete a custom field image from a post? =
 
