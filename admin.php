@@ -57,7 +57,7 @@ class boxCFI extends displayCFI {
 		}
 
 		foreach ( $rows as $row )
-			$table .= scbOptionsPage::form_row($row, $options, false);
+			$table .= scbOptionsPage_05::form_row($row, $options, false);
 
 		echo "<table>\n".str_replace('Image URL', '<strong>Image URL</strong>', $table)."</table>\n";
 	}
