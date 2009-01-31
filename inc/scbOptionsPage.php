@@ -33,7 +33,7 @@ abstract class scbOptionsPage_05 extends scbForms_05 {
 		if ( isset($this->options) )
 			$this->options->setup($file, $this->defaults);
 
-		add_action('admin_menu', array(&$this, 'page_init'));
+		add_action('admin_menu', array($this, 'page_init'));
 	}
 
 	// This is where all the page args goes
@@ -54,7 +54,7 @@ abstract class scbOptionsPage_05 extends scbForms_05 {
 
 	// Generates a standard page footer
 	protected function page_footer() {
-		$output .= "</div>\n";
+		$output = "</div>\n";
 
 		return $output;
 	}
@@ -101,13 +101,14 @@ abstract class scbOptionsPage_05 extends scbForms_05 {
 
 //_____HELPER METHODS (SHOULD NOT BE CALLED DIRECTLY)_____
 
+
 	// Registers a page
 	public function page_init() {
 		if ( !current_user_can('manage_options') )
 			return false;
 
 		extract($this->args);
-		add_options_page($short_title, $short_title, 8, $page_slug, array(&$this, 'page_content'));
+		add_options_page($short_title, $short_title, 8, $page_slug, array($this, 'page_content'));
 	}
 
 	// Update options

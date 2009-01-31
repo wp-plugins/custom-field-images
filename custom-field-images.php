@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Version: 1.8.0.1
 Description: Easily manage and display images anywhere using custom fields.
+Version: 1.8.1
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/projects/custom-field-images
@@ -157,26 +157,26 @@ class displayCFI {
 }
 
 // Init
-global $CFI_options, $CFI_display;
+cfi_init();
 
-// Create options instance
-if ( !class_exists('scbOptions_05') )
-	require_once('inc/scbOptions.php');
-$CFI_options = new scbOptions_05('cfi_options');
+function cfi_init() {
+	if ( !class_exists('scbOptions_05') )
+		require_once('inc/scbOptions.php');
 
-// Create display instance
-$CFI_display = new displayCFI();
+	// Create instances
+	$GLOBALS['CFI_options'] = new scbOptions_05('cfi_options');
+	$GLOBALS['CFI_display'] = new displayCFI();
 
-// Create widget instance
-require_once('widget.php');
-$CFI_widget = new widgetCFI(__FILE__);
+	// Create widget instance
+	require_once('widget.php');
+	new widgetCFI(__FILE__);
 
-// Load admin classes
-if ( is_admin() ) {
-	require_once(dirname(__FILE__).'/admin.php');
-	cfi_admin_init(__FILE__);
+	// Load admin classes
+	if ( is_admin() ) {
+		require_once(dirname(__FILE__) . '/admin.php');
+		cfi_admin_init(__FILE__);
+	}
 }
-
 
 // Template tags
 function custom_field_image() {

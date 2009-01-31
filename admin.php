@@ -17,7 +17,7 @@ class boxCFI extends displayCFI {
 	public function box() {
 ?>
 <style type="text/css">
-		#cfi-box table, #cfi-box input {width:100%}
+		#cfi-box table, #cfi-box .text {width:100%}
 		#cfi-box th {width:7%; text-align:right; font-weight: normal}
 </style>
 <?php $rows = array(
@@ -25,18 +25,21 @@ class boxCFI extends displayCFI {
 				'title' => 'Image URL',
 				'type' => 'text',
 				'names' => 'cfi-url',
+				'extra' => 'class="text"'
 			),
 
 			array(
 				'title' => 'Alt. Text',
 				'type' => 'text',
 				'names' => 'cfi-alt',
+				'extra' => 'class="text"'
 			),
 
 			array(
 				'title' => 'Link to',
 				'type' => 'text',
 				'names' => 'cfi-link',
+				'extra' => 'class="text"'
 			),
 
 			array(
@@ -86,7 +89,7 @@ class insertCFI {
 	}
 
 	public function insert() {
-		if ( !$this->is_admin_page(array('post-new.php', 'page-new.php', 'post.php', 'page.php')) )
+		if ( !$this->is_admin_page(array('post.php', 'post-new.php', 'page.php', 'page-new.php')) )
 			return false;
 
 		$src = $this->get_plugin_url() . '/inc/insert.js';
