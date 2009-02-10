@@ -1,136 +1,271 @@
 <?php
 
-// Version 0.5b
-// TODO: multiple widgets support
+if ( ! class_exists('scbForms_06') )
+	require_once(dirname(__FILE__) . '/scbForms.php');
 
-if ( ! class_exists('scbForms_05') )
-	require_once('scbForms.php');
+abstract class scbWidget_06 extends scbForms_06 {
+	//
+	// Interesting member variables.
+	protected $name;			// Name for this widget type.
+	protected $id_base;			// Root id for all widgets of this type.
+	protected $defaults;		// Default option values
 
-abstract class scbWidget_05 extends scbForms_05 {
-	// Widget args
-	protected $name = '';
-	protected $slug = '';
+	protected $widget_options;	// Option array passed to wp_register_sidebar_widget()
+	protected $control_options;	// Option array passed to wp_register_widget_control()
 
-	// Default options for installation
-	protected $defaults = array();
-
-	// scbOptions object holder
-	protected $options = NULL;
+	//
+	// Not-so-interesting member variables
+	protected $number = false;	// Unique ID number of the current instance.
+	protected $id = false; 		// Unique ID string of the current instance (id_base-number)
+	protected $instances;		// scbOptions object holder
 
 
-//_____MAIN METHODS_____
+	//
+	// Member functions that you must over-ride.
+
+	// This is where the widget options and defaults go
+	abstract protected function setup();
+
+	/** Echo the actual widget content. Subclasses should over-ride this function
+	 *	to generate their widget code. */
+	abstract protected function content($instance);
+
+	/** Update a particular instance.
+	 *	This function should check that $new_instance is set correctly.
+	 *	The newly calculated value of $instance should be returned. */
+	abstract protected function control_update($new_instance, $old_instance);
+
+	// Echo a control form for the current instance.
+	abstract protected function control_form($instance);
 
 
-	public function __construct($file) {
+	//
+	// Helper methods that you might want to over-ride (optional)
+
+	// Echoes the widget args and calls content()
+	protected function content_helper($args, $instance) {
+		extract($args);
+
+		echo $before_widget . $before_title . $instance['title'] . $after_title;
+		$this->content($instance);
+		echo $after_widget;
+	}
+
+	// Sets defaults and calls control_form()
+	protected function control_form_helper($instance) {
+		// Set defaults for new instances
+		if ( empty($instance) && isset($this->defaults) )
+			$instance = $this->defaults;
+
+		$this->control_form($instance);
+	}
+
+	// Calls setup(), checks widget options and registers widget
+	public function __construct() {
 		$this->setup();
 
 		// Check for required fields
-		if ( empty($this->name) )
+		if ( empty($this->name) ) {
+			trigger_error('Widget name cannot be blank', E_USER_WARNING);
 			return false;
+		}
 
-		if ( empty($this->slug) )
-			$this->slug = sanitize_title_with_dashes($this->name);
+		if ( empty($this->id_base) )
+			$this->id_base = sanitize_title_with_dashes($this->name);
 
-		// Create options object
+		$option_name = 'multiwidget_' . $this->id_base;
+
+		$this->widget_options =	wp_parse_args($this->widget_options, array('classname' => $option_name));
+		$this->control_options = wp_parse_args($this->control_options, array('id_base' => $this->id_base));
+
+		// Create instances object
 		if ( ! class_exists('scbOptions_05') )
-			require_once('scbOptions.php');
+			require_once(dirname(__FILE__) . '/scbOptions.php');
+		$this->instances = new scbOptions_05($option_name);
 
-		$this->options = new scbOptions_05($this->slug);
-		$this->options->setup($file, $this->defaults);
-
-		add_action('plugins_loaded', array($this, 'init'));
+		add_action('widgets_init', array($this, 'register'));
 	}
 
-	// This is where the widget name and defaults go
-	abstract protected function setup();
 
-	// This is where the actual widget content goes (no echoing)
-	abstract protected function content();
+	//
+	// Functions you'll want to call
 
-	// This is where the widget form fields go
-	abstract protected function control();
-
-	// This adds an input field
+	// This adds a widget input field
 	public function input($args, $options = array() ) {
-		$args = wp_parse_args($args, array(
-			'extra' => 'class="widefat"',
-			'check' => 'false'
-		));
-
 		// Add default label position
 		if ( !in_array($args['type'], array('checkbox', 'radio')) && empty($args['desc_pos']) )
 			$args['desc_pos'] = 'before';
 
-		// First check options
-		parent::check_names($args['names'], $options);
-
-		// Then add prefix to names and options fields
-		$new_names = (array) $args['names'];
-		$new_options = array();
-		foreach ( $new_names as $i => $name ) {
-			$new_name = $this->add_prefix($name);
-			$new_names[$i] = $new_name;
-			$new_options[$new_name] = $options[$name];
+		// First check names
+		if ( FALSE !== $args['check'] ) {
+			parent::check_names($args['names'], $options);
+			$args['check'] = false;
 		}
 
-		// Finally, replace the $names arg
+		// Then add prefix to names and options
+		$new_options = array();
+		foreach ( (array) $args['names'] as $name )
+			$new_options[ $this->get_field_name($name) ] = $options[$name];
+		$new_names = array_keys($new_options);
+
+		// Finally, replace the old names
 		if ( 1 == count($new_names) )
 			$args['names'] = $new_names[0];
 		else
 			$args['names'] = $new_names;
 
-		// Hijack $desc and replace with $title
+		// Remember $desc and replace with $title
 		if ( $args['desc'] )
 			$desc = "<small>{$args['desc']}</small>";
 		$args['desc'] = $args['title'];
 		unset($args['title']);
 
-		$inputs = parent::input($args, $new_options);
+		$input = parent::input($args, $new_options);
 
-		return "<p>{$inputs}\n<br />\n$desc\n</p>\n";
+		return "<p>{$input}\n<br />\n$desc\n</p>\n";
 	}
 
 
-//_____HELPER METHODS (SHOULD NOT BE CALLED DIRECTLY)_____
+	//
+	// PRIVATE FUNCTIONS. Don't worry about these.
 
-
-	// Adds the widget hooks
-	public function init() {
-		if ( !function_exists('register_sidebar_widget') )
-			return;
-
-		register_sidebar_widget($this->name, array($this, 'display'));
-		register_widget_control($this->name, array($this, 'handler'), 250, 200);
+	/** Helper function to be called by input().
+	 *	Returns an HTML name for the field. */
+	protected function get_field_name($field_name) {
+		return 'widget-'.$this->id_base.'['.$this->number.']['.$field_name.']';
 	}
 
-	// Wraps the content with default widget args
-	public function display($args) {
-		extract($this->options->get());
-		extract($args);
-
-		$content = $this->content();
-
-		echo $before_widget . $before_title . $title . $after_title . $content . $after_widget;
+	/** Helper function to be called by input().
+	 *	Returns an HTML id for the field. */
+	protected function get_field_id($field_name) {
+		return 'widget-'.$this->id_base.'-'.$this->number.'-'.$field_name;
 	}
 
-	// Updates options and displays fields
-	public function handler() {
-		$hidden_key = $this->add_prefix('submit');
+	/** Sets current instance number and id */
+	protected function _set($number) {
+		$this->number = $number;
+		$this->id = $this->id_base.'-'.$number;
+	}
 
-		// Update options
-		if ( isset($_POST[$hidden_key]) ) {
-			foreach ( array_keys($this->options->get()) as $name )
-				$new_options[$name] = $_POST[$this->add_prefix($name)];
+	/** Helper function: Registers a single instance. */
+	protected function _register_one($number = -1) {
+		wp_register_sidebar_widget(
+			$this->id, 
+			$this->name, 
+			array($this, 'widget_callback'), 
+			$this->widget_options, 
+			array( 'number' => $number )
+		);
+		wp_register_widget_control(
+			$this->id, 
+			$this->name, 
+			array($this, 'control_callback'),
+			$this->control_options, 
+			array( 'number' => $number )
+		);
+	}
 
-			$this->options->update($new_options);
+	/** Registers this widget-type.
+	 *	Must be called during the 'widget_init' action. */
+	public function register() {
+		$all_instances = (array) $this->instances->get();
+
+		$registered = false;
+		foreach( array_keys($all_instances) as $number ) {
+			// Old widgets can have null values for some reason
+			if( !isset($all_instances[$number]['__multiwidget']) )
+				continue;
+
+			$this->_set($number);
+			$registered = true;
+			$this->_register_one($number);
 		}
 
-		echo "<input name='{$hidden_key}' type='hidden' value='1' />\n";
-
-		$this->control();
+		// If there are none, we register the widget's existance with a
+		// generic template
+		if( !$registered ) {
+			$this->_set(1);
+			$this->_register_one();
+		}
 	}
 
-	protected function add_prefix($field) {
-		return $this->slug . '-' . $field;
+	/** Generate the actual widget content.
+	 *	Just finds the instance and calls content_helper().
+	 *	Do NOT over-ride this function. */
+	public function widget_callback($args, $widget_args = 1) {
+		if( is_numeric($widget_args) )
+			$widget_args = array( 'number' => $widget_args );
+		$widget_args = wp_parse_args( $widget_args, array( 'number' => -1 ) );
+		$this->_set( $widget_args['number'] );
+
+		// Data is stored as array:
+		//	array( number => data for that instance of the widget, ... )
+		$instance = $this->instances->get($this->number);
+		if( isset($instance) )
+			$this->content_helper($args, $instance);
+	}
+
+	/** Deal with changed settings and generate the control form.
+	 *	Do NOT over-ride this function. */
+	public function control_callback($widget_args = 1) {
+		global $wp_registered_widgets;
+
+		if( is_numeric($widget_args) )
+			$widget_args = array( 'number' => $widget_args );
+		$widget_args = wp_parse_args( $widget_args, array( 'number' => -1 ) );
+
+		// Data is stored as array:
+		//	array( number => data for that instance of the widget, ... )
+		$all_instances = (array) $this->instances->get();
+
+		// We need to update the data
+		if( !$updated && !empty($_POST['sidebar']) ) {
+			// Tells us what sidebar to put the data in
+			$sidebar = (string) $_POST['sidebar'];
+
+			$sidebars_widgets = wp_get_sidebars_widgets();
+			if( isset($sidebars_widgets[$sidebar]) )
+				$this_sidebar =& $sidebars_widgets[$sidebar];
+			else
+				$this_sidebar = array();
+
+			foreach( $this_sidebar as $_widget_id )
+				// Remove all widgets of this type from the sidebar.	We'll add the
+				// new data in a second. This makes sure we don't get any duplicate
+				// data since widget ids aren't necessarily persistent across multiple
+				// updates
+				$number = $wp_registered_widgets[$_widget_id]['params'][0]['number'];
+				if( isset($number) )
+					if( !in_array( $this->id_base.'-'.$number, $_POST['widget-id'] ) )
+						// the widget has been removed.
+						unset($all_instances[$number]);
+
+			foreach( (array) $_POST['widget-'.$this->id_base] as $number => $new_instance) {
+				$this->_set($number);
+				if( isset($all_instances[$number]) )
+					$instance = $this->control_update($new_instance, $all_instances[$number]);
+				else
+					$instance = $this->control_update($new_instance, array());
+				if( !empty($instance) ) {
+					$instance['__multiwidget'] = $number;
+					$all_instances[$number] = $instance;
+				}
+			}
+
+			$this->instances->update($all_instances);
+			static $updated = true; // So that we don't go through this more than once
+		}
+
+		// Here we echo out the form
+		if( -1 == $widget_args['number'] ) {
+			// We echo out a template for a form which can be converted to a
+			// specific form later via JS
+			$this->_set('%i%');
+			$instance = array();
+		} else {
+			$this->_set($widget_args['number']);
+			$instance = $all_instances[ $widget_args['number'] ];
+		}
+		$this->control_form_helper($instance);
 	}
 }

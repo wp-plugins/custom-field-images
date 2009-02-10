@@ -1,7 +1,4 @@
 <?php
-if ( !class_exists('scbOptionsPage_05') )
-	require_once(dirname(__FILE__) . '/inc/scbOptionsPage.php');
-
 // Adds the CFI metabox
 class boxCFI extends displayCFI {
 	public function __construct() {
@@ -60,9 +57,9 @@ class boxCFI extends displayCFI {
 		}
 
 		foreach ( $rows as $row )
-			$table .= scbOptionsPage_05::form_row($row, $options, false);
+			$table .= scbOptionsPage_07::form_row($row, $options);
 
-		echo "<table>\n".str_replace('Image URL', '<strong>Image URL</strong>', $table)."</table>\n";
+		echo "<table>\n" . str_replace('Image URL', '<strong>Image URL</strong>', $table) . "</table>\n";
 	}
 
 	public function save($post_id, $post) {
@@ -113,8 +110,11 @@ class insertCFI {
 	}
 }
 
+if ( !class_exists('scbOptionsPage_07') )
+	require_once(dirname(__FILE__) . '/inc/scbOptionsPage.php');
+
 // Adds the CFI Settings page
-class settingsCFI extends scbOptionsPage_05 {
+class settingsCFI extends scbOptionsPage_07 {
 	protected function setup() {
 		global $CFI_options;
 
@@ -191,28 +191,20 @@ class settingsCFI extends scbOptionsPage_05 {
 }
 
 // Adds the CFI Management page
-class manageCFI extends scbOptionsPage_05 {
+class manageCFI extends scbOptionsPage_07 {
 	private $display;
 
 	protected function setup() {
-		global $CFI_display;
-		$this->display = $CFI_display;
+		$this->display = $GLOBALS['CFI_display'];
 
 		$this->args = array(
 			'page_title' => 'Manage Custom Field Images',
 			'short_title' => 'CFI Management',
-			'page_slug' => 'cfi-management'
+			'page_slug' => 'cfi-management',
+			'type' => 'tools'
 		);
 
 		$this->nonce = 'cfi-management';
-	}
-
-	public function page_init() {
-		if ( !current_user_can('manage_options') )
-			return false;
-
-		extract($this->args);
-		add_management_page($short_title, $short_title, 8, $page_slug, array(&$this, 'page_content'));
 	}
 
 	public function page_content() {

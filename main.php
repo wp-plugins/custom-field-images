@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily manage and display images anywhere using custom fields.
-Version: 1.8.1
+Version: 1.8.2a
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/projects/custom-field-images
@@ -32,12 +32,6 @@ class displayCFI {
 		'right' => 'float:right; margin: 0 0 .5em 1em;'
 	);
 
-	// wp_postmeta -> meta_key
-	public $key = '_cfi_image';
-
-	// $post->ID
-	protected $id;
-
 	// Data fields for current image
 	protected $data = array(
 		'url' => '',
@@ -46,13 +40,17 @@ class displayCFI {
 		'link' => ''
 	);
 
+	// wp_postmeta.meta_key
+	public $key = '_cfi_image';
+
+	// $post->ID
+	protected $id;
+
 	// Options object holder
 	protected $options;
 
 	public function __construct() {
-		global $CFI_options;
-
-		$this->options = $CFI_options;
+		$this->options = $GLOBALS['CFI_options'];
 
 		add_filter('the_excerpt', array(&$this, 'filter'));
 		add_filter('the_content', array(&$this, 'filter'));
@@ -179,12 +177,17 @@ function cfi_init() {
 }
 
 // Template tags
-function custom_field_image() {
+function custom_field_image($echo = true) {
 	global $CFI_display;
+
+	if ( ! $echo )
+		return $CFI_display->generate();
+
 	echo $CFI_display->generate();
 }
 
 function cfi_loop($query) {
 	global $CFI_display;
+
 	echo $CFI_display->loop($query);
 }

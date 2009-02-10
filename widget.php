@@ -3,14 +3,13 @@
 // Simple: Select categories
 // Advanced: Insert query
 
-if ( !class_exists('scbWidget_05') )
+if ( !class_exists('scbWidget_06') )
 	require_once(dirname(__FILE__) . '/inc/scbWidget.php');
 
-class widgetCFI extends scbWidget_05 {
+class widgetCFI extends scbWidget_06 {
 
 	protected function setup() {
 		$this->name = 'CFI Loop';
-		$this->slug = 'cfi_widget';
 
 		$this->defaults = array(
 			'title' => 'Recent Posts',
@@ -18,13 +17,24 @@ class widgetCFI extends scbWidget_05 {
 		);
 	}
 
-	protected function content() {
+	protected function content($instance) {
 		global $CFI_display;
 
-		return $CFI_display->loop($this->options->get('query'));
+		echo $CFI_display->loop($instance['query']);
 	}
 
-	protected function control() {
+	protected function control_update($new_instance, $old_instance) {
+		if ( !isset($new_instance['title']) ) // user clicked cancel
+				return false;
+
+		$instance = $old_instance;
+		$instance['title'] = wp_specialchars( $new_instance['title'] );
+		$instance['query'] = wp_specialchars( $new_instance['query'] );
+
+		return $instance;
+	}
+
+	protected function control_form($instance) {
 		$rows = array(
 			array(
 				'title' => 'Title:',
@@ -39,9 +49,7 @@ class widgetCFI extends scbWidget_05 {
 			)
 		);
 
-		$options = $this->options->get();
-
 		foreach ( $rows as $row )
-			echo $this->input($row, $options);
+			echo $this->input($row, $instance);
 	}
 }
