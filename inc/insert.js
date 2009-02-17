@@ -3,9 +3,9 @@ function fillCfiBox(anchor) {
 	var box = jQuery(document).find('#cfi-box');
 
 	// Set cfi-url
-	url = item.find('.urlfile').attr('title');
+	var url = item.find('.urlfile').attr('title');
 
-	size = item.find('.image-size :checked[value!=full]').parents('.image-size-item').find('.help').text();
+	var size = item.find('.image-size :checked[value!=full]').parents('.image-size-item').find('.help').text();
 	if ( size.length > 0 ) {
 		size = size.replace(/^.*?(\d+).*?(\d+).*?$/, '$1x$2');
 		url = url.replace(/(.*)\./, '$1-'+size+'.');
@@ -14,18 +14,18 @@ function fillCfiBox(anchor) {
 	box.find('[name=cfi-url]').val(url);
 
 	// Set cfi-align
-	align = item.find('.align :checked').val();
+	var align = item.find('.align :checked').val();
 	if ( align != 'none' )
 		box.find('tr:last [value="'+align+'"]').attr('checked',true);
 	else
 		box.find('tr:last :checked').attr('checked', false);	// uncheck all buttons
 
 	// Set cfi-alt
-	alt = item.find('.post_title :text').val();
+	var alt = item.find('.post_title :text').val();
 	box.find('[name=cfi-alt]').val(alt);
 
 	// Set cfi-link
-	link = item.find('.url :text').val();
+	var link = item.find('.url :text').val();
 	box.find('[name=cfi-link]').val(link);
 
 	jQuery(document).find('#TB_closeWindowButton').click();		// close iframe
@@ -37,11 +37,11 @@ jQuery(function($) {
 			var frame = $(this).contents();
 
 			frame.find('.media-item :submit').each(function() {
-				jQuery(this).after(' (<a href="#" class="insert-cfi" style="color:#006505;">Insert CFI</a>)');
+				$(this).after(' (<a href="#" class="insert-cfi" style="color:#006505;">Insert CFI</a>)');
 			});
 
 			frame.find('.insert-cfi').each(function() {
-				var anchor = jQuery(this);
+				var anchor = $(this);
 
 				anchor.click(function () {
 					fillCfiBox(anchor);

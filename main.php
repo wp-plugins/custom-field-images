@@ -5,7 +5,7 @@ Description: Easily manage and display images anywhere using custom fields.
 Version: 1.8.2
 Author: scribu
 Author URI: http://scribu.net/
-Plugin URI: http://scribu.net/projects/custom-field-images
+Plugin URI: http://scribu.net/wordpress/custom-field-images
 
 Copyright (C) 2008 scribu.net (scribu AT gmail DOT com)
 
