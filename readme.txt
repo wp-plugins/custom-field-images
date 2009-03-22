@@ -3,7 +3,7 @@ Contributors: scribu
 Donate link: http://scribu.net/wordpress
 Tags: custom fields, images, thumbs
 Requires at least: 2.5
-Tested up to: 2.7
+Tested up to: 2.8
 Stable tag: trunk
 
 Easily manage and display images in post excerpts, feeds etc. using custom fields.

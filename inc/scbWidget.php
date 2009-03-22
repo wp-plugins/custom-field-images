@@ -1,9 +1,11 @@
 <?php
 
-if ( ! class_exists('scbForms_06') )
+// Version 0.6.1
+
+if ( ! class_exists('scbForms_07') )
 	require_once(dirname(__FILE__) . '/scbForms.php');
 
-abstract class scbWidget_06 extends scbForms_06 {
+abstract class scbWidget_06 extends scbForms_07 {
 	//
 	// Interesting member variables.
 	protected $name;			// Name for this widget type.
@@ -79,9 +81,9 @@ abstract class scbWidget_06 extends scbForms_06 {
 		$this->control_options = wp_parse_args($this->control_options, array('id_base' => $this->id_base));
 
 		// Create instances object
-		if ( ! class_exists('scbOptions_05') )
+		if ( ! class_exists('scbOptions_06') )
 			require_once(dirname(__FILE__) . '/scbOptions.php');
-		$this->instances = new scbOptions_05($option_name);
+		$this->instances = new scbOptions_06($option_name);
 
 		add_action('widgets_init', array($this, 'register'));
 	}

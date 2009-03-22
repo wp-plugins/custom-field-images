@@ -1,4 +1,8 @@
 <?php
+
+if ( !class_exists('scbOptionsPage_07') )
+	require_once(dirname(__FILE__) . '/inc/scbOptionsPage.php');
+
 // Adds the CFI metabox
 class boxCFI extends displayCFI {
 	public function __construct() {
@@ -51,7 +55,6 @@ class boxCFI extends displayCFI {
 
 		if ( $this->data ) {
 			// Prepend 'cfi-' to data keys
-			$options = array();
 			foreach ( $this->data as $key => $value )
 				$options['cfi-'.$key] = $value;
 		}
@@ -66,7 +69,8 @@ class boxCFI extends displayCFI {
 		if ( $post->post_type == 'revision' )
 			return;
 
-		if ( $_POST['cfi-url'] == '' ) {
+		// Delete data on empty url
+		if ( empty($_POST['cfi-url']) ) {
 			delete_post_meta($post_id, $this->key);
 			return;
 		}
@@ -109,9 +113,6 @@ class insertCFI {
 		return plugins_url(plugin_basename(dirname(__FILE__)));
 	}
 }
-
-if ( !class_exists('scbOptionsPage_07') )
-	require_once(dirname(__FILE__) . '/inc/scbOptionsPage.php');
 
 // Adds the CFI Settings page
 class settingsCFI extends scbOptionsPage_07 {
@@ -247,9 +248,9 @@ class manageCFI extends scbOptionsPage_07 {
 		}
 
 		if ( $r !== NULL )
-			printf('<div class="updated fade"><p>%sed <strong>%d</strong> image(s).</p></div>', ucfirst(rtrim($action, 'e')), $r);
+			$this->admin_msg(sprintf('%sed <strong>%d</strong> image(s).', ucfirst(rtrim($action, 'e')), $r));
 		else
-			echo '<div class="error"><p>An error has occured.</p></div>';
+			$this->admin_msg('An error has occured.', 'error');
 	}
 
 // Import/Export methods

@@ -2,12 +2,12 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily manage and display images anywhere using custom fields.
-Version: 1.8.2
+Version: 1.8.3
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
 
-Copyright (C) 2008 scribu.net (scribu AT gmail DOT com)
+Copyright (C) 2009 scribu.net (scribu AT gmail DOT com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -158,11 +158,11 @@ class displayCFI {
 cfi_init();
 
 function cfi_init() {
-	if ( !class_exists('scbOptions_05') )
+	if ( !class_exists('scbOptions_06') )
 		require_once('inc/scbOptions.php');
 
 	// Create instances
-	$GLOBALS['CFI_options'] = new scbOptions_05('cfi_options');
+	$GLOBALS['CFI_options'] = new scbOptions_06('cfi_options');
 	$GLOBALS['CFI_display'] = new displayCFI();
 
 	// Create widget instance

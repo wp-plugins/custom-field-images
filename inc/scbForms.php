@@ -1,8 +1,8 @@
 <?php
 
-// Version 0.6.0.1
+// Version 0.7
 
-abstract class scbForms_06 {
+abstract class scbForms_07 {
 	/* Generates one or more input fields, with labels
 	$args =	array (
 		'type' => any valid <input> type
@@ -29,62 +29,59 @@ abstract class scbForms_06 {
 		if ( empty($type) )
 			trigger_error('No type specified', E_USER_WARNING);
 
-		if ( empty($names) )
+		if ( empty($names) ) {
 			trigger_error('No name specified', E_USER_WARNING);
+			return;
+		}
 
 		// Check for defined options
 		if ( $check && 'submit' != $type && !empty($options) )
-			self::check_names($names, $options);
+			$this->check_names($names, $options);
 
 		$f1 = is_array($names);
 		$f2 = is_array($values);
 
 		// Set default values
 		if ( !isset($values) )
-			if ( 'text' == $type && !$f1 && !$f2 )
-				$values = wp_specialchars($options[$names], ENT_QUOTES);
-			elseif ( in_array($type, array('checkbox', 'radio')) && empty($values) )
+			if ( 'text' == $type && !$f1 )
+				$values = stripslashes(wp_specialchars($options[$names], ENT_QUOTES));
+			elseif ( in_array($type, array('checkbox', 'radio')) )
 				$values = true;
 
-		// Determine what goes where
-		if ( $f1 || $f2 ) {
-			if ( $f1 && $f2 )
-				$a = array_combine($names, $values);
-			elseif ( $f1 && !$f2 )
-				$a = array_fill_keys($names, $values);
-			elseif ( !$f1 && $f2 )
-				$a = array_fill_keys($values, $names);
-
-			if ( $f1 ) {
-				$i1 = 'name';
-				$i2 = 'val';
-			}
-
-			if ( $f2 ) {	
-				$i1 = 'val';
-				$i2 = 'name';
-			}
-	
-			$l1 = 'name';
-		} else {
+		// Expand names or values
+		if ( !$f1 && !$f2 )
 			$a = array($names => $values);
+		elseif ( $f1 && !$f2 )
+			$a = array_fill_keys($names, $values);
+		elseif ( !$f1 && $f2 )
+			$a = array_fill_keys($values, $names);
+		else
+			$a = array_combine($names, $values);
 
+		// Determine what goes where
+		if ( !$f1 && $f2 ) {
+			$i1 = 'val';
+			$i2 = 'name';
+		} else {
 			$i1 = 'name';
 			$i2 = 'val';
-
-			$l1 = 'desc';
 		}
+
+		if ( $f1 || $f2 )
+			$l1 = 'name';
+		else
+			$l1 = 'desc';
 
 		// Generate output
 		foreach ( $a as $name => $val ) {
 			// Build extra string
-			$extra_string = $extra;
+			$extra_s = $extra;
 
 			if ( in_array($type, array('checkbox', 'radio')) && $options[$$i1] == $$i2)
-				$extra_string .= " checked='checked'";
+				$extra_s .= " checked='checked'";
 
 			// Build the item
-			$input = sprintf('<input %4$s name="%1$s" value="%2$s" type="%3$s" /> ', $$i1, $$i2, $type, $extra_string);
+			$input = "<input name='{$$i1}' value='{$$i2}' type='{$type}' {$extra_s}/> ";
 
 			// Add description
 			$desc = $$l1;
@@ -95,15 +92,61 @@ abstract class scbForms_06 {
 				elseif ( 'after' == $desc_pos )
 					$desc = $token . ' ' . $desc;
 			$desc = str_replace($token, $input, $desc);
+			$desc = trim($desc);
 
 			// Add label
 			if ( 'none' == $desc_pos || empty($desc) )
-				$output .= $input;
+				$output[] = $input . "\n";
 			else
-				$output .= sprintf("<label for='%s'>%s</label> ", $$i1, $desc);
+				$output[] = "<label for='{$$i1}'>{$desc}</label>\n";
 		}
 
-		return $output;
+		return implode("\n", $output);
+	}
+
+	public function select($args, $options) {
+		extract(wp_parse_args($args, array(
+			'name' => '', 
+			'selected' => NULL, 
+			'extra' => ''
+		)));
+
+		if ( empty($name) )
+			trigger_error('No name specified', E_USER_NOTICE);
+
+		if ( !is_array($options) ) {
+			trigger_error("Second argument is expected to be an associative array", E_USER_WARNING);
+			return;
+		}
+
+		foreach ( $options as $key => $value ) {
+			$extra_s = $extra;
+			if ( $name === $selected )
+				$extra_s = " selected='selected'";
+			else
+				$extra_s = "";
+
+			$opts .= "\t<option value='{$key}'{$extra_s}>{$value}</option>\n";
+		}
+
+		return "<select name='{$name}'>\n{$opts}</select>\n";
+	}
+
+	// Creates a textarea
+	public function textarea($args, $content) {
+		extract(wp_parse_args($args, array(
+			'name' => '', 
+			'extra' => 'class="widefat"',
+			'escaped' => 'false'
+		)));
+
+		if ( !$escaped )
+			$content = stripslashes(wp_specialchars($content, ENT_QUOTES));
+
+		if ( empty($name) )
+			trigger_error('No name specified', E_USER_NOTICE);
+
+		return "<textarea name='{$name}'{$extra}>\n{$content}\n</textarea>\n";
 	}
 
 	// Adds a form around the $content, including a hidden nonce field
@@ -111,10 +154,10 @@ abstract class scbForms_06 {
 		if ( empty($nonce) )
 			$nonce = $this->nonce;
 
-		$output .= "<form method='post' action=''>\n";
-		$output .= wp_nonce_field($action = $nonce, $name = "_wpnonce", $referer = true , $echo = false );
+		$output .= "\n<form method='post' action=''>\n";
 		$output .= $content;
-		$output .= "</form>\n";
+		$output .= wp_nonce_field($action = $nonce, $name = "_wpnonce", $referer = true , $echo = false);
+		$output .= "\n</form>\n";
 
 		return $output;
 	}
@@ -146,3 +189,4 @@ function array_fill_keys($keys, $value) {
 	return $r;
 }
 endif;
+
