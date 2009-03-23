@@ -1,6 +1,6 @@
 <?php
 
-// Version 0.7
+// Version 0.7.1
 
 abstract class scbForms_07 {
 	/* Generates one or more input fields, with labels
@@ -16,7 +16,7 @@ abstract class scbForms_07 {
 	$options = array('name' => 'value'...)
 	*/
 
-	public function input($args, $options = array()) {
+	public static function input($args, $options = array()) {
 		$token = '%input%';
 
 		extract(wp_parse_args($args, array(
@@ -36,7 +36,7 @@ abstract class scbForms_07 {
 
 		// Check for defined options
 		if ( $check && 'submit' != $type && !empty($options) )
-			$this->check_names($names, $options);
+			self::check_names($names, $options);
 
 		$f1 = is_array($names);
 		$f2 = is_array($values);
@@ -104,7 +104,7 @@ abstract class scbForms_07 {
 		return implode("\n", $output);
 	}
 
-	public function select($args, $options) {
+	public static function select($args, $options) {
 		extract(wp_parse_args($args, array(
 			'name' => '', 
 			'selected' => NULL, 
@@ -133,7 +133,7 @@ abstract class scbForms_07 {
 	}
 
 	// Creates a textarea
-	public function textarea($args, $content) {
+	public static function textarea($args, $content) {
 		extract(wp_parse_args($args, array(
 			'name' => '', 
 			'extra' => 'class="widefat"',
@@ -150,10 +150,7 @@ abstract class scbForms_07 {
 	}
 
 	// Adds a form around the $content, including a hidden nonce field
-	public function form_wrap($content, $nonce = '') {
-		if ( empty($nonce) )
-			$nonce = $this->nonce;
-
+	public static function form_wrap($content, $nonce = 'update_options') {
 		$output .= "\n<form method='post' action=''>\n";
 		$output .= $content;
 		$output .= wp_nonce_field($action = $nonce, $name = "_wpnonce", $referer = true , $echo = false);

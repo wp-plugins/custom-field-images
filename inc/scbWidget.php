@@ -1,6 +1,6 @@
 <?php
 
-// Version 0.6.1
+// Version 0.6.2
 
 if ( ! class_exists('scbForms_07') )
 	require_once(dirname(__FILE__) . '/scbForms.php');
@@ -93,7 +93,7 @@ abstract class scbWidget_06 extends scbForms_07 {
 	// Functions you'll want to call
 
 	// This adds a widget input field
-	public function input($args, $options = array() ) {
+	public static function input($args, $options = array()) {
 		// Add default label position
 		if ( !in_array($args['type'], array('checkbox', 'radio')) && empty($args['desc_pos']) )
 			$args['desc_pos'] = 'before';

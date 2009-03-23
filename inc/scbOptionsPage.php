@@ -2,7 +2,7 @@
 
 // Version 0.7.1
 
-if ( ! class_exists('scbForms_06') )
+if ( ! class_exists('scbForms_07') )
 	require_once(dirname(__FILE__) . '/scbForms.php');
 
 abstract class scbOptionsPage_07 extends scbForms_07 {
