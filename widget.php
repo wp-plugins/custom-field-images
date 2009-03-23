@@ -50,6 +50,6 @@ class widgetCFI extends scbWidget_06 {
 		);
 
 		foreach ( $rows as $row )
-			echo $this->input($row, $instance);
+			echo self::input($row, $instance);
 	}
 }

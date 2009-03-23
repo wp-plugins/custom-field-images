@@ -16,7 +16,7 @@ abstract class scbForms_07 {
 	$options = array('name' => 'value'...)
 	*/
 
-	public static function input($args, $options = array()) {
+	public function input($args, $options = array()) {
 		$token = '%input%';
 
 		extract(wp_parse_args($args, array(
@@ -164,7 +164,7 @@ abstract class scbForms_07 {
 
 
 	// Checks if selected $names have equivalent in $options. Used by form_row()
-	protected function check_names($names, $options) {
+	protected static function check_names($names, $options) {
 		$names = (array) $names;
 
 		foreach ( $names as $i => $name )

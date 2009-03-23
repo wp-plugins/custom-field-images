@@ -93,7 +93,7 @@ abstract class scbWidget_06 extends scbForms_07 {
 	// Functions you'll want to call
 
 	// This adds a widget input field
-	public static function input($args, $options = array()) {
+	public function input($args, $options = array()) {
 		// Add default label position
 		if ( !in_array($args['type'], array('checkbox', 'radio')) && empty($args['desc_pos']) )
 			$args['desc_pos'] = 'before';
@@ -107,7 +107,7 @@ abstract class scbWidget_06 extends scbForms_07 {
 		// Then add prefix to names and options
 		$new_options = array();
 		foreach ( (array) $args['names'] as $name )
-			$new_options[ $this->get_field_name($name) ] = $options[$name];
+			$new_options[ self::get_field_name($name) ] = $options[$name];
 		$new_names = array_keys($new_options);
 
 		// Finally, replace the old names
