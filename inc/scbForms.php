@@ -1,6 +1,6 @@
 <?php
 
-// Version 0.7.1
+// Version 0.7.2
 
 abstract class scbForms_07 {
 	/* Generates one or more input fields, with labels
@@ -150,7 +150,7 @@ abstract class scbForms_07 {
 	}
 
 	// Adds a form around the $content, including a hidden nonce field
-	public static function form_wrap($content, $nonce = 'update_options') {
+	public function form_wrap($content, $nonce = 'update_options') {
 		$output .= "\n<form method='post' action=''>\n";
 		$output .= $content;
 		$output .= wp_nonce_field($action = $nonce, $name = "_wpnonce", $referer = true , $echo = false);

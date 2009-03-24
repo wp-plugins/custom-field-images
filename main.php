@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily manage and display images anywhere using custom fields.
-Version: 1.8.3.1
+Version: 1.8.3.2
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
@@ -33,7 +33,7 @@ class displayCFI {
 	);
 
 	// Data fields for current image
-	protected $data = array(
+	public $data = array(
 		'url' => '',
 		'align' => '',
 		'alt' => '',

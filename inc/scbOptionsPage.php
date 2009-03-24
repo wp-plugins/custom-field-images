@@ -1,6 +1,6 @@
 <?php
 
-// Version 0.7.1
+// Version 0.7.2
 
 if ( ! class_exists('scbForms_07') )
 	require_once(dirname(__FILE__) . '/scbForms.php');
@@ -14,8 +14,11 @@ abstract class scbOptionsPage_07 extends scbForms_07 {
 		'type' => 'settings'
 	);
 
+	// Hook string created at page init
+	protected $pagehook;
+
 	// Nonce string
-	protected $nonce = 'update_settings';
+	protected $nonce;
 
 	// Plugin dir url
 	protected $plugin_url;
@@ -71,17 +74,17 @@ abstract class scbOptionsPage_07 extends scbForms_07 {
 	protected function page_header() {
 		$this->form_handler();
 
-		$output .= "<div class='wrap'>\n";
-		$output .= "<h2>".$this->args['page_title']."</h2>\n";
-
-		return $output;
+		echo "<div class='wrap'>\n";
+		echo "<h2>".$this->args['page_title']."</h2>\n";
 	}
 
 	// Generates a standard page footer
 	protected function page_footer() {
-		$output = "</div>\n";
+		echo "</div>\n";
+	}
 
-		return $output;
+	public function form_wrap($content) {
+		return parent::form_wrap($content, $this->nonce);
 	}
 
 	// Wrap a field in a table row
@@ -117,7 +120,7 @@ abstract class scbOptionsPage_07 extends scbForms_07 {
 		);
 
 		if ( ! empty($class) )
-			$args['extra'] = "class={$class}'";
+			$args['extra'] = "class='{$class}'";
 
 		$this->actions[] = $action;
 		$output .= "<p class='submit'>\n";
@@ -144,6 +147,9 @@ abstract class scbOptionsPage_07 extends scbForms_07 {
 
 		if ( empty($this->args['page_slug']) )
 			$this->args['page_slug'] = sanitize_title_with_dashes($this->args['short_title']);
+			
+		if ( empty($this->nonce) )
+			$this->nonce = $this->args['page_slug'];
 	}
 
 	// Registers a page
@@ -154,13 +160,13 @@ abstract class scbOptionsPage_07 extends scbForms_07 {
 		extract($this->args);
 
 		if ( 'settings' == $type )
-			$page = add_options_page($short_title, $short_title, 8, $page_slug, array($this, 'page_content'));
+			$this->pagehook = add_options_page($short_title, $short_title, 8, $page_slug, array($this, 'page_content'));
 		elseif ( 'tools' == $type )
-			$page = add_management_page($short_title, $short_title, 8, $page_slug, array($this, 'page_content'));
+			$this->pagehook = add_management_page($short_title, $short_title, 8, $page_slug, array($this, 'page_content'));
 		else
 			trigger_error("Unknown page type: $page", E_USER_WARNING);
 
-		add_action("admin_print_styles-$page", array($this, 'page_head'));
+		add_action('admin_print_styles-' . $this->pagehook, array($this, 'page_head'));
 	}
 
 	// Update options
