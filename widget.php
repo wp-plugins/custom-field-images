@@ -3,38 +3,33 @@
 // Simple: Select categories
 // Advanced: Insert query
 
-if ( !class_exists('scbWidget_06') )
-	require_once(dirname(__FILE__) . '/inc/scbWidget.php');
-
-class widgetCFI extends scbWidget_06 {
-
-	protected function setup() {
-		$this->name = 'CFI Loop';
-
-		$this->defaults = array(
+class widgetCFI extends scbWidget {
+	function __construct() {
+		$widget_ops = array(
 			'title' => 'Recent Posts',
 			'query' => ''
 		);
+		$this->WP_Widget('cfi-loop', 'CFI Loop', $widget_ops);
 	}
 
-	protected function content($instance) {
+	function widget($instance) {
 		global $CFI_display;
 
 		echo $CFI_display->loop($instance['query']);
 	}
 
-	protected function control_update($new_instance, $old_instance) {
-		if ( !isset($new_instance['title']) ) // user clicked cancel
+	function update($new_instance, $old_instance) {
+		if ( ! isset($new_instance['title']) ) // user clicked cancel
 				return false;
 
 		$instance = $old_instance;
-		$instance['title'] = wp_specialchars( $new_instance['title'] );
-		$instance['query'] = wp_specialchars( $new_instance['query'] );
+		$instance['title'] = wp_specialchars($new_instance['title']);
+		$instance['query'] = wp_specialchars($new_instance['query']);
 
 		return $instance;
 	}
 
-	protected function control_form($instance) {
+	function form($instance) {
 		$rows = array(
 			array(
 				'title' => 'Title:',
@@ -50,6 +45,9 @@ class widgetCFI extends scbWidget_06 {
 		);
 
 		foreach ( $rows as $row )
-			echo self::input($row, $instance);
+			echo $this->input($row, $instance);
 	}
 }
+
+add_action('widgets_init', create_function('', "register_widget('widgetCFI');"));
+

@@ -1,21 +1,18 @@
 <?php
 
-if ( !class_exists('scbOptionsPage_07') )
-	require_once(dirname(__FILE__) . '/inc/scbOptionsPage.php');
-
 // Adds the CFI metabox
 class boxCFI extends displayCFI {
-	public function __construct() {
+	function __construct() {
 		add_action('admin_menu', array($this, 'box_init'));
 		add_action('save_post', array($this, 'save'), 1, 2);
 	}
 
-	public function box_init() {
+	function box_init() {
 		add_meta_box('cfi-box', 'Custom Field Image', array($this, 'box'), 'post', 'normal');
 		add_meta_box('cfi-box', 'Custom Field Image', array($this, 'box'), 'page', 'normal');
 	}
 
-	public function box() {
+	function box() {
 ?>
 <style type="text/css">
 		#cfi-box table, #cfi-box .text {width:100%}
@@ -60,13 +57,13 @@ class boxCFI extends displayCFI {
 		}
 
 		foreach ( $rows as $row )
-			$table .= scbOptionsPage_07::form_row($row, $options);
+			$table .= scbOptionsPage::form_row($row, $options);
 
 		echo "<table>\n" . str_replace('Image URL', '<strong>Image URL</strong>', $table) . "</table>\n";
 	}
 
-	public function save($post_id, $post) {
-		if ( $post->post_type == 'revision' )
+	function save($post_id, $post) {
+		if ( DOING_AJAX === true or $post->post_type == 'revision' )
 			return;
 
 		// Delete data on empty url
@@ -85,28 +82,23 @@ class boxCFI extends displayCFI {
 
 // Loads (Insert CFI) button script
 class insertCFI {
-	public function __construct() {
+
+	function __construct() {
 		add_action('admin_print_scripts', array($this, 'insert'));
 	}
 
-	public function insert() {
-		if ( !$this->is_admin_page(array('post.php', 'post-new.php', 'page.php', 'page-new.php')) )
+	function insert() {
+		global $pagenow;
+
+		if ( !in_array($pagenow, array('post.php', 'post-new.php', 'page.php', 'page-new.php')) )
 			return false;
 
 		$src = $this->get_plugin_url() . '/inc/insert.js';
 		wp_enqueue_script('cfi-insert', $src, array('jquery'));
 	}
 
-	private function is_admin_page($names) {
-		foreach ( $names as $url )
-			if ( FALSE !== stripos($_SERVER['SCRIPT_NAME'], '/wp-admin/'.$url) )
-				return true;
-
-		return false;
-	}
-
 	private function get_plugin_url() {
-		// < WP 2.6
+		// WP < 2.6
 		if ( !function_exists('plugins_url') )
 			return get_option('siteurl') . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
 
@@ -115,23 +107,10 @@ class insertCFI {
 }
 
 // Adds the CFI Settings page
-class settingsCFI extends scbOptionsPage_07 {
-	protected function setup() {
-		global $CFI_options;
+class settingsCFI extends scbOptionsPage {
 
-		$this->options = $CFI_options;
-
-		$this->defaults = array(
-			'default_align' => 'right',
-			'add_title' => TRUE,
-			'default_link' => TRUE,
-			'extra_attr' => '',
-			'insert_button' => TRUE,
-
-			'content' => TRUE,
-			'feed' => TRUE,
-			'excerpt' => TRUE
-		);
+	function setup() {
+		$this->options = $GLOBALS['CFI_options'];
 
 		$this->args = array(
 			'page_title' => 'Custom Field Images Settings',
@@ -142,7 +121,7 @@ class settingsCFI extends scbOptionsPage_07 {
 		$this->nonce = 'cfi-settings';
 	}
 
-	public function page_content() {
+	function page_content() {
 		echo $this->page_header();
 		$rows = array(
 			array(
@@ -192,7 +171,7 @@ class settingsCFI extends scbOptionsPage_07 {
 }
 
 // Adds the CFI Management page
-class manageCFI extends scbOptionsPage_07 {
+class manageCFI extends scbOptionsPage {
 	private $display;
 
 	protected function setup() {
@@ -208,7 +187,7 @@ class manageCFI extends scbOptionsPage_07 {
 		$this->nonce = 'cfi-management';
 	}
 
-	public function page_content() {
+	function page_content() {
 		echo $this->page_header();
 
 		echo "<p>Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed.</p>\n";
@@ -371,13 +350,12 @@ class manageCFI extends scbOptionsPage_07 {
 	}
 }
 
-function cfi_admin_init($file) {
-	global $CFI_options;
-
+function cfi_admin_init() {
 	new boxCFI();
-	new settingsCFI($file);
+	new settingsCFI();
 	new manageCFI();
 
-	if ( $CFI_options->get('insert_button') )
+	if ( $GLOBALS['CFI_options']->get('insert_button') )
 		new insertCFI();
 }
+

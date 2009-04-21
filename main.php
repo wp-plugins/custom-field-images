@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily manage and display images anywhere using custom fields.
-Version: 1.8.3.2
+Version: 1.8.4a
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
@@ -155,35 +155,45 @@ class displayCFI {
 }
 
 // Init
-cfi_init();
-
-function cfi_init() {
-	if ( !class_exists('scbOptions_06') )
-		require_once('inc/scbOptions.php');
+_cfi_init();
+function _cfi_init() {
+	// Load scbFramework
+	require_once(dirname(__FILE__) . '/inc/scb/load.php');
 
 	// Create instances
-	$GLOBALS['CFI_options'] = new scbOptions_06('cfi_options');
+	$GLOBALS['CFI_options'] = new scbOptions('cfi_options', __FILE__, array(
+			'default_align' => 'right',
+			'add_title' => TRUE,
+			'default_link' => TRUE,
+			'extra_attr' => '',
+			'insert_button' => TRUE,
+
+			'content' => TRUE,
+			'feed' => TRUE,
+			'excerpt' => TRUE
+	));
+
 	$GLOBALS['CFI_display'] = new displayCFI();
 
-	// Create widget instance
-	require_once('widget.php');
-	new widgetCFI(__FILE__);
+	// Load widget class
+	require_once(dirname(__FILE__) . '/widget.php');
 
 	// Load admin classes
 	if ( is_admin() ) {
 		require_once(dirname(__FILE__) . '/admin.php');
-		cfi_admin_init(__FILE__);
+		cfi_admin_init();
 	}
 }
 
 // Template tags
-function custom_field_image($echo = true) {
+function custom_field_image($post_id = '') {
+	echo get_custom_field_image($post_id);
+}
+
+function get_custom_field_image($post_id = '') {
 	global $CFI_display;
 
-	if ( ! $echo )
-		return $CFI_display->generate();
-
-	echo $CFI_display->generate();
+	return $CFI_display->generate($post_id);
 }
 
 function cfi_loop($query) {
@@ -191,3 +201,4 @@ function cfi_loop($query) {
 
 	echo $CFI_display->loop($query);
 }
+
