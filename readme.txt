@@ -4,7 +4,7 @@ Donate link: http://scribu.net/wordpress
 Tags: custom fields, images, thumbs
 Requires at least: 2.5
 Tested up to: 2.8
-Stable tag: 1.8.3.2
+Stable tag: 1.8.3.3
 
 Easily manage and display images in post excerpts, feeds etc. using custom fields.
 
