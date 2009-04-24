@@ -49,8 +49,8 @@ class displayCFI {
 	// Options object holder
 	protected $options;
 
-	public function __construct() {
-		$this->options = $GLOBALS['CFI_options'];
+	public function __construct($options) {
+		$this->options = $options;
 
 		add_filter('the_excerpt', array(&$this, 'filter'));
 		add_filter('the_content', array(&$this, 'filter'));
@@ -154,14 +154,16 @@ class displayCFI {
 	}
 }
 
+
 // Init
 _cfi_init();
 function _cfi_init() {
 	// Load scbFramework
 	require_once(dirname(__FILE__) . '/inc/scb/load.php');
 
+
 	// Create instances
-	$GLOBALS['CFI_options'] = new scbOptions('cfi_options', __FILE__, array(
+	$options = new scbOptions('cfi_options', __FILE__, array(
 			'default_align' => 'right',
 			'add_title' => TRUE,
 			'default_link' => TRUE,
@@ -173,15 +175,16 @@ function _cfi_init() {
 			'excerpt' => TRUE
 	));
 
-	$GLOBALS['CFI_display'] = new displayCFI();
+
+	$GLOBALS['CFI_display'] = new displayCFI($options);
 
 	// Load widget class
-	require_once(dirname(__FILE__) . '/widget.php');
+#	require_once(dirname(__FILE__) . '/widget.php');
 
 	// Load admin classes
 	if ( is_admin() ) {
 		require_once(dirname(__FILE__) . '/admin.php');
-		cfi_admin_init();
+		cfi_admin_init(__FILE__, $options);
 	}
 }
 
@@ -190,10 +193,21 @@ function custom_field_image($post_id = '') {
 	echo get_custom_field_image($post_id);
 }
 
-function get_custom_field_image($post_id = '') {
+function get_custom_field_image($post_id = '', $format = 'html') {
 	global $CFI_display;
 
-	return $CFI_display->generate($post_id);
+	if ( 'html' == $format )
+		return $CFI_display->generate($post_id);
+	else {
+		$CFI_display->load($post_id);
+
+		$data = $CFI_display->data;
+
+		if ( 'object' == $format )
+			return (object) $data;
+
+		return $data;
+	}
 }
 
 function cfi_loop($query) {

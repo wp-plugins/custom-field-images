@@ -110,8 +110,6 @@ class insertCFI {
 class settingsCFI extends scbOptionsPage {
 
 	function setup() {
-		$this->options = $GLOBALS['CFI_options'];
-
 		$this->args = array(
 			'page_title' => 'Custom Field Images Settings',
 			'short_title' => 'CFI Settings',
@@ -122,7 +120,6 @@ class settingsCFI extends scbOptionsPage {
 	}
 
 	function page_content() {
-		echo $this->page_header();
 		$rows = array(
 			array(
 				'title' => 'Display in',
@@ -166,7 +163,6 @@ class settingsCFI extends scbOptionsPage {
 			)
 		);
 		echo $this->form_table($rows);
-		echo $this->page_footer();
 	}
 }
 
@@ -174,7 +170,7 @@ class settingsCFI extends scbOptionsPage {
 class manageCFI extends scbOptionsPage {
 	private $display;
 
-	protected function setup() {
+	function setup() {
 		$this->display = $GLOBALS['CFI_display'];
 
 		$this->args = array(
@@ -188,8 +184,6 @@ class manageCFI extends scbOptionsPage {
 	}
 
 	function page_content() {
-		echo $this->page_header();
-
 		echo "<p>Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed.</p>\n";
 
 		$warning = 'onClick="return confirm(\'Are you sure?\')" ';
@@ -205,11 +199,9 @@ class manageCFI extends scbOptionsPage {
 		echo "<h2>Delete images</h2>\n";
 		echo "<p>This will delete all custom field images.</p>\n";
 		echo $this->form_wrap(str_replace('<input ', '<input ' . $warning, $this->submit_button('Delete')));
-
-		echo $this->page_footer();
 	}
 
-	protected function form_handler() {
+	function form_handler() {
 		if ( !isset($_POST['action']) )
 			return false;
 
@@ -350,12 +342,12 @@ class manageCFI extends scbOptionsPage {
 	}
 }
 
-function cfi_admin_init() {
+function cfi_admin_init($file, $options) {
 	new boxCFI();
-	new settingsCFI();
-	new manageCFI();
+	new settingsCFI($file, $options);
+	new manageCFI($file, $options);
 
-	if ( $GLOBALS['CFI_options']->get('insert_button') )
+	if ( $options->insert_button )
 		new insertCFI();
 }
 
