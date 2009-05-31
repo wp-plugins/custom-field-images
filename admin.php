@@ -56,14 +56,13 @@ class boxCFI extends displayCFI {
 				$options['cfi-'.$key] = $value;
 		}
 
-		foreach ( $rows as $row )
-			$table .= scbOptionsPage::form_row($row, $options);
+		$table = scbForms::table($rows, $options);
 
-		echo "<table>\n" . str_replace('Image URL', '<strong>Image URL</strong>', $table) . "</table>\n";
+		echo str_replace('Image URL', '<strong>Image URL</strong>', $table);
 	}
 
 	function save($post_id, $post) {
-		if ( DOING_AJAX === true or $post->post_type == 'revision' )
+		if ( DOING_AJAX === true || empty($_POST) || $post->post_type == 'revision' )
 			return;
 
 		// Delete data on empty url

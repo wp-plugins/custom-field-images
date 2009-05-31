@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily manage and display images anywhere using custom fields.
-Version: 1.8.4a
+Version: 1.8.5a
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
@@ -23,8 +23,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-class displayCFI {
+require_once dirname(__FILE__) . '/inc/scb-check.php';
+if ( !scb_check(__FILE__) ) return;
 
+class displayCFI 
+{
 	// Styles for images in feeds
 	public $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
@@ -49,14 +52,16 @@ class displayCFI {
 	// Options object holder
 	protected $options;
 
-	public function __construct($options) {
+	public function __construct($options)
+	{
 		$this->options = $options;
 
 		add_filter('the_excerpt', array(&$this, 'filter'));
 		add_filter('the_content', array(&$this, 'filter'));
 	}
 
-	public function filter($content) {
+	public function filter($content)
+	{
 		$type = substr(current_filter(), 4);
 		$is_feed = is_feed();
 
@@ -69,7 +74,8 @@ class displayCFI {
 		return $content;
 	}
 
-	public function generate($post_id = '', $data = '' ) {
+	public function generate($post_id = '', $data = '' )
+	{
 		$this->load($post_id);
 
 		if ( is_array($data) )
@@ -106,7 +112,8 @@ class displayCFI {
 		return $this->add_link($image);
 	}
 
-	public function loop($query) {
+	public function loop($query)
+	{
 		$query = wp_parse_args($query, array(
 			'meta_key' => $CFI_display->key,
 			'post_type' => 'post',
@@ -133,7 +140,8 @@ class displayCFI {
 		return ob_get_clean();
 	}
 
-	protected function add_link($image) {
+	protected function add_link($image)
+	{
 		$link = $this->data['link'];
 
 		if ( empty($link) )
@@ -145,7 +153,8 @@ class displayCFI {
 		return sprintf( "<a href='$link' %s>$image</a>", stripslashes($this->options->get('extra_attr')) );
 	}
 
-	protected function load($post_id = '') {
+	protected function load($post_id = '')
+	{
 		global $post;
 
 		$this->id = $post_id ? $post_id : $post->ID;
@@ -157,11 +166,8 @@ class displayCFI {
 
 // Init
 _cfi_init();
-function _cfi_init() {
-	// Load scbFramework
-	require_once(dirname(__FILE__) . '/inc/scb/load.php');
-
-
+function _cfi_init()
+{
 	// Create instances
 	$options = new scbOptions('cfi_options', __FILE__, array(
 			'default_align' => 'right',
@@ -175,30 +181,33 @@ function _cfi_init() {
 			'excerpt' => TRUE
 	));
 
-
 	$GLOBALS['CFI_display'] = new displayCFI($options);
 
 	// Load widget class
 #	require_once(dirname(__FILE__) . '/widget.php');
 
 	// Load admin classes
-	if ( is_admin() ) {
+	if ( is_admin() )
+	{
 		require_once(dirname(__FILE__) . '/admin.php');
 		cfi_admin_init(__FILE__, $options);
 	}
 }
 
 // Template tags
-function custom_field_image($post_id = '') {
+function custom_field_image($post_id = '')
+{
 	echo get_custom_field_image($post_id);
 }
 
-function get_custom_field_image($post_id = '', $format = 'html') {
+function get_custom_field_image($post_id = '', $format = 'html')
+{
 	global $CFI_display;
 
 	if ( 'html' == $format )
 		return $CFI_display->generate($post_id);
-	else {
+	else
+	{
 		$CFI_display->load($post_id);
 
 		$data = $CFI_display->data;
@@ -210,7 +219,8 @@ function get_custom_field_image($post_id = '', $format = 'html') {
 	}
 }
 
-function cfi_loop($query) {
+function cfi_loop($query)
+{
 	global $CFI_display;
 
 	echo $CFI_display->loop($query);
