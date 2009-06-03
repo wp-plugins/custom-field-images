@@ -92,8 +92,10 @@ class insertCFI {
 		if ( !in_array($pagenow, array('post.php', 'post-new.php', 'page.php', 'page-new.php')) )
 			return false;
 
-		$src = $this->get_plugin_url() . '/inc/insert.js';
-		wp_enqueue_script('cfi-insert', $src, array('jquery'));
+		$src = $this->get_plugin_url() . '/inc';
+		
+		wp_register_script('livequery', $src . '/livequery.js');
+		wp_enqueue_script('cfi-insert', $src . '/insert.js', array('jquery', 'livequery'));
 	}
 
 	private function get_plugin_url() {

@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily manage and display images anywhere using custom fields.
-Version: 1.8.5a
+Version: 1.8.4a
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images

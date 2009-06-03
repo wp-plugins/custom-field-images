@@ -1,5 +1,5 @@
-function fillCfiBox(anchor) {
-	var item = anchor.parents('.media-item');
+function fillCfiBox() {
+	var item = jQuery(this).parents('.media-item');
 	var box = jQuery(document).find('#cfi-box');
 
 	// Set cfi-url
@@ -29,24 +29,33 @@ function fillCfiBox(anchor) {
 	box.find('[name=cfi-link]').val(link);
 
 	jQuery(document).find('#TB_closeWindowButton').click();		// close iframe
+
+	return false;
 }
 
 jQuery(function($) {
 	$('#add_image').click(function() {										// when invoking iframe
-		$('#TB_iframeContent').load(function() { 							// after each tab load,
-			var frame = $(this).contents();
+		$('#TB_iframeContent').livequery(function() {						// after creating iframe tag
+			$('#TB_iframeContent').load(function() { 						// after each tab load,
+				button = $('<a>')
+					.attr('href', '#')
+					.css('color', '#006505')
+					.text('Insert CFI')
+					.addClass('insert-cfi')
+					.click(fillCfiBox);
 
-			frame.find('.media-item :submit').each(function() {
-				$(this).after(' (<a href="#" class="insert-cfi" style="color:#006505;">Insert CFI</a>)');
-			});
+				$('.media-item :submit', $(this).contents()).livequery(function() {
+					if ( $(this).find(' + .insert-cfi').length > 0 )
+						return;
 
-			frame.find('.insert-cfi').each(function() {
-				var anchor = $(this);
-
-				anchor.click(function () {
-					fillCfiBox(anchor);
+					button.clone(true)
+						.insertAfter($(this))
+						.before(' &nbsp;(')
+						.after(')');
+					console.log('added');
 				});
 			});
 		});
 	});
 });
+
