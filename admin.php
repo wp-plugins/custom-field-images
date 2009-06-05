@@ -1,18 +1,24 @@
 <?php
 
 // Adds the CFI metabox
-class boxCFI extends displayCFI {
-	function __construct() {
+class boxCFI extends displayCFI 
+{
+	function __construct($textdomain) 
+	{
+		$this->textdomain = $textdomain;
+
 		add_action('admin_menu', array($this, 'box_init'));
 		add_action('save_post', array($this, 'save'), 1, 2);
 	}
 
-	function box_init() {
+	function box_init() 
+	{
 		add_meta_box('cfi-box', 'Custom Field Image', array($this, 'box'), 'post', 'normal');
 		add_meta_box('cfi-box', 'Custom Field Image', array($this, 'box'), 'page', 'normal');
 	}
 
-	function box() {
+	function box() 
+	{
 ?>
 <style type="text/css">
 		#cfi-box table, #cfi-box .text {width:100%}
@@ -20,28 +26,28 @@ class boxCFI extends displayCFI {
 </style>
 <?php $rows = array(
 			array(
-				'title' => 'Image URL',
+				'title' => '<strong>' . __('Image URL', $this->textdomain) . '</strong>',
 				'type' => 'text',
 				'names' => 'cfi-url',
 				'extra' => 'class="text"'
 			),
 
 			array(
-				'title' => 'Alt. Text',
+				'title' => __('Alt. Text', $this->textdomain),
 				'type' => 'text',
 				'names' => 'cfi-alt',
 				'extra' => 'class="text"'
 			),
 
 			array(
-				'title' => 'Link to',
+				'title' => __('Link to', $this->textdomain),
 				'type' => 'text',
 				'names' => 'cfi-link',
 				'extra' => 'class="text"'
 			),
 
 			array(
-				'title' => 'Align',
+				'title' => __('Align', $this->textdomain),
 				'type' => 'radio',
 				'names' => 'cfi-align',
 				'values' => array('left', 'center', 'right')
@@ -50,18 +56,18 @@ class boxCFI extends displayCFI {
 
 		$this->load();
 
-		if ( $this->data ) {
+		if ( $this->data ) 
+		{
 			// Prepend 'cfi-' to data keys
 			foreach ( $this->data as $key => $value )
 				$options['cfi-'.$key] = $value;
 		}
 
-		$table = scbForms::table($rows, $options);
-
-		echo str_replace('Image URL', '<strong>Image URL</strong>', $table);
+		echo scbForms::table($rows, $options);
 	}
 
-	function save($post_id, $post) {
+	function save($post_id, $post) 
+	{
 		if ( DOING_AJAX === true || empty($_POST) || $post->post_type == 'revision' )
 			return;
 
@@ -80,13 +86,15 @@ class boxCFI extends displayCFI {
 }
 
 // Loads (Insert CFI) button script
-class insertCFI {
-
-	function __construct() {
+class insertCFI 
+{
+	function __construct() 
+	{
 		add_action('admin_print_scripts', array($this, 'insert'));
 	}
 
-	function insert() {
+	function insert() 
+	{
 		global $pagenow;
 
 		if ( !in_array($pagenow, array('post.php', 'post-new.php', 'page.php', 'page-new.php')) )
@@ -98,7 +106,8 @@ class insertCFI {
 		wp_enqueue_script('cfi-insert', $src . '/insert.js', array('jquery', 'livequery'));
 	}
 
-	private function get_plugin_url() {
+	private function get_plugin_url() 
+	{
 		// WP < 2.6
 		if ( !function_exists('plugins_url') )
 			return get_option('siteurl') . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
@@ -108,56 +117,60 @@ class insertCFI {
 }
 
 // Adds the CFI Settings page
-class settingsCFI extends scbOptionsPage {
+class settingsCFI extends scbOptionsPage 
+{
+	function __construct($file, $options, $textdomain) 
+	{
+		$this->textdomain = $textdomain;
 
-	function setup() {
 		$this->args = array(
-			'page_title' => 'Custom Field Images Settings',
-			'short_title' => 'CFI Settings',
-			'page_slug' => 'cfi-settings'
+			'page_title' => __('Custom Field Images Settings', $this->textdomain),
+			'menu_title' => __('CFI Settings', $this->textdomain),
+			'page_slug' => 'cfi-settings',
 		);
-
-		$this->nonce = 'cfi-settings';
+		
+		parent::__construct($file, $options);
 	}
 
-	function page_content() {
+	function page_content() 
+	{
 		$rows = array(
 			array(
-				'title' => 'Display in',
+				'title' => __('Display in', $this->textdomain),
 				'type' => 'checkbox',
 				'names' => array('content', 'excerpt', 'feed')
 			),
 
 			array(
-				'title' => 'Default alignment',
+				'title' => __('Default alignment', $this->textdomain),
 				'type' => 'radio',
 				'names' => 'default_align',
 				'values' => array('left', 'center', 'right')
 			),
 
 			array(
-				'title' => 'Extra link attributes',
+				'title' => __('Extra link attributes', $this->textdomain),
 				'desc' => 'Example: <em>target="_blank" rel="nofollow"</em>',
 				'type' => 'text',
 				'names' => 'extra_attr'
 			),
 
 			array(
-				'title' => 'Link image to post',
+				'title' => __('Link image to post', $this->textdomain),
 				'desc' => 'If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.',
 				'type' => 'checkbox',
 				'names' => 'default_link',
 			),
 
 			array(
-				'title' => 'Duplicate Alt. Text as Title',
+				'title' => __('Duplicate Alt. Text as Title', $this->textdomain),
 				'desc' => 'If the <em>Alt. Text</em> field is not empty, it will also be added as the image title.',
 				'type' => 'checkbox',
 				'names' => 'add_title',
 			),
 
 			array(
-				'title' => 'Insert CFI button',
+				'title' => __('Insert CFI button', $this->textdomain),
 				'desc' => 'Add button in the Insert Image form',
 				'type' => 'checkbox',
 				'names' => 'insert_button',
@@ -168,66 +181,124 @@ class settingsCFI extends scbOptionsPage {
 }
 
 // Adds the CFI Management page
-class manageCFI extends scbOptionsPage {
+class manageCFI extends scbOptionsPage 
+{
 	private $display;
 
-	function setup() {
+	function __construct($file, $options, $textdomain) 
+	{
+		$this->textdomain = $textdomain;
+
 		$this->display = $GLOBALS['CFI_display'];
 
 		$this->args = array(
-			'page_title' => 'Manage Custom Field Images',
-			'short_title' => 'CFI Management',
+			'page_title' => __('Manage Custom Field Images', $this->textdomain),
+			'menu_title' => __('CFI Management', $this->textdomain),
 			'page_slug' => 'cfi-management',
-			'type' => 'tools'
+			'action_link' => 'Manage'
 		);
 
-		$this->nonce = 'cfi-management';
+		parent::__construct($file, $options);
 	}
 
-	function page_content() {
-		echo "<p>Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed.</p>\n";
+	function one_button_form($action, $value)
+	{
+		return $this->form(array(
+			array(
+				'type' => 'hidden',
+				'name' => 'action',
+				'value' => $action,
+				'desc' => false
+			),
 
-		$warning = 'onClick="return confirm(\'Are you sure?\')" ';
-
-		echo "<h2>Import images</h2>\n";
-		echo "<p>This will scan for images at beginning of posts, insert them into custom field keys and then remove them from the posts.</p>\n";
-		echo $this->form_wrap(str_replace('<input ', '<input ' . $warning, $this->submit_button('Import')));
-
-		echo "<h2>Export images</h2>\n";
-		echo "<p>This will insert all custom field images at the beginning of their respective posts and then delete the custom field keys.</p>\n";
-		echo $this->form_wrap(str_replace('<input ', '<input ' . $warning, $this->submit_button('Export')));
-
-		echo "<h2>Delete images</h2>\n";
-		echo "<p>This will delete all custom field images.</p>\n";
-		echo $this->form_wrap(str_replace('<input ', '<input ' . $warning, $this->submit_button('Delete')));
+			array(
+				'type' => 'submit',
+				'name' => 'action_button',
+				'value' => $value,
+				'extra' => 'class="button" onClick="return confirm(\'Are you sure?\')"',
+				'desc' => false
+			)
+		));
 	}
 
-	function form_handler() {
+	function html_wrap($tag, $content)
+	{
+		return "<$tag>$content</$tag>\n";
+	}
+
+	function page_content()
+	{
+		echo $this->html_wrap('p', __("Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed.", $this->textdomain));
+
+		$sections = array(
+			array(
+				'header' => __("Import images", $this->textdomain),
+				'description' => __("This will scan for images at beginning of posts, insert them into custom field keys and then remove them from the posts.", $this->textdomain),
+				'value' => __('Import', $this->textdomain),
+				'action' => 'import'
+			),
+
+			array(
+				'header' => __("Export images", $this->textdomain),
+				'description' => __("This will insert all custom field images at the beginning of their respective posts and then delete the custom field keys.", $this->textdomain),
+				'value' => __('Export', $this->textdomain),
+				'action' => 'export'
+			),
+
+			array(
+				'header' => __("Delete images", $this->textdomain),
+				'description' => __("This will delete all custom field images.", $this->textdomain),
+				'value' => __('Delete', $this->textdomain),
+				'action' => 'delete'
+			),
+		);
+
+		foreach ( $sections as $section )
+		{
+			extract($section);
+			echo $this->html_wrap('h2', $header);
+			echo $this->html_wrap('p', $description);
+			echo $this->one_button_form($action, $value);
+		}
+	}
+
+	function form_handler() 
+	{
 		if ( !isset($_POST['action']) )
 			return false;
 
 		check_admin_referer($this->nonce);
 
-		$action = strtolower($_POST['action']);
+		$action = trim($_POST['action']);
 
-		switch ($action) {
+		switch ($action)
+		{
 			case 'import':
 			case 'export':
-				$r = call_user_func(array($this, 'impex'), $action);
+				$r = $this->impex($action);
 				break;
 			case 'delete':
-				$r = call_user_func(array($this, 'delete'));
+				$r = $this->delete();
 		}
 
 		if ( $r !== NULL )
-			$this->admin_msg(sprintf('%sed <strong>%d</strong> image(s).', ucfirst(rtrim($action, 'e')), $r));
+		{
+			$actions = array(
+				'import' => __('Imported', $this->textdomain),
+				'export' => __('Exported', $this->textdomain),
+				'delete' => __('Deleted', $this->textdomain),
+			);
+
+			$this->admin_msg($actions[$action] . " <strong>$r</strong> " . _n('image', 'images', $r, $this->textdomain) . '.');
+		}
 		else
-			$this->admin_msg('An error has occured.', 'error');
+			$this->admin_msg(__('An error has occured.', $this->textdomain), 'error');
 	}
 
 // Import/Export methods
 
-	private function impex($action) {
+	private function impex($action) 
+	{
 		$operators = array(
 			'import' => '!=',
 			'export' => '='
@@ -241,7 +312,8 @@ class manageCFI extends scbOptionsPage {
 		return (int) $count;
 	}
 
-	private function import_single($post) {
+	private function import_single($post) 
+	{
 		if ( 0 == preg_match('#^\s*(<a[^\<]+>)?\s*(<img[^\<]+>)\s*(?:</a>)?#i', $post->content, $matches) )
 			return 0;
 
@@ -254,7 +326,8 @@ class manageCFI extends scbOptionsPage {
 		$img_clases = explode(' ', $img['class']);
 
 		// Search for known classes
-		foreach ( $img_clases as $class ) {
+		foreach ( $img_clases as $class ) 
+		{
 			if ( !in_array(substr($class, 5), array_keys($this->display->styles)) )
 				continue;
 
@@ -267,7 +340,8 @@ class manageCFI extends scbOptionsPage {
 		// Set link
 		$element['link'] = '';
 
-		if ( $matches[1] ) {
+		if ( $matches[1] ) 
+		{
 			$link = $this->get_attributes($matches[1]);
 			$element['link'] = $link['href'];
 		}
@@ -282,7 +356,8 @@ class manageCFI extends scbOptionsPage {
 		return 1;
 	}
 
-	private function get_attributes($string) {
+	private function get_attributes($string) 
+	{
 		preg_match_all('#(\w+)="\s*((?:[^"]+\s*)+)\s*"#i', $string, $matches, PREG_SET_ORDER);
 
 		foreach( $matches as $att )
@@ -291,7 +366,8 @@ class manageCFI extends scbOptionsPage {
 		return $attributes;
 	}
 
-	private function export_single($post) {
+	private function export_single($post) 
+	{
 		$new_content = $this->display->generate($post->ID) . $post->content;
 
 		if ( $new_content == $post->content )
@@ -304,7 +380,8 @@ class manageCFI extends scbOptionsPage {
 		return 1;
 	}
 
-	private function get_posts($operator) {
+	private function get_posts($operator) 
+	{
 		global $wpdb;
 
 		$query = $wpdb->prepare("
@@ -317,7 +394,8 @@ class manageCFI extends scbOptionsPage {
 		return $wpdb->get_results($query);
 	}
 
-	private function update_post($content, $id) {
+	private function update_post($content, $id)
+	{
 		global $wpdb;
 
 		$query = $wpdb->prepare("
@@ -331,7 +409,8 @@ class manageCFI extends scbOptionsPage {
 
 // Delete methods
 
-	function delete() {
+	function delete()
+	{
 		global $wpdb;
 
 		$query = $wpdb->prepare("
@@ -343,10 +422,16 @@ class manageCFI extends scbOptionsPage {
 	}
 }
 
-function cfi_admin_init($file, $options) {
-	new boxCFI();
-	new settingsCFI($file, $options);
-	new manageCFI($file, $options);
+function cfi_admin_init($file, $options) 
+{
+	// Load translations
+	$textdomain = 'imageshack-offloader';
+	$plugin_dir = basename(dirname($file));
+	load_plugin_textdomain($textdomain, "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
+
+	new boxCFI($textdomain);
+	new settingsCFI($file, $options, $textdomain);
+	new manageCFI($file, $options, $textdomain);
 
 	if ( $options->insert_button )
 		new insertCFI();

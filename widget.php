@@ -3,22 +3,29 @@
 // Simple: Select categories
 // Advanced: Insert query
 
-class widgetCFI extends scbWidget {
-	function __construct() {
+class widgetCFI extends scbWidget 
+{
+	function __construct($textdomain) 
+	{
+		$this->textdomain = $textdomain;
+
 		$widget_ops = array(
 			'title' => 'Recent Posts',
 			'query' => ''
 		);
+
 		$this->WP_Widget('cfi-loop', 'CFI Loop', $widget_ops);
 	}
 
-	function widget($instance) {
+	function content($instance)
+	{
 		global $CFI_display;
 
 		echo $CFI_display->loop($instance['query']);
 	}
 
-	function update($new_instance, $old_instance) {
+	function update($new_instance, $old_instance)
+	{
 		if ( ! isset($new_instance['title']) ) // user clicked cancel
 				return false;
 
@@ -29,18 +36,20 @@ class widgetCFI extends scbWidget {
 		return $instance;
 	}
 
-	function form($instance) {
+	function form($instance) 
+	{
 		$rows = array(
 			array(
-				'title' => 'Title:',
+				'title' => __('Title:', $this->textdomain),
 				'type' => 'text',
-				'names' => 'title',
+				'name' => 'title',
 			),
+
 			array(
-				'title' => 'Query string (See <a target="_blank" href="http://codex.wordpress.org/Template_Tags/query_posts#Parameters">available parameters</a>)',
+				'title' => __('Query string (See <a target="_blank" href="http://codex.wordpress.org/Template_Tags/query_posts#Parameters">available parameters</a>)', $this->textdomain),
 				'type' => 'text',
-				'names' => 'query',
-				'desc' => 'Example: <em>category_name=Events</em>'
+				'name' => 'query',
+				'desc' => __('Example: <em>category_name=Events</em>', $this->textdomain),
 			)
 		);
 
