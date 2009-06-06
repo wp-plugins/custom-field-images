@@ -168,7 +168,8 @@ class displayCFI
 _cfi_init();
 function _cfi_init()
 {
-	// Create instances
+	define('CFI_TEXTDOMAIN', 'imageshack-offloader');
+
 	$options = new scbOptions('cfi_options', __FILE__, array(
 			'default_align' => 'right',
 			'add_title' => TRUE,
@@ -184,7 +185,7 @@ function _cfi_init()
 	$GLOBALS['CFI_display'] = new displayCFI($options);
 
 	// Load widget class
-#	require_once(dirname(__FILE__) . '/widget.php');
+	require_once(dirname(__FILE__) . '/widget.php');
 
 	// Load admin classes
 	if ( is_admin() )

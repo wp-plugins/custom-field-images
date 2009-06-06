@@ -3,18 +3,18 @@
 // Simple: Select categories
 // Advanced: Insert query
 
-class widgetCFI extends scbWidget 
-{
-	function __construct($textdomain) 
-	{
-		$this->textdomain = $textdomain;
 
+class widgetCFI extends scbWidget
+{
+	function widgetCFI()
+	{
 		$widget_ops = array(
 			'title' => 'Recent Posts',
-			'query' => ''
+			'query' => '',
+			'description' => 'Test'
 		);
 
-		$this->WP_Widget('cfi-loop', 'CFI Loop', $widget_ops);
+		$this->WP_Widget('cfi-loop', __('CFI Loop', CFI_TEXTDOMAIN), $widget_ops);
 	}
 
 	function content($instance)
@@ -40,16 +40,16 @@ class widgetCFI extends scbWidget
 	{
 		$rows = array(
 			array(
-				'title' => __('Title:', $this->textdomain),
+				'title' => __('Title:', CFI_TEXTDOMAIN),
 				'type' => 'text',
 				'name' => 'title',
 			),
 
 			array(
-				'title' => __('Query string (See <a target="_blank" href="http://codex.wordpress.org/Template_Tags/query_posts#Parameters">available parameters</a>)', $this->textdomain),
+				'title' => '<a target="_blank" href="http://codex.wordpress.org/Template_Tags/query_posts#Parameters">' . __('Query string', CFI_TEXTDOMAIN) . '</a>',
 				'type' => 'text',
 				'name' => 'query',
-				'desc' => __('Example: <em>category_name=Events</em>', $this->textdomain),
+				'desc' => __('Example: <em>category_name=Events</em>', CFI_TEXTDOMAIN),
 			)
 		);
 
@@ -58,5 +58,5 @@ class widgetCFI extends scbWidget
 	}
 }
 
-add_action('widgets_init', create_function('', "register_widget('widgetCFI');"));
+add_action('widgets_init', create_function('', "register_widget(widgetCFI);"));
 
