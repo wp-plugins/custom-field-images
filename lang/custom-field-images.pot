@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Custom Field Images 1.8.4a\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
-"POT-Creation-Date: 2009-06-06 21:02+0300\n"
+"POT-Creation-Date: 2009-06-07 16:33+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,111 +33,159 @@ msgstr ""
 msgid "Align"
 msgstr ""
 
-#: admin.php:123
-msgid "Custom Field Images Settings"
+#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 1.8.4a)  #-#-#-#-#
+#. Plugin Name of an extension
+#: admin.php:125
+msgid "Custom Field Images"
 msgstr ""
 
-#: admin.php:124
-msgid "CFI Settings"
+#: admin.php:126 admin.php:130
+msgid "Settings"
 msgstr ""
 
-#: admin.php:135
+#: admin.php:131
+msgid "Management"
+msgstr ""
+
+#: admin.php:144
 msgid "Display in"
 msgstr ""
 
-#: admin.php:141
-msgid "Default alignment"
+#: admin.php:148
+msgid "content"
 msgstr ""
 
-#: admin.php:148
-msgid "Extra link attributes"
+#: admin.php:149
+msgid "excerpt"
+msgstr ""
+
+#: admin.php:150
+msgid "feed"
 msgstr ""
 
 #: admin.php:155
-msgid "Link image to post"
+msgid "Default alignment"
+msgstr ""
+
+#: admin.php:160
+msgid "left"
+msgstr ""
+
+#: admin.php:161
+msgid "center"
 msgstr ""
 
 #: admin.php:162
+msgid "right"
+msgstr ""
+
+#: admin.php:167
+msgid "Extra link attributes"
+msgstr ""
+
+#: admin.php:168
+msgid "Example"
+msgstr ""
+
+#: admin.php:174
+msgid "Link image to post"
+msgstr ""
+
+#: admin.php:175
+msgid ""
+"If the <em>Link to</em> field is blank, the image will have a link to the "
+"post or page it is associated with."
+msgstr ""
+
+#: admin.php:181
 msgid "Duplicate Alt. Text as Title"
 msgstr ""
 
-#: admin.php:169
+#: admin.php:182
+msgid "The <em>Alt. Text</em> will also be added as the image title."
+msgstr ""
+
+#: admin.php:188
 msgid "Insert CFI button"
 msgstr ""
 
 #: admin.php:189
-msgid "Manage Custom Field Images"
+msgid "Add button in the Insert Image form"
 msgstr ""
 
-#: admin.php:190
-msgid "CFI Management"
+#: admin.php:195 admin.php:202
+msgid "Save Changes"
 msgstr ""
 
-#: admin.php:225
+#: admin.php:211
+msgid "Settings <strong>saved</strong>."
+msgstr ""
+
+#: admin.php:239
 msgid ""
 "Here you can manage all custom field images at once. Please make a "
 "<strong>backup</strong> of your database before you proceed."
 msgstr ""
 
-#: admin.php:229
+#: admin.php:243
 msgid "Import images"
 msgstr ""
 
-#: admin.php:230
-msgid ""
-"This will scan for images at beginning of posts, insert them into custom "
-"field keys and then remove them from the posts."
-msgstr ""
-
-#: admin.php:231
-msgid "Import"
-msgstr ""
-
-#: admin.php:236
-msgid "Export images"
-msgstr ""
-
-#: admin.php:237
-msgid ""
-"This will insert all custom field images at the beginning of their "
-"respective posts and then delete the custom field keys."
-msgstr ""
-
-#: admin.php:238
-msgid "Export"
-msgstr ""
-
-#: admin.php:243
-msgid "Delete images"
-msgstr ""
-
 #: admin.php:244
-msgid "This will delete all custom field images."
+msgid ""
+"This will extract the first image at the beginning of posts, insert it into "
+"custom fields and then remove it from the post content."
 msgstr ""
 
 #: admin.php:245
+msgid "Import"
+msgstr ""
+
+#: admin.php:250
+msgid "Export images"
+msgstr ""
+
+#: admin.php:251
+msgid ""
+"This will insert each image in the post content and then delete the custom "
+"field."
+msgstr ""
+
+#: admin.php:252
+msgid "Export"
+msgstr ""
+
+#: admin.php:257
+msgid "Delete images"
+msgstr ""
+
+#: admin.php:258
+msgid "This will delete all custom field images."
+msgstr ""
+
+#: admin.php:259
 msgid "Delete"
 msgstr ""
 
-#: admin.php:281
+#: admin.php:293
 msgid "Imported"
 msgstr ""
 
-#: admin.php:282
+#: admin.php:294
 msgid "Exported"
 msgstr ""
 
-#: admin.php:283
+#: admin.php:295
 msgid "Deleted"
 msgstr ""
 
-#: admin.php:286
+#: admin.php:298
 msgid "image"
 msgid_plural "images"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin.php:289
+#: admin.php:301
 msgid "An error has occured."
 msgstr ""
 
@@ -159,10 +207,6 @@ msgstr ""
 
 #: widget.php:52
 msgid "Example: <em>category_name=Events</em>"
-msgstr ""
-
-#. Plugin Name of an extension
-msgid "Custom Field Images"
 msgstr ""
 
 #. Plugin URI of an extension

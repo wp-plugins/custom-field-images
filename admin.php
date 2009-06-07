@@ -26,29 +26,29 @@ class boxCFI extends displayCFI
 			array(
 				'title' => '<strong>' . __('Image URL', 'custom-field-images') . '</strong>',
 				'type' => 'text',
-				'names' => 'cfi-url',
+				'name' => 'cfi-url',
 				'extra' => 'class="text"'
 			),
 
 			array(
 				'title' => __('Alt. Text', 'custom-field-images'),
 				'type' => 'text',
-				'names' => 'cfi-alt',
+				'name' => 'cfi-alt',
 				'extra' => 'class="text"'
 			),
 
 			array(
 				'title' => __('Link to', 'custom-field-images'),
 				'type' => 'text',
-				'names' => 'cfi-link',
+				'name' => 'cfi-link',
 				'extra' => 'class="text"'
 			),
 
 			array(
 				'title' => __('Align', 'custom-field-images'),
 				'type' => 'radio',
-				'names' => 'cfi-align',
-				'values' => array('left', 'center', 'right')
+				'name' => 'cfi-align',
+				'value' => array('left', 'center', 'right')
 			)
 		);
 
@@ -115,85 +115,103 @@ class insertCFI
 }
 
 // Adds the CFI Settings page
-class settingsCFI extends scbOptionsPage 
+class settingsCFI extends scbBoxesPage
 {
-	function __construct($file, $options)
+	function setup()
 	{
+		$this->display = $GLOBALS['CFI_display'];
+	
 		$this->args = array(
-			'page_title' => __('Custom Field Images Settings', 'custom-field-images'),
-			'menu_title' => __('CFI Settings', 'custom-field-images'),
-			'page_slug' => 'cfi-settings',
+			'page_title' => __('Custom Field Images', 'custom-field-images'),
+			'action_link' => __('Settings', 'custom-field-images'),
 		);
-		
-		parent::__construct($file, $options);
+
+		$this->boxes = array(
+			array('settings', __('Settings', 'custom-field-images'), 'normal'),
+			array('manage', __('Management', 'custom-field-images'), 'normal'),
+		);
 	}
 
-	function page_content() 
+	function page_head()
+	{
+		wp_enqueue_style('cft_css', $this->plugin_url . '/inc/admin.css', array(), '1.2');
+	}
+
+	function settings_box()
 	{
 		$rows = array(
 			array(
 				'title' => __('Display in', 'custom-field-images'),
 				'type' => 'checkbox',
-				'names' => array('content', 'excerpt', 'feed')
+				'name' => array('content', 'excerpt', 'feed'),
+				'desc' => array(
+					__('content', 'custom-field-images'),
+					__('excerpt', 'custom-field-images'),
+					__('feed', 'custom-field-images'),
+				)
 			),
 
 			array(
 				'title' => __('Default alignment', 'custom-field-images'),
 				'type' => 'radio',
-				'names' => 'default_align',
-				'values' => array('left', 'center', 'right')
+				'name' => 'default_align',
+				'value' => array('left', 'center', 'right'),
+				'desc' => array(
+					__('left', 'custom-field-images'),
+					__('center', 'custom-field-images'),
+					__('right', 'custom-field-images'),
+				)
 			),
 
 			array(
 				'title' => __('Extra link attributes', 'custom-field-images'),
-				'desc' => 'Example: <em>target="_blank" rel="nofollow"</em>',
+				'desc' => __('Example', 'custom-field-images') . ': <em>target="_blank" rel="nofollow"</em>',
 				'type' => 'text',
-				'names' => 'extra_attr'
+				'name' => 'extra_attr'
 			),
 
 			array(
 				'title' => __('Link image to post', 'custom-field-images'),
-				'desc' => 'If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.',
+				'desc' => __('If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.', 'custom-field-images'),
 				'type' => 'checkbox',
-				'names' => 'default_link',
+				'name' => 'default_link',
 			),
 
 			array(
 				'title' => __('Duplicate Alt. Text as Title', 'custom-field-images'),
-				'desc' => 'If the <em>Alt. Text</em> field is not empty, it will also be added as the image title.',
+				'desc' => __('The <em>Alt. Text</em> will also be added as the image title.', 'custom-field-images'),
 				'type' => 'checkbox',
-				'names' => 'add_title',
+				'name' => 'add_title',
 			),
 
 			array(
 				'title' => __('Insert CFI button', 'custom-field-images'),
-				'desc' => 'Add button in the Insert Image form',
+				'desc' => __('Add button in the Insert Image form', 'custom-field-images'),
 				'type' => 'checkbox',
-				'names' => 'insert_button',
+				'name' => 'insert_button',
 			)
 		);
-		echo $this->form_table($rows);
+
+		echo $this->form_table($rows, $this->formdata, $this->submit_button('action', __('Save Changes', 'custom-field-images')));
 	}
-}
 
-// Adds the CFI Management page
-class manageCFI extends scbOptionsPage 
-{
-	private $display;
-
-	function __construct($file, $options)
+	function settings_handler()
 	{
-		$this->display = $GLOBALS['CFI_display'];
+		if ( $_POST['action'] != __('Save Changes', 'custom-field-images') )
+			return;
 
-		$this->args = array(
-			'page_title' => __('Manage Custom Field Images', 'custom-field-images'),
-			'menu_title' => __('CFI Management', 'custom-field-images'),
-			'page_slug' => 'cfi-management',
-			'action_link' => 'Manage'
-		);
+		foreach ( $this->options->get() as $name => $value )
+			$new_data[$name] = $_POST[$name];
 
-		parent::__construct($file, $options);
+		$this->formdata = $new_data;
+		$this->options->update($this->formdata);
+
+		$this->admin_msg(__('Settings <strong>saved</strong>.', 'custom-field-images'));
 	}
+
+
+// Manage
+
 
 	function one_button_form($action, $value)
 	{
@@ -215,26 +233,21 @@ class manageCFI extends scbOptionsPage
 		));
 	}
 
-	function html_wrap($tag, $content)
+	function manage_box()
 	{
-		return "<$tag>$content</$tag>\n";
-	}
-
-	function page_content()
-	{
-		echo $this->html_wrap('p', __("Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed.", 'custom-field-images'));
+		echo "<p>" . __("Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed.", 'custom-field-images') . "</p>\n";
 
 		$sections = array(
 			array(
 				'header' => __("Import images", 'custom-field-images'),
-				'description' => __("This will scan for images at beginning of posts, insert them into custom field keys and then remove them from the posts.", 'custom-field-images'),
+				'description' => __("This will extract the first image at the beginning of posts, insert it into custom fields and then remove it from the post content.", 'custom-field-images'),
 				'value' => __('Import', 'custom-field-images'),
 				'action' => 'import'
 			),
 
 			array(
 				'header' => __("Export images", 'custom-field-images'),
-				'description' => __("This will insert all custom field images at the beginning of their respective posts and then delete the custom field keys.", 'custom-field-images'),
+				'description' => __("This will insert each image in the post content and then delete the custom field.", 'custom-field-images'),
 				'value' => __('Export', 'custom-field-images'),
 				'action' => 'export'
 			),
@@ -250,18 +263,16 @@ class manageCFI extends scbOptionsPage
 		foreach ( $sections as $section )
 		{
 			extract($section);
-			echo $this->html_wrap('h2', $header);
-			echo $this->html_wrap('p', $description);
-			echo $this->one_button_form($action, $value);
+			$output .= $this->row_wrap($header, "<p>$description</p>\n" . $this->one_button_form($action, $value));
 		}
+
+		echo $this->table_wrap($output);
 	}
 
-	function form_handler() 
+	function manage_handler() 
 	{
 		if ( !isset($_POST['action']) )
-			return false;
-
-		check_admin_referer($this->nonce);
+			return;
 
 		$action = trim($_POST['action']);
 
@@ -269,10 +280,10 @@ class manageCFI extends scbOptionsPage
 		{
 			case 'import':
 			case 'export':
-				$r = $this->impex($action);
-				break;
+				$r = $this->impex($action); break;
 			case 'delete':
-				$r = $this->delete();
+				$r = $this->delete(); break;
+			default: return;
 		}
 
 		if ( $r !== NULL )
@@ -283,7 +294,11 @@ class manageCFI extends scbOptionsPage
 				'delete' => __('Deleted', 'custom-field-images'),
 			);
 
-			$this->admin_msg($actions[$action] . " <strong>$r</strong> " . _n('image', 'images', $r, 'custom-field-images') . '.');
+			$this->admin_msg($actions[$action] 
+				. " <strong>$r</strong> " 
+				. _n('image', 'images', $r, 'custom-field-images') 
+				. '.'
+			);
 		}
 		else
 			$this->admin_msg(__('An error has occured.', 'custom-field-images'), 'error');
@@ -345,7 +360,9 @@ class manageCFI extends scbOptionsPage
 		// Delete image from post
 		$new_content = str_replace($matches[0], '', $post->content);
 
-		$this->update_post($new_content, $post->ID);
+		$post->content = $new_content;
+
+		wp_update_post($post);
 
 		return 1;
 	}
@@ -367,7 +384,9 @@ class manageCFI extends scbOptionsPage
 		if ( $new_content == $post->content )
 			return 0;
 
-		$this->update_post($new_content, $post->ID);
+		$post->content = $new_content;
+
+		wp_update_post($post);
 
 		delete_post_meta($post->ID, $this->key);
 
@@ -378,27 +397,12 @@ class manageCFI extends scbOptionsPage
 	{
 		global $wpdb;
 
-		$query = $wpdb->prepare("
+		return $wpdb->get_results($wpdb->prepare("
 			SELECT DISTINCT ID, post_content AS content
 			FROM $wpdb->posts NATURAL JOIN $wpdb->postmeta
 			WHERE post_type IN ('post', 'page')
 			AND meta_key $operator '%s'
-		", $this->display->key);
-
-		return $wpdb->get_results($query);
-	}
-
-	private function update_post($content, $id)
-	{
-		global $wpdb;
-
-		$query = $wpdb->prepare("
-			UPDATE $wpdb->posts
-			SET post_content = '%s'
-			WHERE ID = %d
-		", $content, $id);
-
-		return $wpdb->query($query);
+		", $this->display->key));
 	}
 
 // Delete methods
@@ -407,12 +411,10 @@ class manageCFI extends scbOptionsPage
 	{
 		global $wpdb;
 
-		$query = $wpdb->prepare("
+		return $wpdb->query($wpdb->prepare("
 			DELETE FROM $wpdb->postmeta
 			WHERE meta_key = '%s'
-		", $this->display->key);
-
-		return $wpdb->query($query);
+		", $this->display->key));
 	}
 }
 
@@ -420,7 +422,6 @@ function cfi_admin_init($file, $options)
 {
 	new boxCFI();
 	new settingsCFI($file, $options);
-	new manageCFI($file, $options);
 
 	if ( $options->insert_button )
 		new insertCFI();
