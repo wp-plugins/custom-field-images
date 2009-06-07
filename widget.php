@@ -14,7 +14,7 @@ class widgetCFI extends scbWidget
 			'description' => 'Test'
 		);
 
-		$this->WP_Widget('cfi-loop', __('CFI Loop', CFI_TEXTDOMAIN), $widget_ops);
+		$this->WP_Widget('cfi-loop', __('CFI Loop', 'custom-field-images'), $widget_ops);
 	}
 
 	function content($instance)
@@ -40,16 +40,16 @@ class widgetCFI extends scbWidget
 	{
 		$rows = array(
 			array(
-				'title' => __('Title:', CFI_TEXTDOMAIN),
+				'title' => __('Title', 'custom-field-images') . ':',
 				'type' => 'text',
 				'name' => 'title',
 			),
 
 			array(
-				'title' => '<a target="_blank" href="http://codex.wordpress.org/Template_Tags/query_posts#Parameters">' . __('Query string', CFI_TEXTDOMAIN) . '</a>',
+				'title' => '<a target="_blank" href="http://codex.wordpress.org/Template_Tags/query_posts#Parameters">' . __('Query string', 'custom-field-images') . '</a>:',
 				'type' => 'text',
 				'name' => 'query',
-				'desc' => __('Example: <em>category_name=Events</em>', CFI_TEXTDOMAIN),
+				'desc' => __('Example: <em>category_name=Events</em>', 'custom-field-images'),
 			)
 		);
 

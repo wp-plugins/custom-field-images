@@ -168,7 +168,11 @@ class displayCFI
 _cfi_init();
 function _cfi_init()
 {
-	define('CFI_TEXTDOMAIN', 'imageshack-offloader');
+	define('CFI_TEXTDOMAIN', 'custom-field-images');
+
+	// Load translations
+	$plugin_dir = basename(dirname(__FILE__));
+	load_plugin_textdomain(CFI_TEXTDOMAIN, "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
 
 	$options = new scbOptions('cfi_options', __FILE__, array(
 			'default_align' => 'right',
