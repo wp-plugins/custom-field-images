@@ -168,11 +168,9 @@ class displayCFI
 _cfi_init();
 function _cfi_init()
 {
-	define('CFI_TEXTDOMAIN', 'custom-field-images');
-
 	// Load translations
 	$plugin_dir = basename(dirname(__FILE__));
-	load_plugin_textdomain(CFI_TEXTDOMAIN, "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
+	load_plugin_textdomain('custom-field-images', "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
 
 	$options = new scbOptions('cfi_options', __FILE__, array(
 			'default_align' => 'right',
@@ -190,6 +188,7 @@ function _cfi_init()
 
 	// Load widget class
 	require_once(dirname(__FILE__) . '/widget.php');
+	scbWidget::init('widgetCFI', __FILE__, 'cfi-loop');
 
 	// Load admin classes
 	if ( is_admin() )
@@ -197,37 +196,8 @@ function _cfi_init()
 		require_once(dirname(__FILE__) . '/admin.php');
 		cfi_admin_init(__FILE__, $options);
 	}
-}
 
-// Template tags
-function custom_field_image($post_id = '')
-{
-	echo get_custom_field_image($post_id);
-}
-
-function get_custom_field_image($post_id = '', $format = 'html')
-{
-	global $CFI_display;
-
-	if ( 'html' == $format )
-		return $CFI_display->generate($post_id);
-	else
-	{
-		$CFI_display->load($post_id);
-
-		$data = $CFI_display->data;
-
-		if ( 'object' == $format )
-			return (object) $data;
-
-		return $data;
-	}
-}
-
-function cfi_loop($query)
-{
-	global $CFI_display;
-
-	echo $CFI_display->loop($query);
+	// Load template tags
+	require_once(dirname(__FILE__) . '/template-tags.php');
 }
 

@@ -10,7 +10,6 @@ class widgetCFI extends scbWidget
 	{
 		$widget_ops = array(
 			'title' => 'Recent Posts',
-			'query' => '',
 			'description' => 'Test'
 		);
 
@@ -30,8 +29,8 @@ class widgetCFI extends scbWidget
 				return false;
 
 		$instance = $old_instance;
-		$instance['title'] = wp_specialchars($new_instance['title']);
-		$instance['query'] = wp_specialchars($new_instance['query']);
+		$instance['title'] = esc_html($new_instance['title']);
+		$instance['query'] = esc_html($new_instance['query']);
 
 		return $instance;
 	}
@@ -46,7 +45,8 @@ class widgetCFI extends scbWidget
 			),
 
 			array(
-				'title' => '<a target="_blank" href="http://codex.wordpress.org/Template_Tags/query_posts#Parameters">' . __('Query string', 'custom-field-images') . '</a>:',
+				'title' => '<a target="_blank" href="http://codex.wordpress.org/Template_Tags/query_posts#Parameters">' 
+							. __('Query string', 'custom-field-images') . '</a>:',
 				'type' => 'text',
 				'name' => 'query',
 				'desc' => __('Example: <em>category_name=Events</em>', 'custom-field-images'),
@@ -57,6 +57,4 @@ class widgetCFI extends scbWidget
 			echo $this->input($row, $instance);
 	}
 }
-
-add_action('widgets_init', create_function('', "register_widget(widgetCFI);"));
 
