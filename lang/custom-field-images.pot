@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Custom Field Images 1.8.4a\n"
+"Project-Id-Version: Custom Field Images 1.9\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
-"POT-Creation-Date: 2009-06-11 18:54+0300\n"
+"POT-Creation-Date: 2009-06-11 21:23+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,168 +33,172 @@ msgstr ""
 msgid "Align"
 msgstr ""
 
-#: admin.php:53 admin.php:165
+#: admin.php:53 admin.php:169
 msgid "left"
 msgstr ""
 
-#: admin.php:54 admin.php:166
+#: admin.php:54 admin.php:170
 msgid "center"
 msgstr ""
 
-#: admin.php:55 admin.php:167
+#: admin.php:55 admin.php:171
 msgid "right"
 msgstr ""
 
-#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 1.8.4a)  #-#-#-#-#
+#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 1.9)  #-#-#-#-#
 #. Plugin Name of an extension
-#: admin.php:130
+#: admin.php:126
 msgid "Custom Field Images"
 msgstr ""
 
-#: admin.php:131 admin.php:135
+#: admin.php:127 admin.php:131 inc/scb/AdminPage.php:246
 msgid "Settings"
 msgstr ""
 
-#: admin.php:136
+#: admin.php:132
 msgid "Management"
 msgstr ""
 
-#: admin.php:149
-msgid "Display in"
+#: admin.php:143 admin.php:204
+msgid "Save Changes"
 msgstr ""
 
 #: admin.php:153
+msgid "Display in"
+msgstr ""
+
+#: admin.php:157
 msgid "content"
 msgstr ""
 
-#: admin.php:154
+#: admin.php:158
 msgid "excerpt"
 msgstr ""
 
-#: admin.php:155
+#: admin.php:159
 msgid "feed"
 msgstr ""
 
-#: admin.php:160
+#: admin.php:164
 msgid "Default alignment"
 msgstr ""
 
-#: admin.php:172
+#: admin.php:176
 msgid "Extra link attributes"
 msgstr ""
 
-#: admin.php:173
+#: admin.php:177
 msgid "Example"
 msgstr ""
 
-#: admin.php:179
+#: admin.php:183
 msgid "Link image to post"
 msgstr ""
 
-#: admin.php:180
+#: admin.php:184
 msgid ""
 "If the <em>Link to</em> field is blank, the image will have a link to the "
 "post or page it is associated with."
 msgstr ""
 
-#: admin.php:186
+#: admin.php:190
 msgid "Duplicate Alt. Text as Title"
 msgstr ""
 
-#: admin.php:187
+#: admin.php:191
 msgid "The <em>Alt. Text</em> will also be added as the image title."
 msgstr ""
 
-#: admin.php:193
+#: admin.php:197
 msgid "Insert CFI button"
 msgstr ""
 
-#: admin.php:194
+#: admin.php:198
 msgid "Add button in the Insert Image form"
 msgstr ""
 
-#: admin.php:200 admin.php:205
-msgid "Save Changes"
-msgstr ""
-
-#: admin.php:214
-msgid "Settings <strong>saved</strong>."
-msgstr ""
-
-#: admin.php:223
+#: admin.php:213
 msgid "Are you sure?"
 msgstr ""
 
-#: admin.php:245
+#: admin.php:235
 msgid ""
 "Here you can manage all custom field images at once. Please make a "
 "<strong>backup</strong> of your database before you proceed."
 msgstr ""
 
-#: admin.php:249
+#: admin.php:239
 msgid "Import images"
 msgstr ""
 
-#: admin.php:250
+#: admin.php:240
 msgid ""
 "This will extract the first image at the beginning of posts, insert it into "
 "custom fields and then remove it from the post content."
 msgstr ""
 
-#: admin.php:251
+#: admin.php:241
 msgid "Import"
 msgstr ""
 
-#: admin.php:256
+#: admin.php:246
 msgid "Export images"
 msgstr ""
 
-#: admin.php:257
+#: admin.php:247
 msgid ""
 "This will insert each image in the post content and then delete the custom "
 "field."
 msgstr ""
 
-#: admin.php:258
+#: admin.php:248
 msgid "Export"
 msgstr ""
 
-#: admin.php:263
+#: admin.php:253
 msgid "Delete images"
 msgstr ""
 
-#: admin.php:264
+#: admin.php:254
 msgid "This will delete all custom field images."
 msgstr ""
 
-#: admin.php:265
+#: admin.php:255
 msgid "Delete"
 msgstr ""
 
-#: admin.php:299
+#: admin.php:289
 msgid "Imported"
 msgstr ""
 
-#: admin.php:300
+#: admin.php:290
 msgid "Exported"
 msgstr ""
 
-#: admin.php:301
+#: admin.php:291
 msgid "Deleted"
 msgstr ""
 
-#: admin.php:306
+#: admin.php:296
 msgid "image"
 msgid_plural "images"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin.php:311
+#: admin.php:301
 msgid "An error has occured."
+msgstr ""
+
+#: inc/scb/AdminPage.php:103
+msgid "Settings <strong>saved</strong>."
 msgstr ""
 
 #: inc/scb-check.php:44
 msgid "Install now"
+msgstr ""
+
+#: widget.php:13
+msgid "Display posts as a thumb list"
 msgstr ""
 
 #: widget.php:16

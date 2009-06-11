@@ -23,9 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once dirname(__FILE__) . '/inc/scb-check.php';
-if ( !scb_check(__FILE__) ) return;
-
 abstract class displayCFI
 {
 	// Styles for images in feeds
@@ -162,6 +159,8 @@ abstract class displayCFI
 	{
 		global $post;
 
+		$post_id = intval($post_id);
+
 		self::$id = $post_id ? $post_id : $post->ID;
 
 		self::$data = get_post_meta(self::$id, self::$key, TRUE);
@@ -177,6 +176,9 @@ function _cfi_init()
 	$plugin_dir = basename(dirname(__FILE__));
 	load_plugin_textdomain('custom-field-images', "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
 
+	// Load scbFramework
+	require_once dirname(__FILE__) . '/inc/scb/load.php';
+
 	$options = new scbOptions('cfi_options', __FILE__, array(
 			'default_align' => 'right',
 			'add_title' => TRUE,
@@ -191,18 +193,21 @@ function _cfi_init()
 
 	displayCFI::init($options);
 
+	// Load template tags
+	require_once dirname(__FILE__) . '/template-tags.php';
+
 	// Load widget class
-	require_once(dirname(__FILE__) . '/widget.php');
-	scbWidget::init('widgetCFI', __FILE__, 'cfi-loop');
+	if ( class_exists('WP_Widget') )
+	{
+		require_once dirname(__FILE__) . '/widget.php';
+		scbWidget::init('widgetCFI', __FILE__, 'cfi-loop');
+	}
 
 	// Load admin classes
 	if ( is_admin() )
 	{
-		require_once(dirname(__FILE__) . '/admin.php');
+		require_once dirname(__FILE__) . '/admin.php';
 		cfi_admin_init(__FILE__, $options);
 	}
-
-	// Load template tags
-	require_once(dirname(__FILE__) . '/template-tags.php');
 }
 

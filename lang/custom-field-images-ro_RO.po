@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Custom Field Images 1.8.4a\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
-"POT-Creation-Date: 2009-06-11 18:54+0300\n"
-"PO-Revision-Date: 2009-06-11 18:55+0200\n"
+"POT-Creation-Date: 2009-06-11 21:23+0300\n"
+"PO-Revision-Date: 2009-06-11 21:23+0200\n"
 "Last-Translator: scribu <scribu@gmail.com>\n"
 "Language-Team: ROMANIAN <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -33,165 +33,170 @@ msgid "Align"
 msgstr "Aliniere"
 
 #: admin.php:53
-#: admin.php:165
+#: admin.php:169
 msgid "left"
 msgstr "stânga"
 
 #: admin.php:54
-#: admin.php:166
+#: admin.php:170
 msgid "center"
 msgstr "centru"
 
 #: admin.php:55
-#: admin.php:167
+#: admin.php:171
 msgid "right"
 msgstr "dreapta"
 
-#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 1.8.4a)  #-#-#-#-#
+#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 1.9)  #-#-#-#-#
 #. Plugin Name of an extension
-#: admin.php:130
+#: admin.php:126
 msgid "Custom Field Images"
 msgstr ""
 
+#: admin.php:127
 #: admin.php:131
-#: admin.php:135
+#: inc/scb/AdminPage.php:246
 msgid "Settings"
 msgstr "Setări"
 
-#: admin.php:136
+#: admin.php:132
 msgid "Management"
 msgstr "Administrare"
 
-#: admin.php:149
-msgid "Display in"
-msgstr "Afișează în"
-
-#: admin.php:153
-msgid "content"
-msgstr "conținut"
-
-#: admin.php:154
-msgid "excerpt"
-msgstr "extras"
-
-#: admin.php:155
-msgid "feed"
-msgstr "feed"
-
-#: admin.php:160
-msgid "Default alignment"
-msgstr "Aliniere implicită"
-
-#: admin.php:172
-msgid "Extra link attributes"
-msgstr "Atribute adiționale link"
-
-#: admin.php:173
-msgid "Example"
-msgstr "Exemplu"
-
-#: admin.php:179
-msgid "Link image to post"
-msgstr "Linkează imaginea cu postul"
-
-#: admin.php:180
-msgid "If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with."
-msgstr "Dacă <em>Link spre</em> este lăsat gol, atunci imaginea va avea link spre postul cu care e asociată."
-
-#: admin.php:186
-msgid "Duplicate Alt. Text as Title"
-msgstr "Duplică textul alternativ ca titlu"
-
-#: admin.php:187
-msgid "The <em>Alt. Text</em> will also be added as the image title."
-msgstr "Textul alternativ va fi adăugat și ca titlul imaginii."
-
-#: admin.php:193
-msgid "Insert CFI button"
-msgstr "Buton de inserare CFI"
-
-#: admin.php:194
-msgid "Add button in the Insert Image form"
-msgstr "Adaugă buton la formularul pentru inserare imagini"
-
-#: admin.php:200
-#: admin.php:205
+#: admin.php:143
+#: admin.php:204
 msgid "Save Changes"
 msgstr "Salvează schimbările"
 
-#: admin.php:214
-msgid "Settings <strong>saved</strong>."
-msgstr "Setările au fost <strong>salvate</strong>."
+#: admin.php:153
+msgid "Display in"
+msgstr "Afișează în"
 
-#: admin.php:223
+#: admin.php:157
+msgid "content"
+msgstr "conținut"
+
+#: admin.php:158
+msgid "excerpt"
+msgstr "extras"
+
+#: admin.php:159
+msgid "feed"
+msgstr "feed"
+
+#: admin.php:164
+msgid "Default alignment"
+msgstr "Aliniere implicită"
+
+#: admin.php:176
+msgid "Extra link attributes"
+msgstr "Atribute adiționale link"
+
+#: admin.php:177
+msgid "Example"
+msgstr "Exemplu"
+
+#: admin.php:183
+msgid "Link image to post"
+msgstr "Linkează imaginea cu postul"
+
+#: admin.php:184
+msgid "If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with."
+msgstr "Dacă <em>Link spre</em> este lăsat gol, atunci imaginea va avea link spre postul cu care e asociată."
+
+#: admin.php:190
+msgid "Duplicate Alt. Text as Title"
+msgstr "Duplică textul alternativ ca titlu"
+
+#: admin.php:191
+msgid "The <em>Alt. Text</em> will also be added as the image title."
+msgstr "Textul alternativ va fi adăugat și ca titlul imaginii."
+
+#: admin.php:197
+msgid "Insert CFI button"
+msgstr "Buton de inserare CFI"
+
+#: admin.php:198
+msgid "Add button in the Insert Image form"
+msgstr "Adaugă buton la formularul pentru inserare imagini"
+
+#: admin.php:213
 msgid "Are you sure?"
 msgstr "Sunteți sigur?"
 
-#: admin.php:245
+#: admin.php:235
 msgid "Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed."
 msgstr ""
 
-#: admin.php:249
+#: admin.php:239
 msgid "Import images"
 msgstr "Importează imagini"
 
-#: admin.php:250
+#: admin.php:240
 msgid "This will extract the first image at the beginning of posts, insert it into custom fields and then remove it from the post content."
 msgstr "Aceasta va extrage prima imagine de la începutul posturilor, o va insera într-un custom field și apoi o va șterge din conținutul postului."
 
-#: admin.php:251
+#: admin.php:241
 msgid "Import"
 msgstr "Importează"
 
-#: admin.php:256
+#: admin.php:246
 msgid "Export images"
 msgstr "Exportează imagini"
 
-#: admin.php:257
+#: admin.php:247
 msgid "This will insert each image in the post content and then delete the custom field."
 msgstr "Aceasta va insera fiecare imaginile în conținutul postului și apoi va șterge custom field-ul."
 
-#: admin.php:258
+#: admin.php:248
 msgid "Export"
 msgstr "Exportează"
 
-#: admin.php:263
+#: admin.php:253
 msgid "Delete images"
 msgstr "Șterge imagini"
 
-#: admin.php:264
+#: admin.php:254
 msgid "This will delete all custom field images."
 msgstr "Aceasta va șterge toate imaginile din custom fields."
 
-#: admin.php:265
+#: admin.php:255
 msgid "Delete"
 msgstr "Șterge"
 
-#: admin.php:299
+#: admin.php:289
 msgid "Imported"
 msgstr "S-au importat"
 
-#: admin.php:300
+#: admin.php:290
 msgid "Exported"
 msgstr "S-au exportat"
 
-#: admin.php:301
+#: admin.php:291
 msgid "Deleted"
 msgstr "S-au șters"
 
-#: admin.php:306
+#: admin.php:296
 msgid "image"
 msgid_plural "images"
 msgstr[0] "imagine"
 msgstr[1] "imagini"
 
-#: admin.php:311
+#: admin.php:301
 msgid "An error has occured."
 msgstr "S-a produs o eroare."
+
+#: inc/scb/AdminPage.php:103
+msgid "Settings <strong>saved</strong>."
+msgstr "Setările au fost <strong>salvate</strong>."
 
 #: inc/scb-check.php:44
 msgid "Install now"
 msgstr "Instalează acum"
+
+#: widget.php:13
+msgid "Display posts as a thumb list"
+msgstr "Afișează posturi ca o listă de imagini"
 
 #: widget.php:16
 msgid "CFI Loop"

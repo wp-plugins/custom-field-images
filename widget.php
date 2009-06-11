@@ -9,8 +9,7 @@ class widgetCFI extends scbWidget
 	function widgetCFI()
 	{
 		$widget_ops = array(
-			'title' => 'Recent Posts',
-			'description' => 'Test'
+			'description' => __('Display posts as a thumb list', 'custom-field-images')
 		);
 
 		$this->WP_Widget('cfi-loop', __('CFI Loop', 'custom-field-images'), $widget_ops);
