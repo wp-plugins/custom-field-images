@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Custom Field Images
-Description: Easily manage and display images anywhere using custom fields.
+Description: Easily associate any image to a post and display it in post excerpts, feeds etc.
 Version: 1.9
 Author: scribu
 Author URI: http://scribu.net/

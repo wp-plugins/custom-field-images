@@ -6,25 +6,25 @@ Requires at least: 2.5
 Tested up to: 2.8
 Stable tag: trunk
 
-Easily manage and display images in post excerpts, feeds etc. using custom fields.
+Easily associate any image to a post and display it in post excerpts, feeds etc.
 
 == Description ==
 
-Custom Field Images gives you increased flexibility in displaying images on specific page types, post excerpts and even feeds.
+Custom Field Images provides a flexible way to associate an image to a post and display it anywhere on your site.
 
 **Easily insert image data**
 
-The custom meta box is designed specifically for image data, making it easier to use than the generic Custom Fields box. There is also a button for filling the box after an image is uploaded through WordPress.
+The plugin adds a custom meta box which is designed specifically for image data, making it easier to use than the generic custom fields box. There is also a button for filling the box automatically with an image uploaded through WordPress.
 
 **Manage all images in one go**
 
-The plugin has a management page from which you can import / export / delete available images, all at once. Also, you can set defaults for all images, so you don't have to edit every image if you change your site's layout.
+The plugin has button for importing / exporting / deleting any available images, all at once. Also, you can set default settings for all images, so you don't have to edit every image if you change your site's layout.
 
 **Show recent posts as images**
 
 Instead of displaying recent posts as a list of plain links, you can display them as a list of images, using the built-in widget.
 
-**Note: If you're using WordPress 2.7 or older, and Custom Field Images 1.9 or newer, the CFI Loop widget won't work.**
+**If you're using WordPress 2.7 or older, and Custom Field Images 1.9 or newer, the CFI Loop widget won't work.**
 
 == Installation ==
 
@@ -64,4 +64,9 @@ You can add `<?php cfi_loop($query) ?>` directly to your theme files. $query is 
 = How can I delete a custom field image from a post? =
 
 Just clear the URL field and save the post.
+
+== Screenshots ==
+
+1. The custom box for inserting image data
+2. The quick insert button
 
