@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Custom Field Images 1.8.4a\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
-"POT-Creation-Date: 2009-06-07 16:33+0300\n"
-"PO-Revision-Date: 2009-06-07 16:42+0200\n"
+"POT-Creation-Date: 2009-06-11 18:54+0300\n"
+"PO-Revision-Date: 2009-06-11 18:55+0200\n"
 "Last-Translator: scribu <scribu@gmail.com>\n"
 "Language-Team: ROMANIAN <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -32,153 +32,160 @@ msgstr "Link spre"
 msgid "Align"
 msgstr "Aliniere"
 
-#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 1.8.4a)  #-#-#-#-#
-#. Plugin Name of an extension
-#: admin.php:125
-msgid "Custom Field Images"
-msgstr ""
-
-#: admin.php:126
-#: admin.php:130
-msgid "Settings"
-msgstr "Setări"
-
-#: admin.php:131
-msgid "Management"
-msgstr "Administrare"
-
-#: admin.php:144
-msgid "Display in"
-msgstr "Afișează în"
-
-#: admin.php:148
-msgid "content"
-msgstr "conținut"
-
-#: admin.php:149
-msgid "excerpt"
-msgstr "extras"
-
-#: admin.php:150
-msgid "feed"
-msgstr "feed"
-
-#: admin.php:155
-msgid "Default alignment"
-msgstr "Aliniere implicită"
-
-#: admin.php:160
+#: admin.php:53
+#: admin.php:165
 msgid "left"
 msgstr "stânga"
 
-#: admin.php:161
+#: admin.php:54
+#: admin.php:166
 msgid "center"
 msgstr "centru"
 
-#: admin.php:162
+#: admin.php:55
+#: admin.php:167
 msgid "right"
 msgstr "dreapta"
 
-#: admin.php:167
+#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 1.8.4a)  #-#-#-#-#
+#. Plugin Name of an extension
+#: admin.php:130
+msgid "Custom Field Images"
+msgstr ""
+
+#: admin.php:131
+#: admin.php:135
+msgid "Settings"
+msgstr "Setări"
+
+#: admin.php:136
+msgid "Management"
+msgstr "Administrare"
+
+#: admin.php:149
+msgid "Display in"
+msgstr "Afișează în"
+
+#: admin.php:153
+msgid "content"
+msgstr "conținut"
+
+#: admin.php:154
+msgid "excerpt"
+msgstr "extras"
+
+#: admin.php:155
+msgid "feed"
+msgstr "feed"
+
+#: admin.php:160
+msgid "Default alignment"
+msgstr "Aliniere implicită"
+
+#: admin.php:172
 msgid "Extra link attributes"
 msgstr "Atribute adiționale link"
 
-#: admin.php:168
+#: admin.php:173
 msgid "Example"
 msgstr "Exemplu"
 
-#: admin.php:174
+#: admin.php:179
 msgid "Link image to post"
 msgstr "Linkează imaginea cu postul"
 
-#: admin.php:175
+#: admin.php:180
 msgid "If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with."
 msgstr "Dacă <em>Link spre</em> este lăsat gol, atunci imaginea va avea link spre postul cu care e asociată."
 
-#: admin.php:181
+#: admin.php:186
 msgid "Duplicate Alt. Text as Title"
 msgstr "Duplică textul alternativ ca titlu"
 
-#: admin.php:182
+#: admin.php:187
 msgid "The <em>Alt. Text</em> will also be added as the image title."
 msgstr "Textul alternativ va fi adăugat și ca titlul imaginii."
 
-#: admin.php:188
+#: admin.php:193
 msgid "Insert CFI button"
 msgstr "Buton de inserare CFI"
 
-#: admin.php:189
+#: admin.php:194
 msgid "Add button in the Insert Image form"
 msgstr "Adaugă buton la formularul pentru inserare imagini"
 
-#: admin.php:195
-#: admin.php:202
+#: admin.php:200
+#: admin.php:205
 msgid "Save Changes"
 msgstr "Salvează schimbările"
 
-#: admin.php:211
+#: admin.php:214
 msgid "Settings <strong>saved</strong>."
 msgstr "Setările au fost <strong>salvate</strong>."
 
-#: admin.php:239
+#: admin.php:223
+msgid "Are you sure?"
+msgstr "Sunteți sigur?"
+
+#: admin.php:245
 msgid "Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed."
 msgstr ""
 
-#: admin.php:243
+#: admin.php:249
 msgid "Import images"
 msgstr "Importează imagini"
 
-#: admin.php:244
+#: admin.php:250
 msgid "This will extract the first image at the beginning of posts, insert it into custom fields and then remove it from the post content."
 msgstr "Aceasta va extrage prima imagine de la începutul posturilor, o va insera într-un custom field și apoi o va șterge din conținutul postului."
 
-#: admin.php:245
+#: admin.php:251
 msgid "Import"
 msgstr "Importează"
 
-#: admin.php:250
+#: admin.php:256
 msgid "Export images"
 msgstr "Exportează imagini"
 
-#: admin.php:251
+#: admin.php:257
 msgid "This will insert each image in the post content and then delete the custom field."
 msgstr "Aceasta va insera fiecare imaginile în conținutul postului și apoi va șterge custom field-ul."
 
-#: admin.php:252
+#: admin.php:258
 msgid "Export"
 msgstr "Exportează"
 
-#: admin.php:257
+#: admin.php:263
 msgid "Delete images"
 msgstr "Șterge imagini"
 
-#: admin.php:258
+#: admin.php:264
 msgid "This will delete all custom field images."
 msgstr "Aceasta va șterge toate imaginile din custom fields."
 
-#: admin.php:259
+#: admin.php:265
 msgid "Delete"
 msgstr "Șterge"
 
-#: admin.php:293
+#: admin.php:299
 msgid "Imported"
 msgstr "S-au importat"
 
-#: admin.php:294
+#: admin.php:300
 msgid "Exported"
 msgstr "S-au exportat"
 
-#: admin.php:295
+#: admin.php:301
 msgid "Deleted"
 msgstr "S-au șters"
 
-#: admin.php:298
+#: admin.php:306
 msgid "image"
 msgid_plural "images"
 msgstr[0] "imagine"
 msgstr[1] "imagini"
 
-#: admin.php:301
+#: admin.php:311
 msgid "An error has occured."
 msgstr "S-a produs o eroare."
 
@@ -186,11 +193,11 @@ msgstr "S-a produs o eroare."
 msgid "Install now"
 msgstr "Instalează acum"
 
-#: widget.php:17
+#: widget.php:16
 msgid "CFI Loop"
 msgstr "Loop CFI"
 
-#: widget.php:43
+#: widget.php:42
 msgid "Title"
 msgstr "Titlu"
 

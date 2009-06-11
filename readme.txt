@@ -24,6 +24,8 @@ The plugin has a management page from which you can import / export / delete ava
 
 Instead of displaying recent posts as a list of plain links, you can display them as a list of images, using the built-in widget.
 
+**Note: If you're using WordPress 2.7 or older, and Custom Field Images 1.9 or newer, the CFI Loop widget won't work.**
+
 == Installation ==
 
 The plugin can be installed in 2 easy steps:

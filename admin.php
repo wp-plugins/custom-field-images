@@ -1,7 +1,7 @@
 <?php
 
 // Adds the CFI metabox
-class boxCFI extends displayCFI 
+class boxCFI extends displayCFI
 {
 	function __construct()
 	{
@@ -9,13 +9,13 @@ class boxCFI extends displayCFI
 		add_action('save_post', array($this, 'save'), 1, 2);
 	}
 
-	function box_init() 
+	function box_init()
 	{
 		add_meta_box('cfi-box', 'Custom Field Image', array($this, 'box'), 'post', 'normal');
 		add_meta_box('cfi-box', 'Custom Field Image', array($this, 'box'), 'page', 'normal');
 	}
 
-	function box() 
+	function box()
 	{
 ?>
 <style type="text/css">
@@ -48,7 +48,12 @@ class boxCFI extends displayCFI
 				'title' => __('Align', 'custom-field-images'),
 				'type' => 'radio',
 				'name' => 'cfi-align',
-				'value' => array('left', 'center', 'right')
+				'value' => array('left', 'center', 'right'),
+				'desc' => array(
+					__('left', 'custom-field-images'),
+					__('center', 'custom-field-images'),
+					__('right', 'custom-field-images'),
+				)
 			)
 		);
 
@@ -215,6 +220,8 @@ class settingsCFI extends scbBoxesPage
 
 	function one_button_form($action, $value)
 	{
+		$warning = __('Are you sure?', 'custom-field-images');
+
 		return $this->form(array(
 			array(
 				'type' => 'hidden',
@@ -227,7 +234,7 @@ class settingsCFI extends scbBoxesPage
 				'type' => 'submit',
 				'name' => 'action_button',
 				'value' => $value,
-				'extra' => 'class="button" onClick="return confirm(\'Are you sure?\')"',
+				'extra' => "class='button' onClick='return confirm(\"$warning\")'",
 				'desc' => false
 			)
 		));
