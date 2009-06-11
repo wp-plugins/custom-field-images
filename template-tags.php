@@ -20,14 +20,12 @@ Get a custom field image in various formats:
 */
 function get_custom_field_image($post_id = '', $format = 'html')
 {
-	global $CFI_display;
-
 	if ( 'html' == $format )
-		return $CFI_display->generate($post_id);
+		return displayCFI::generate($post_id);
 
-	$CFI_display->load($post_id);
+	displayCFI::load($post_id);
 
-	$data = $CFI_display->data;
+	$data = displayCFI::$data;
 
 	if ( 'object' == $format )
 		return (object) $data;
@@ -40,8 +38,6 @@ Creates a loop with custom field images
 */
 function cfi_loop($query)
 {
-	global $CFI_display;
-
-	echo $CFI_display->loop($query);
+	echo displayCFI::loop($query);
 }
 
