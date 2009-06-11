@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Custom Field Images 1.9\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
-"POT-Creation-Date: 2009-06-11 21:23+0300\n"
+"POT-Creation-Date: 2009-06-11 22:41+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -193,27 +193,23 @@ msgstr ""
 msgid "Settings <strong>saved</strong>."
 msgstr ""
 
-#: inc/scb-check.php:44
-msgid "Install now"
-msgstr ""
-
-#: widget.php:13
+#: widget.php:12
 msgid "Display posts as a thumb list"
 msgstr ""
 
-#: widget.php:16
+#: widget.php:15
 msgid "CFI Loop"
 msgstr ""
 
-#: widget.php:42
+#: widget.php:41
 msgid "Title"
 msgstr ""
 
-#: widget.php:49
+#: widget.php:48
 msgid "Query string"
 msgstr ""
 
-#: widget.php:52
+#: widget.php:51
 msgid "Example: <em>category_name=Events</em>"
 msgstr ""
 
@@ -222,7 +218,9 @@ msgid "http://scribu.net/wordpress/custom-field-images"
 msgstr ""
 
 #. Description of an extension
-msgid "Easily manage and display images anywhere using custom fields."
+msgid ""
+"Easily associate any image to a post and display it in post excerpts, feeds "
+"etc."
 msgstr ""
 
 #. Author of an extension
