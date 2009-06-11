@@ -28,7 +28,7 @@ Instead of displaying recent posts as a list of plain links, you can display the
 
 == Installation ==
 
-The plugin can be installed in 2 easy steps:
+You can use the WordPress plugin installer, or do it manually:
 
 1. Unzip "Custom Field Images" archive and put the folder into your plugins folder (/wp-content/plugins/).
 1. Activate the plugin from the Plugins menu.
@@ -41,9 +41,12 @@ For example, if you want them to appear only when viewing posts by category, add
 
 You can also add `[cfi]` where you want the image to appear in the post content (not excerpt). By default, it is inserted at the beginning.
 
+There is also an additional template tag, called `get_custom_field_image()` which you can use to display the images however you want. See `template-tags.php` in the plugin directory for more details.
+
 == Frequently Asked Questions ==
 
 = Why are the images displayed two times? =
+
 Probably because you used the template tag and forgot to uncheck the content, excerpt or feed checkboxes from the Settings page.
 
 = Why aren't my images aligning properly? =
@@ -55,8 +58,10 @@ img.alignright {float:right; margin: 0 0 .5em 1em}
 img.aligncenter {display:block; margin:0 auto .5em auto}`
 
 = What if I don't want to use the widget? =
+
 You can add `<?php cfi_loop($query) ?>` directly to your theme files. $query is an optional parameter, which acts as a [query string](http://codex.wordpress.org/Template_Tags/query_posts).
 
 = How can I delete a custom field image from a post? =
 
 Just clear the URL field and save the post.
+

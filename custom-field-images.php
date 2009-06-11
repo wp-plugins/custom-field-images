@@ -26,17 +26,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 require_once dirname(__FILE__) . '/inc/scb-check.php';
 if ( !scb_check(__FILE__) ) return;
 
-class displayCFI 
+abstract class displayCFI
 {
 	// Styles for images in feeds
-	public $styles = array(
+	static $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
 		'center' => 'display:block; margin:0 auto .5em auto;',
 		'right' => 'float:right; margin: 0 0 .5em 1em;'
 	);
 
 	// Data fields for current image
-	public $data = array(
+	static $data = array(
 		'url' => '',
 		'align' => '',
 		'alt' => '',
@@ -44,44 +44,49 @@ class displayCFI
 	);
 
 	// wp_postmeta.meta_key
-	public $key = '_cfi_image';
+	static $key = '_cfi_image';
+
+	static $token = '[cfi]';
 
 	// $post->ID
-	protected $id;
+	static $id;
 
 	// Options object holder
-	protected $options;
+	static $options;
 
-	public function __construct($options)
+	static function init($options)
 	{
-		$this->options = $options;
+		self::$options = $options;
 
-		add_filter('the_excerpt', array(&$this, 'filter'));
-		add_filter('the_content', array(&$this, 'filter'));
+		add_filter('the_excerpt', array(__CLASS__, 'filter'));
+		add_filter('the_content', array(__CLASS__, 'filter'));
 	}
 
-	public function filter($content)
+	static function filter($content)
 	{
 		$type = substr(current_filter(), 4);
 		$is_feed = is_feed();
 
-		if ( ($is_feed && $this->options->get('feed')) || (!$is_feed && $this->options->get($type)) )
-			if ( $type != 'excerpt' && (FALSE !== strpos($content, '[cfi]')) )
-				return str_replace('[cfi]', $this->generate(), $content);
+		if ( 
+			($is_feed && self::$options->get('feed')) 
+		|| (!$is_feed && self::$options->get($type))
+		)
+			if ( $type != 'excerpt' && FALSE !== strpos($content, '[cfi]') )
+				return str_replace(self::$token, self::generate(), $content);
 			else
-				return $this->generate() . $content;
+				return self::generate() . $content;
 
 		return $content;
 	}
 
-	public function generate($post_id = '', $data = '' )
+	static function generate($post_id = '', $data = '')
 	{
-		$this->load($post_id);
+		self::load($post_id);
 
 		if ( is_array($data) )
-			$this->data = @array_merge($this->data, $data);
+			self::$data = @array_merge(self::$data, $data);
 
-		$url = $this->data['url'];
+		$url = self::$data['url'];
 
 		if ( !$url )
 			return;
@@ -90,29 +95,29 @@ class displayCFI
 		$image .= '<img src="'. $url .'" ';
 
 		// Set alignment
-		$align = $this->data['align'] ? $this->data['align'] : $this->options->get('default_align');
+		$align = self::$data['align'] ? self::$data['align'] : self::$options->get('default_align');
 
 		if ( is_feed() )
-			$image .= sprintf( 'style="%s" ', $this->styles[$align] );
+			$image .= sprintf( 'style="%s" ', self::$styles[$align] );
 		else
 			$image .= sprintf( 'class="cfi align%s" ', $align );
 
 		// Set alt text
-		$alt = $this->data['alt'] ? $this->data['alt'] : get_the_title();
+		$alt = self::$data['alt'] ? self::$data['alt'] : get_the_title();
 
 		$image .= sprintf( 'alt="%s" ', $alt );
 
 		// Set title
-		if ( $this->options->get('add_title') )
+		if ( self::$options->get('add_title') )
 			$image .= sprintf( 'title="%s" ', $alt );
 
 		// End img tag
 		$image .= '/>';
 
-		return $this->add_link($image);
+		return self::add_link($image);
 	}
 
-	public function loop($query)
+	static function loop($query)
 	{
 		$query = wp_parse_args($query, array(
 			'meta_key' => $CFI_display->key,
@@ -128,7 +133,7 @@ class displayCFI
 		echo "<ul id='cfi-loop'>";
 		while ( $side_query->have_posts() ) : $side_query->the_post();
 			echo "<li>";
-			echo $this->generate($post->ID, array(
+			echo self::generate($post->ID, array(
 				'alt' => $post->post_title,
 				'align' => '',
 				'link' => get_permalink($post->ID)
@@ -140,26 +145,26 @@ class displayCFI
 		return ob_get_clean();
 	}
 
-	protected function add_link($image)
+	protected static function add_link($image)
 	{
-		$link = $this->data['link'];
+		$link = self::$data['link'];
 
 		if ( empty($link) )
-			if ( $this->options->get('default_link') )
-				$link = get_permalink($this->id);
+			if ( self::$options->get('default_link') )
+				$link = get_permalink(self::$id);
 			else
-				return $image;
+				return $image . "\n";
 
-		return sprintf( "<a href='$link' %s>$image</a>", stripslashes($this->options->get('extra_attr')) );
+		return sprintf( "<a href='$link' %s>$image</a>\n", stripslashes(self::$options->get('extra_attr')) );
 	}
 
-	protected function load($post_id = '')
+	protected static function load($post_id = '')
 	{
 		global $post;
 
-		$this->id = $post_id ? $post_id : $post->ID;
+		self::$id = $post_id ? $post_id : $post->ID;
 
-		$this->data = get_post_meta($this->id, $this->key, TRUE);
+		self::$data = get_post_meta(self::$id, self::$key, TRUE);
 	}
 }
 
@@ -184,7 +189,7 @@ function _cfi_init()
 			'excerpt' => TRUE
 	));
 
-	$GLOBALS['CFI_display'] = new displayCFI($options);
+	displayCFI::init($options);
 
 	// Load widget class
 	require_once(dirname(__FILE__) . '/widget.php');

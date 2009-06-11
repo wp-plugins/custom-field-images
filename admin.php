@@ -1,21 +1,21 @@
 <?php
 
 // Adds the CFI metabox
-class boxCFI extends displayCFI
+abstract class boxCFI extends displayCFI
 {
-	function __construct()
+	static function init()
 	{
-		add_action('admin_menu', array($this, 'box_init'));
-		add_action('save_post', array($this, 'save'), 1, 2);
+		add_action('admin_menu', array(__CLASS__, 'box_init'));
+		add_action('save_post', array(__CLASS__, 'save'), 1, 2);
 	}
 
-	function box_init()
+	static function box_init()
 	{
-		add_meta_box('cfi-box', 'Custom Field Image', array($this, 'box'), 'post', 'normal');
-		add_meta_box('cfi-box', 'Custom Field Image', array($this, 'box'), 'page', 'normal');
+		add_meta_box('cfi-box', 'Custom Field Image', array(__CLASS__, 'box'), 'post', 'normal');
+		add_meta_box('cfi-box', 'Custom Field Image', array(__CLASS__, 'box'), 'page', 'normal');
 	}
 
-	function box()
+	static function box()
 	{
 ?>
 <style type="text/css">
@@ -57,59 +57,57 @@ class boxCFI extends displayCFI
 			)
 		);
 
-		$this->load();
+		self::load();
 
-		if ( $this->data ) 
+		if ( self::$data )
 		{
 			// Prepend 'cfi-' to data keys
-			foreach ( $this->data as $key => $value )
+			foreach ( self::$data as $key => $value )
 				$options['cfi-'.$key] = $value;
 		}
 
 		echo scbForms::table($rows, $options);
 	}
 
-	function save($post_id, $post) 
+	function save($post_id, $post)
 	{
 		if ( DOING_AJAX === true || empty($_POST) || $post->post_type == 'revision' )
 			return;
 
 		// Delete data on empty url
 		if ( empty($_POST['cfi-url']) ) {
-			delete_post_meta($post_id, $this->key);
+			delete_post_meta($post_id, self::$key);
 			return;
 		}
 
-		foreach ( $this->data as $name => $value )
-			$this->data[$name] = $_POST['cfi-'.$name];
+		foreach ( self::$data as $name => $value )
+			self::$data[$name] = $_POST['cfi-'.$name];
 
-		   add_post_meta($post_id, $this->key, $this->data, TRUE) or
-		update_post_meta($post_id, $this->key, $this->data);
+		   add_post_meta($post_id, self::$key, self::$data, TRUE) or
+		update_post_meta($post_id, self::$key, self::$data);
 	}
 }
 
 // Loads (Insert CFI) button script
-class insertCFI 
+abstract class insertCFI
 {
-	function __construct() 
+	static function init()
 	{
-		add_action('admin_print_scripts', array($this, 'insert'));
+		add_action('admin_enqueue_scripts', array(__CLASS__, 'insert'));
 	}
 
-	function insert() 
+	static function insert($page)
 	{
-		global $pagenow;
-
-		if ( !in_array($pagenow, array('post.php', 'post-new.php', 'page.php', 'page-new.php')) )
+		if ( !in_array($page, array('post.php', 'post-new.php', 'page.php', 'page-new.php')) )
 			return false;
 
-		$src = $this->get_plugin_url() . '/inc';
-		
+		$src = self::get_plugin_url() . '/inc';
+
 		wp_register_script('livequery', $src . '/livequery.js');
 		wp_enqueue_script('cfi-insert', $src . '/insert.js', array('jquery', 'livequery'));
 	}
 
-	private function get_plugin_url() 
+	private static function get_plugin_url()
 	{
 		// WP < 2.6
 		if ( !function_exists('plugins_url') )
@@ -124,8 +122,6 @@ class settingsCFI extends scbBoxesPage
 {
 	function setup()
 	{
-		$this->display = $GLOBALS['CFI_display'];
-	
 		$this->args = array(
 			'page_title' => __('Custom Field Images', 'custom-field-images'),
 			'action_link' => __('Settings', 'custom-field-images'),
@@ -139,7 +135,15 @@ class settingsCFI extends scbBoxesPage
 
 	function page_head()
 	{
-		wp_enqueue_style('cft_css', $this->plugin_url . '/inc/admin.css', array(), '1.2');
+		wp_enqueue_style('cfi_css', $this->plugin_url . '/inc/admin.css', array(), '1.2');
+	}
+
+	function settings_handler()
+	{
+		if ( $_POST['action'] != __('Save Changes', 'custom-field-images') )
+			return;
+
+		scbAdminPage::form_handler();
 	}
 
 	function settings_box()
@@ -198,20 +202,6 @@ class settingsCFI extends scbBoxesPage
 		);
 
 		echo $this->form_table($rows, $this->formdata, $this->submit_button('action', __('Save Changes', 'custom-field-images')));
-	}
-
-	function settings_handler()
-	{
-		if ( $_POST['action'] != __('Save Changes', 'custom-field-images') )
-			return;
-
-		foreach ( $this->options->get() as $name => $value )
-			$new_data[$name] = $_POST[$name];
-
-		$this->formdata = $new_data;
-		$this->options->update($this->formdata);
-
-		$this->admin_msg(__('Settings <strong>saved</strong>.', 'custom-field-images'));
 	}
 
 
@@ -276,7 +266,7 @@ class settingsCFI extends scbBoxesPage
 		echo $this->table_wrap($output);
 	}
 
-	function manage_handler() 
+	function manage_handler()
 	{
 		if ( !isset($_POST['action']) )
 			return;
@@ -301,9 +291,9 @@ class settingsCFI extends scbBoxesPage
 				'delete' => __('Deleted', 'custom-field-images'),
 			);
 
-			$this->admin_msg($actions[$action] 
-				. " <strong>$r</strong> " 
-				. _n('image', 'images', $r, 'custom-field-images') 
+			$this->admin_msg($actions[$action]
+				. " <strong>$r</strong> "
+				. _n('image', 'images', $r, 'custom-field-images')
 				. '.'
 			);
 		}
@@ -313,7 +303,7 @@ class settingsCFI extends scbBoxesPage
 
 // Import/Export methods
 
-	private function impex($action) 
+	private function impex($action)
 	{
 		$operators = array(
 			'import' => '!=',
@@ -322,13 +312,14 @@ class settingsCFI extends scbBoxesPage
 
 		$posts = $this->get_posts($operators[$action]);
 
+		$func = $action . '_single';
 		foreach ( $posts as $post )
-			$count += call_user_func(array($this, $action . '_single'), $post);
+			$count += $this->$func($post);
 
 		return (int) $count;
 	}
 
-	private function import_single($post) 
+	private function import_single($post)
 	{
 		if ( 0 == preg_match('#^\s*(<a[^\<]+>)?\s*(<img[^\<]+>)\s*(?:</a>)?#i', $post->content, $matches) )
 			return 0;
@@ -342,9 +333,9 @@ class settingsCFI extends scbBoxesPage
 		$img_clases = explode(' ', $img['class']);
 
 		// Search for known classes
-		foreach ( $img_clases as $class ) 
+		foreach ( $img_clases as $class )
 		{
-			if ( !in_array(substr($class, 5), array_keys($this->display->styles)) )
+			if ( !in_array(substr($class, 5), array_keys(displayCFI::$styles)) )
 				continue;
 
 			$align = substr($class, 5);
@@ -356,25 +347,23 @@ class settingsCFI extends scbBoxesPage
 		// Set link
 		$element['link'] = '';
 
-		if ( $matches[1] ) 
+		if ( $matches[1] )
 		{
 			$link = $this->get_attributes($matches[1]);
 			$element['link'] = $link['href'];
 		}
 
-		add_post_meta($post->ID, $this->key, $element, TRUE);
+		add_post_meta($post->ID, displayCFI::$key, $element, TRUE);
 
 		// Delete image from post
 		$new_content = str_replace($matches[0], '', $post->content);
 
-		$post->content = $new_content;
-
-		wp_update_post($post);
+		$this->update_post($new_content, $post->ID);
 
 		return 1;
 	}
 
-	private function get_attributes($string) 
+	private function get_attributes($string)
 	{
 		preg_match_all('#(\w+)="\s*((?:[^"]+\s*)+)\s*"#i', $string, $matches, PREG_SET_ORDER);
 
@@ -384,32 +373,41 @@ class settingsCFI extends scbBoxesPage
 		return $attributes;
 	}
 
-	private function export_single($post) 
+	private function export_single($post)
 	{
-		$new_content = $this->display->generate($post->ID) . $post->content;
+		$img = displayCFI::generate($post->ID);
+		if ( FALSE === strpos($post->content, displayCFI::$token) )
+			$new_content = $img . $post->content;
+		else
+			$new_content = str_replace(displayCFI::$token, $img, $post->content);
 
 		if ( $new_content == $post->content )
 			return 0;
 
-		$post->content = $new_content;
+		$this->update_post($new_content, $post->ID);
 
-		wp_update_post($post);
-
-		delete_post_meta($post->ID, $this->key);
+		delete_post_meta($post->ID, displayCFI::$key);
 
 		return 1;
 	}
 
-	private function get_posts($operator) 
+	private function update_post($content, $id)
+	{
+		global $wpdb;
+
+		return $wpdb->update($wpdb->posts, array('post_content' => $content), array('ID' => $id));
+	}
+
+	private function get_posts($operator)
 	{
 		global $wpdb;
 
 		return $wpdb->get_results($wpdb->prepare("
 			SELECT DISTINCT ID, post_content AS content
-			FROM $wpdb->posts NATURAL JOIN $wpdb->postmeta
+			FROM {$wpdb->posts} NATURAL JOIN {$wpdb->postmeta}
 			WHERE post_type IN ('post', 'page')
 			AND meta_key $operator '%s'
-		", $this->display->key));
+		", displayCFI::$key));
 	}
 
 // Delete methods
@@ -421,16 +419,17 @@ class settingsCFI extends scbBoxesPage
 		return $wpdb->query($wpdb->prepare("
 			DELETE FROM $wpdb->postmeta
 			WHERE meta_key = '%s'
-		", $this->display->key));
+		", displayCFI::$key));
 	}
 }
 
 function cfi_admin_init($file, $options)
 {
-	new boxCFI();
-	new settingsCFI($file, $options);
+	boxCFI::init();
 
 	if ( $options->insert_button )
-		new insertCFI();
+		insertCFI::init();
+
+	new settingsCFI($file, $options);
 }
 
