@@ -124,18 +124,12 @@ class settingsCFI extends scbBoxesPage
 	{
 		$this->args = array(
 			'page_title' => __('Custom Field Images', 'custom-field-images'),
-			'action_link' => __('Settings', 'custom-field-images'),
 		);
 
 		$this->boxes = array(
 			array('settings', __('Settings', 'custom-field-images'), 'normal'),
-			array('manage', __('Management', 'custom-field-images'), 'normal'),
+			array('manage', __('Management', 'custom-field-images'), 'side'),
 		);
-	}
-
-	function page_head()
-	{
-		wp_enqueue_style('cfi_css', $this->plugin_url . '/inc/admin.css', array(), '1.2');
 	}
 
 	function settings_handler()
@@ -201,7 +195,7 @@ class settingsCFI extends scbBoxesPage
 			)
 		);
 
-		echo $this->form_table($rows, $this->formdata, $this->submit_button('action', __('Save Changes', 'custom-field-images')));
+		echo $this->form_table($rows, $this->formdata, __('Save Changes', 'custom-field-images'));
 	}
 
 
