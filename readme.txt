@@ -79,21 +79,21 @@ Just clear the URL field and save the post.
 * fixed template tags
 
 = 1.9 =
-* added l10n
+* l10n
 * better admin page
 * fixed (Insert CFI) button
 * [more info](http://scribu.net/wordpress/custom-field-images/cfi-1-9.html)
 
 = 1.8 =
-* added CFI Loop widget
+* CFI Loop widget
 * [more info](http://scribu.net/wordpress/custom-field-images/cfi-1-8.html)
 
 = 1.7 =
-* added (Insert CFI) button
+* (Insert CFI) button
 * [more info](http://scribu.net/wordpress/custom-field-images/cfi-1-7.html)
 
 = 1.6 =
-* added shortcode
+* [cfi] shortcode
 * duplicate alt. text as title
 * [more info](http://scribu.net/wordpress/custom-field-images/cfi-1-6.html)
 
@@ -111,7 +111,7 @@ Just clear the URL field and save the post.
 * general improvements
 
 = 1.1 =
-* added page support
+* page support
 
 = 1.0 =
 * initial release
