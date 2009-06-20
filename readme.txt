@@ -70,3 +70,49 @@ Just clear the URL field and save the post.
 1. The custom box for inserting image data
 2. The quick insert button
 
+== Changelog ==
+
+= 1.9.2 =
+* bugfix
+
+= 1.9.1 =
+* fixed template tags
+
+= 1.9 =
+* added l10n
+* better admin page
+* fixed (Insert CFI) button
+* [more info](http://scribu.net/wordpress/custom-field-images/cfi-1-9.html)
+
+= 1.8 =
+* added CFI Loop widget
+* [more info](http://scribu.net/wordpress/custom-field-images/cfi-1-8.html)
+
+= 1.7 =
+* added (Insert CFI) button
+* [more info](http://scribu.net/wordpress/custom-field-images/cfi-1-7.html)
+
+= 1.6 =
+* added shortcode
+* duplicate alt. text as title
+* [more info](http://scribu.net/wordpress/custom-field-images/cfi-1-6.html)
+
+= 1.5 =
+* import / export functionality
+* option to automatically link to associated post
+
+= 1.4 =
+* extra attributes for image link
+
+= 1.3 =
+* one field per image instead of 4
+
+= 1.2 =
+* general improvements
+
+= 1.1 =
+* added page support
+
+= 1.0 =
+* initial release
+
