@@ -1,0 +1,243 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR scribu
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Custom Field Images 1.8.4a\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
+"POT-Creation-Date: 2009-06-11 22:41+0300\n"
+"PO-Revision-Date: 2009-06-11 22:42+0200\n"
+"Last-Translator: scribu <scribu@gmail.com>\n"
+"Language-Team: ROMANIAN <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1 || n==0);\n"
+
+#: admin.php:27
+msgid "Image URL"
+msgstr "URL Imagine"
+
+#: admin.php:34
+msgid "Alt. Text"
+msgstr "Text alternativ"
+
+#: admin.php:41
+msgid "Link to"
+msgstr "Link spre"
+
+#: admin.php:48
+msgid "Align"
+msgstr "Aliniere"
+
+#: admin.php:53
+#: admin.php:169
+msgid "left"
+msgstr "stânga"
+
+#: admin.php:54
+#: admin.php:170
+msgid "center"
+msgstr "centru"
+
+#: admin.php:55
+#: admin.php:171
+msgid "right"
+msgstr "dreapta"
+
+#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 1.9)  #-#-#-#-#
+#. Plugin Name of an extension
+#: admin.php:126
+msgid "Custom Field Images"
+msgstr ""
+
+#: admin.php:127
+#: admin.php:131
+#: inc/scb/AdminPage.php:246
+msgid "Settings"
+msgstr "Setări"
+
+#: admin.php:132
+msgid "Management"
+msgstr "Administrare"
+
+#: admin.php:143
+#: admin.php:204
+msgid "Save Changes"
+msgstr "Salvează schimbările"
+
+#: admin.php:153
+msgid "Display in"
+msgstr "Afișează în"
+
+#: admin.php:157
+msgid "content"
+msgstr "conținut"
+
+#: admin.php:158
+msgid "excerpt"
+msgstr "extras"
+
+#: admin.php:159
+msgid "feed"
+msgstr "feed"
+
+#: admin.php:164
+msgid "Default alignment"
+msgstr "Aliniere implicită"
+
+#: admin.php:176
+msgid "Extra link attributes"
+msgstr "Atribute adiționale link"
+
+#: admin.php:177
+msgid "Example"
+msgstr "Exemplu"
+
+#: admin.php:183
+msgid "Link image to post"
+msgstr "Linkează imaginea cu postul"
+
+#: admin.php:184
+msgid "If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with."
+msgstr "Dacă <em>Link spre</em> este lăsat gol, atunci imaginea va avea link spre postul cu care e asociată."
+
+#: admin.php:190
+msgid "Duplicate Alt. Text as Title"
+msgstr "Duplică textul alternativ ca titlu"
+
+#: admin.php:191
+msgid "The <em>Alt. Text</em> will also be added as the image title."
+msgstr "Textul alternativ va fi adăugat și ca titlul imaginii."
+
+#: admin.php:197
+msgid "Insert CFI button"
+msgstr "Buton de inserare CFI"
+
+#: admin.php:198
+msgid "Add button in the Insert Image form"
+msgstr "Adaugă buton la formularul pentru inserare imagini"
+
+#: admin.php:213
+msgid "Are you sure?"
+msgstr "Sunteți sigur?"
+
+#: admin.php:235
+msgid "Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed."
+msgstr "Aici puteți administra toate imaginile deodată. Vă rugăm să faceți o <strong>copie de siguranță</strong> înainte să continuați."
+
+#: admin.php:239
+msgid "Import images"
+msgstr "Importează imagini"
+
+#: admin.php:240
+msgid "This will extract the first image at the beginning of posts, insert it into custom fields and then remove it from the post content."
+msgstr "Aceasta va extrage prima imagine de la începutul posturilor, o va insera într-un custom field și apoi o va șterge din conținutul postului."
+
+#: admin.php:241
+msgid "Import"
+msgstr "Importează"
+
+#: admin.php:246
+msgid "Export images"
+msgstr "Exportează imagini"
+
+#: admin.php:247
+msgid "This will insert each image in the post content and then delete the custom field."
+msgstr "Aceasta va insera fiecare imaginile în conținutul postului și apoi va șterge custom field-ul."
+
+#: admin.php:248
+msgid "Export"
+msgstr "Exportează"
+
+#: admin.php:253
+msgid "Delete images"
+msgstr "Șterge imagini"
+
+#: admin.php:254
+msgid "This will delete all custom field images."
+msgstr "Aceasta va șterge toate imaginile din custom fields."
+
+#: admin.php:255
+msgid "Delete"
+msgstr "Șterge"
+
+#: admin.php:289
+msgid "Imported"
+msgstr "S-au importat"
+
+#: admin.php:290
+msgid "Exported"
+msgstr "S-au exportat"
+
+#: admin.php:291
+msgid "Deleted"
+msgstr "S-au șters"
+
+#: admin.php:296
+msgid "image"
+msgid_plural "images"
+msgstr[0] "imagine"
+msgstr[1] "imagini"
+
+#: admin.php:301
+msgid "An error has occured."
+msgstr "S-a produs o eroare."
+
+#: inc/scb/AdminPage.php:103
+msgid "Settings <strong>saved</strong>."
+msgstr "Setările au fost <strong>salvate</strong>."
+
+#: widget.php:12
+msgid "Display posts as a thumb list"
+msgstr "Afișează posturi ca o listă de imagini"
+
+#: widget.php:15
+msgid "CFI Loop"
+msgstr "Loop CFI"
+
+#: widget.php:41
+msgid "Title"
+msgstr "Titlu"
+
+#: widget.php:48
+msgid "Query string"
+msgstr "Parametri selecție"
+
+#: widget.php:51
+msgid "Example: <em>category_name=Events</em>"
+msgstr "Exemplu: <em>category_name=Evenimente</em>"
+
+#. Plugin URI of an extension
+msgid "http://scribu.net/wordpress/custom-field-images"
+msgstr ""
+
+#. Description of an extension
+msgid "Easily associate any image to a post and display it in post excerpts, feeds etc."
+msgstr ""
+
+#. Author of an extension
+msgid "scribu"
+msgstr ""
+
+#. Author URI of an extension
+msgid "http://scribu.net/"
+msgstr ""
+
+#~ msgid "Install now"
+#~ msgstr "Instalează acum"
+#~ msgid "Easily manage and display images anywhere using custom fields."
+#~ msgstr "Administrează și afișează imagini oriunde folosind custom fields."
+#~ msgid "Example: <em>target=\"_blank\" rel=\"nofollow\"</em>"
+#~ msgstr "Exemplu: <em>target=\"_blank\" rel=\"nofollow\"</em>"
+#~ msgid "Custom Field Images Settings"
+#~ msgstr "Setări Custom Field Images"
+#~ msgid "CFI Settings"
+#~ msgstr "Setări CFI"
+#~ msgid "Manage Custom Field Images"
+#~ msgstr "Administrează Custom Field Images"
+#~ msgid "Manage"
+#~ msgstr "Administrează"
+
