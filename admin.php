@@ -7,6 +7,22 @@ abstract class boxCFI extends displayCFI
 	{
 		add_action('admin_menu', array(__CLASS__, 'box_init'));
 		add_action('save_post', array(__CLASS__, 'save'), 1, 2);
+		add_action('admin_print_styles', array(__CLASS__, 'scripts'));
+	}
+
+	static function scripts($page)
+	{
+		global $pagenow;
+
+		if ( !in_array($pagenow, array('post-new.php', 'post.php', 'page-new.php', 'page.php')) )
+			return;
+?>
+<style type="text/css">
+		#cfi-box table, #cfi-box input[type='text'] {width:100%}
+		#cfi-box th {width:7%; text-align:right; font-weight: normal}
+		#cfi-id input {margin:0 !important; width: 15em !important}
+</style>
+<?php
 	}
 
 	static function box_init()
@@ -17,31 +33,45 @@ abstract class boxCFI extends displayCFI
 
 	static function box()
 	{
-?>
-<style type="text/css">
-		#cfi-box table, #cfi-box .text {width:100%}
-		#cfi-box th {width:7%; text-align:right; font-weight: normal}
-</style>
-<?php $rows = array(
+		$extra_row = array(
+			array(
+				'title' => __('Link to', 'custom-field-images'),
+				'type' => 'text',
+				'name' => 'cfi-id',
+				'desc' => '&nbsp;&nbsp;Size:',
+			),
+
+			array(
+				'type' => 'select',
+				'name' => 'cfi-size',
+				'value' => apply_filters('intermediate_image_sizes', array('thumbnail', 'medium', 'large')),
+			),
+		);
+
+		$extra_row_html = '<div id="cfi-id">';
+		foreach ( $extra_row as $input )
+			$extra_row_html .= scbForms::input($input);
+		$extra_row_html .= '</div>';
+
+		$table[] = scbForms::row_wrap('<strong>' . __('Image ID', 'custom-field-images') . '</strong>', $extra_row_html);
+
+		$rows = array(
 			array(
 				'title' => '<strong>' . __('Image URL', 'custom-field-images') . '</strong>',
 				'type' => 'text',
 				'name' => 'cfi-url',
-				'extra' => 'class="text"'
 			),
 
 			array(
 				'title' => __('Alt. Text', 'custom-field-images'),
 				'type' => 'text',
 				'name' => 'cfi-alt',
-				'extra' => 'class="text"'
 			),
 
 			array(
 				'title' => __('Link to', 'custom-field-images'),
 				'type' => 'text',
 				'name' => 'cfi-link',
-				'extra' => 'class="text"'
 			),
 
 			array(
@@ -59,6 +89,7 @@ abstract class boxCFI extends displayCFI
 
 		self::load();
 
+		$options = array();
 		if ( self::$data )
 		{
 			// Prepend 'cfi-' to data keys
@@ -66,7 +97,10 @@ abstract class boxCFI extends displayCFI
 				$options['cfi-'.$key] = $value;
 		}
 
-		echo scbForms::table($rows, $options);
+		foreach ( $rows as $row )
+			$table[] = scbForms::table_row($row, $options);
+
+		echo scbForms::table_wrap(implode('', $table));
 	}
 
 	function save($post_id, $post)
@@ -251,6 +285,7 @@ class settingsCFI extends scbBoxesPage
 			),
 		);
 
+		$output = '';
 		foreach ( $sections as $section )
 		{
 			extract($section);

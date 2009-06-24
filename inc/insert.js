@@ -1,35 +1,43 @@
-jQuery(function($) {
+jQuery(function($) 
+{
+	var $box = $(document).find('#cfi-box');
+	var $special_row = $box.find('tr:first');
+
+	$(document).ready(function() {
+		$special_row.hide();
+	});
+
 	function fillCfiBox() 
 	{
-		var item = $(this).parents('.media-item');
-		var box = $(document).find('#cfi-box');
+		var $item = $(this).parents('.media-item');
 
-		// Set cfi-url
-		var url = item.find('.urlfile').attr('title');
+		$special_row.show();
+		$box.find('tr:eq(1)').hide();
 
-		var size = item.find('.image-size :checked[value!=full]').parents('.image-size-item').find('.help').text();
-		if ( size.length > 0 ) 
-		{
-			size = size.replace(/^.*?(\d+).*?(\d+).*?$/, '$1x$2');
-			url = url.replace(/(.*)\./, '$1-'+size+'.');
-		}
+		// Set cfi-id
+		var id = $item.find(':submit').attr('name').replace(/^.*?(\d+).*?$/, '$1');
+		$box.find('[name=cfi-id]').val(id);
 
-		box.find('[name=cfi-url]').val(url);
+		console.log($item.find(':submit').attr('name'));
+
+		// Set cfi-size
+		var size = $item.find('.image-size :checked').val();
+		$box.find('[name=cfi-size]').val(size);
 
 		// Set cfi-align
-		var align = item.find('.align :checked').val();
+		var align = $item.find('.align :checked').val();
 		if ( align != 'none' )
-			box.find('tr:last [value="'+align+'"]').attr('checked',true);
+			$box.find('tr:last [value="'+align+'"]').attr('checked',true);
 		else
-			box.find('tr:last :checked').attr('checked', false);	// uncheck all buttons
+			$box.find('tr:last :checked').attr('checked', false);	// uncheck all buttons
 
 		// Set cfi-alt
-		var alt = item.find('.post_title :text').val();
-		box.find('[name=cfi-alt]').val(alt);
+		var alt = $item.find('.post_title :text').val();
+		$box.find('[name=cfi-alt]').val(alt);
 
 		// Set cfi-link
-		var link = item.find('.url :text').val();
-		box.find('[name=cfi-link]').val(link);
+		var link = $item.find('.url :text').val();
+		$box.find('[name=cfi-link]').val(link);
 
 		$(document).find('#TB_closeWindowButton').click();		// close iframe
 
