@@ -85,7 +85,17 @@ abstract class displayCFI
 		if ( is_array($data) )
 			self::$data = @array_merge(self::$data, $data);
 
-		$url = self::$data['url'];
+		if ( isset(self::$data['url']) )
+			$url = self::$data['url'];
+		else
+		{
+			if ( isset(self::$data['size']) )
+				$data = image_downsize(self::$data['id'], self::$data['size']);
+			else
+				$data = image_downsize(self::$data['id']);
+
+			$url = $data[0];
+		}
 
 		if ( !$url )
 			return;
@@ -182,10 +192,10 @@ function _cfi_init()
 	require_once dirname(__FILE__) . '/inc/scb/load.php';
 
 	$options = new scbOptions('cfi_options', __FILE__, array(
-			'default_align' => 'right',
+			'default_align' => '',
+			'extra_attr' => '',
 			'add_title' => TRUE,
 			'default_link' => TRUE,
-			'extra_attr' => '',
 			'insert_button' => TRUE,
 
 			'content' => TRUE,

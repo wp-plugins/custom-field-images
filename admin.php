@@ -1,6 +1,5 @@
 <?php
 
-// Adds the CFI metabox
 abstract class boxCFI extends displayCFI
 {
 	static $insert;
@@ -52,11 +51,8 @@ abstract class boxCFI extends displayCFI
 
 		$options = array();
 		if ( self::$data )
-		{
-			// Prepend 'cfi-' to data keys
 			foreach ( self::$data as $key => $value )
 				$options['cfi-'.$key] = $value;
-		}
 
 		$extra_row = array(
 			array(
@@ -138,7 +134,6 @@ abstract class boxCFI extends displayCFI
 		if ( DOING_AJAX === true || DOING_CRON === true || empty($_POST) || $post->post_type == 'revision' )
 			return;
 
-		// Delete data on empty url
 		if ( empty($_POST['cfi-url']) && empty($_POST['cfi-id']) )
 		{
 			delete_post_meta($post_id, self::$key);
@@ -155,6 +150,7 @@ abstract class boxCFI extends displayCFI
 				self::$data[$name] = $newval;
 		}
 
+		// Can't have both id and url
 		if ( isset(self::$data['id']) )
 		{
 			self::$data['id'] = intval(self::$data['id']);
@@ -162,8 +158,6 @@ abstract class boxCFI extends displayCFI
 		}
 		else
 			unset(self::$data['id'], self::$data['size']);
-
-// print_r(self::$data);
 
 		   add_post_meta($post_id, self::$key, self::$data, TRUE) or
 		update_post_meta($post_id, self::$key, self::$data);
@@ -223,8 +217,9 @@ class settingsCFI extends scbBoxesPage
 				'title' => __('Default alignment', 'custom-field-images'),
 				'type' => 'radio',
 				'name' => 'default_align',
-				'value' => array('left', 'center', 'right'),
+				'value' => array('', 'left', 'center', 'right'),
 				'desc' => array(
+					__('none', 'custom-field-images'),
 					__('left', 'custom-field-images'),
 					__('center', 'custom-field-images'),
 					__('right', 'custom-field-images'),
