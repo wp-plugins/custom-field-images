@@ -3,11 +3,17 @@
 // Adds the CFI metabox
 abstract class boxCFI extends displayCFI
 {
-	static function init()
+	static $insert;
+
+	static function init($insert)
 	{
-		add_action('admin_menu', array(__CLASS__, 'box_init'));
-		add_action('save_post', array(__CLASS__, 'save'), 1, 2);
+		self::$insert = $insert;
+
 		add_action('admin_print_styles', array(__CLASS__, 'scripts'));
+		add_action('admin_menu', array(__CLASS__, 'box_init'));
+
+		add_action('save_post', array(__CLASS__, 'save'), 1, 2);
+		add_action('delete_attachment', array(__CLASS__, 'delete'));
 	}
 
 	static function scripts($page)
@@ -16,23 +22,42 @@ abstract class boxCFI extends displayCFI
 
 		if ( !in_array($pagenow, array('post-new.php', 'post.php', 'page-new.php', 'page.php')) )
 			return;
+
+		if ( self::$insert )
+		{
+			$src = self::get_plugin_url() . '/inc';
+
+			wp_register_script('livequery', $src . '/livequery.js');
+			wp_enqueue_script('cfi-insert', $src . '/insert.js', array('jquery', 'livequery'));
+		}
+
 ?>
 <style type="text/css">
 		#cfi-box table, #cfi-box input[type='text'] {width:100%}
 		#cfi-box th {width:7%; text-align:right; font-weight: normal}
-		#cfi-id input {margin:0 !important; width: 15em !important}
+		#cfi-id input {margin:0 !important; max-width: 15em !important}
 </style>
 <?php
 	}
 
 	static function box_init()
 	{
-		add_meta_box('cfi-box', 'Custom Field Image', array(__CLASS__, 'box'), 'post', 'normal');
-		add_meta_box('cfi-box', 'Custom Field Image', array(__CLASS__, 'box'), 'page', 'normal');
+		foreach ( array('post', 'page') as $page )
+			add_meta_box('cfi-box', __('Custom Field Image', 'custom-field-images'), array(__CLASS__, 'box'), $page, 'normal');
 	}
 
 	static function box()
 	{
+		self::load();
+
+		$options = array();
+		if ( self::$data )
+		{
+			// Prepend 'cfi-' to data keys
+			foreach ( self::$data as $key => $value )
+				$options['cfi-'.$key] = $value;
+		}
+
 		$extra_row = array(
 			array(
 				'title' => __('Link to', 'custom-field-images'),
@@ -50,7 +75,7 @@ abstract class boxCFI extends displayCFI
 
 		$extra_row_html = '<div id="cfi-id">';
 		foreach ( $extra_row as $input )
-			$extra_row_html .= scbForms::input($input);
+			$extra_row_html .= scbForms::input($input, $options);
 		$extra_row_html .= '</div>';
 
 		$table[] = scbForms::row_wrap('<strong>' . __('Image ID', 'custom-field-images') . '</strong>', $extra_row_html);
@@ -78,8 +103,9 @@ abstract class boxCFI extends displayCFI
 				'title' => __('Align', 'custom-field-images'),
 				'type' => 'radio',
 				'name' => 'cfi-align',
-				'value' => array('left', 'center', 'right'),
+				'value' => array('', 'left', 'center', 'right'),
 				'desc' => array(
+					__('none', 'custom-field-images'),
 					__('left', 'custom-field-images'),
 					__('center', 'custom-field-images'),
 					__('right', 'custom-field-images'),
@@ -87,58 +113,60 @@ abstract class boxCFI extends displayCFI
 			)
 		);
 
-		self::load();
-
-		$options = array();
-		if ( self::$data )
-		{
-			// Prepend 'cfi-' to data keys
-			foreach ( self::$data as $key => $value )
-				$options['cfi-'.$key] = $value;
-		}
-
 		foreach ( $rows as $row )
 			$table[] = scbForms::table_row($row, $options);
 
 		echo scbForms::table_wrap(implode('', $table));
 	}
 
+	function delete($id)
+	{
+		global $wpdb;
+
+		$key = self::$key;
+		$regex = '"id";s:[0-9]+:"' . intval($id) . '"';
+
+		$wpdb->query("
+			DELETE FROM $wpdb->postmeta
+			WHERE meta_key = '$key'
+			AND meta_value RLIKE '$regex'
+		");
+	}
+
 	function save($post_id, $post)
 	{
-		if ( DOING_AJAX === true || empty($_POST) || $post->post_type == 'revision' )
+		if ( DOING_AJAX === true || DOING_CRON === true || empty($_POST) || $post->post_type == 'revision' )
 			return;
 
 		// Delete data on empty url
-		if ( empty($_POST['cfi-url']) ) {
+		if ( empty($_POST['cfi-url']) && empty($_POST['cfi-id']) )
+		{
 			delete_post_meta($post_id, self::$key);
 			return;
 		}
 
-		foreach ( self::$data as $name => $value )
-			self::$data[$name] = $_POST['cfi-'.$name];
+		foreach ( array_keys(self::$data) as $name )
+		{
+			$newval = trim($_POST['cfi-'.$name]);
+
+			if ( empty($newval) )
+				unset(self::$data[$name]);
+			else
+				self::$data[$name] = $newval;
+		}
+
+		if ( isset(self::$data['id']) )
+		{
+			self::$data['id'] = intval(self::$data['id']);
+			unset(self::$data['url']);
+		}
+		else
+			unset(self::$data['id'], self::$data['size']);
+
+// print_r(self::$data);
 
 		   add_post_meta($post_id, self::$key, self::$data, TRUE) or
 		update_post_meta($post_id, self::$key, self::$data);
-	}
-}
-
-// Loads (Insert CFI) button script
-abstract class insertCFI
-{
-	static function init()
-	{
-		add_action('admin_enqueue_scripts', array(__CLASS__, 'insert'));
-	}
-
-	static function insert($page)
-	{
-		if ( !in_array($page, array('post.php', 'post-new.php', 'page.php', 'page-new.php')) )
-			return false;
-
-		$src = self::get_plugin_url() . '/inc';
-
-		wp_register_script('livequery', $src . '/livequery.js');
-		wp_enqueue_script('cfi-insert', $src . '/insert.js', array('jquery', 'livequery'));
 	}
 
 	private static function get_plugin_url()
@@ -151,7 +179,10 @@ abstract class insertCFI
 	}
 }
 
-// Adds the CFI Settings page
+
+
+// _____________Settings page_____________
+
 class settingsCFI extends scbBoxesPage
 {
 	function setup()
@@ -454,10 +485,7 @@ class settingsCFI extends scbBoxesPage
 
 function cfi_admin_init($file, $options)
 {
-	boxCFI::init();
-
-	if ( $options->insert_button )
-		insertCFI::init();
+	boxCFI::init($options->insert_button);
 
 	new settingsCFI($file, $options);
 }

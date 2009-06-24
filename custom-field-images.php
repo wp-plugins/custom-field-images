@@ -34,6 +34,8 @@ abstract class displayCFI
 
 	// Data fields for current image
 	static $data = array(
+		'id' => '',
+		'size' => '',
 		'url' => '',
 		'align' => '',
 		'alt' => '',
