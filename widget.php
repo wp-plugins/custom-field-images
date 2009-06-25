@@ -17,9 +17,7 @@ class widgetCFI extends scbWidget
 
 	function content($instance)
 	{
-		global $CFI_display;
-
-		echo $CFI_display->loop($instance['query']);
+		echo displayCFI::loop($instance['query']);
 	}
 
 	function update($new_instance, $old_instance)

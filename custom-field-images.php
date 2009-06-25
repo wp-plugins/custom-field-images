@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily associate any image to a post and display it in post excerpts, feeds etc.
-Version: 2.0b
+Version: 2.0b2
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
@@ -78,12 +78,12 @@ abstract class displayCFI
 		return $content;
 	}
 
-	static function generate($post_id = '', $data = '')
+	static function generate($post_id = '', $defaults = '')
 	{
 		self::load($post_id);
 
-		if ( is_array($data) )
-			self::$data = @array_merge(self::$data, $data);
+		if ( ! empty($defaults) )
+			self::$data = wp_parse_args($defaults, self::$data);
 
 		if ( isset(self::$data['url']) )
 			$url = self::$data['url'];
@@ -91,8 +91,8 @@ abstract class displayCFI
 		{
 			if ( isset(self::$data['size']) )
 				$data = image_downsize(self::$data['id'], self::$data['size']);
-			else
-				$data = image_downsize(self::$data['id']);
+ 			else
+ 				$data = image_downsize(self::$data['id']);
 
 			$url = $data[0];
 		}
@@ -139,10 +139,11 @@ abstract class displayCFI
 		ob_start();
 
 		// Do the loop
-		echo "<ul id='cfi-loop'>";
+		echo "<ul class='cfi-loop'>";
 		while ( $side_query->have_posts() ) : $side_query->the_post();
 			echo "<li>";
 			echo self::generate($post->ID, array(
+				'size' => 'thumbnail',
 				'alt' => $post->post_title,
 				'align' => '',
 				'link' => get_permalink($post->ID)
@@ -192,15 +193,15 @@ function _cfi_init()
 	require_once dirname(__FILE__) . '/inc/scb/load.php';
 
 	$options = new scbOptions('cfi_options', __FILE__, array(
-			'default_align' => '',
-			'extra_attr' => '',
-			'add_title' => TRUE,
-			'default_link' => TRUE,
-			'insert_button' => TRUE,
+		'default_align' => '',
+		'extra_attr' => '',
+		'add_title' => TRUE,
+		'default_link' => TRUE,
+		'insert_button' => TRUE,
 
-			'content' => TRUE,
-			'feed' => TRUE,
-			'excerpt' => TRUE
+		'content' => TRUE,
+		'feed' => TRUE,
+		'excerpt' => TRUE
 	));
 
 	displayCFI::init($options);
