@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily associate any image to a post and display it in post excerpts, feeds etc.
-Version: 2.0b2
+Version: 2.0rc1
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
@@ -23,8 +23,58 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+// Init
+_cfi_init();
+function _cfi_init()
+{
+	// Load translations
+	$plugin_dir = basename(dirname(__FILE__));
+	load_plugin_textdomain('custom-field-images', "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
+
+	// Load scbFramework
+	require_once dirname(__FILE__) . '/inc/scb/load.php';
+
+	$options = new scbOptions('cfi_options', __FILE__, array(
+		'default_url' => '',
+		'default_align' => '',
+		'default_link' => TRUE,
+		'extra_attr' => '',
+		'add_title' => TRUE,
+		'insert_button' => TRUE,
+
+		'content' => TRUE,
+		'feed' => TRUE,
+		'excerpt' => TRUE
+	));
+
+	displayCFI::init($options);
+
+	// Load template tags
+	require_once dirname(__FILE__) . '/template-tags.php';
+
+	// Load widget class
+	if ( class_exists('WP_Widget') )
+	{
+		require_once dirname(__FILE__) . '/widget.php';
+		scbWidget::init('widgetCFI', __FILE__, 'cfi-loop');
+	}
+
+	// Load admin classes
+	if ( is_admin() )
+	{
+		require_once dirname(__FILE__) . '/admin.php';
+		cfi_admin_init(__FILE__, $options);
+	}
+}
+
 abstract class displayCFI
 {
+	// wp_postmeta.meta_key
+	const key = '_cfi_image';
+
+	const token = '[cfi]';
+
 	// Styles for images in feeds
 	static $styles = array(
 		'left' => 'float:left; margin: 0 1em .5em 0;',
@@ -42,11 +92,6 @@ abstract class displayCFI
 		'link' => ''
 	);
 
-	// wp_postmeta.meta_key
-	static $key = '_cfi_image';
-
-	static $token = '[cfi]';
-
 	// $post->ID
 	static $id;
 
@@ -57,8 +102,8 @@ abstract class displayCFI
 	{
 		self::$options = $options;
 
-		add_filter('the_excerpt', array(__CLASS__, 'filter'));
-		add_filter('the_content', array(__CLASS__, 'filter'));
+		add_filter('the_excerpt', array(__CLASS__, 'filter'), 20);
+		add_filter('the_content', array(__CLASS__, 'filter'), 20);
 	}
 
 	static function filter($content)
@@ -66,14 +111,20 @@ abstract class displayCFI
 		$type = substr(current_filter(), 4);
 		$is_feed = is_feed();
 
-		if ( 
-			($is_feed && self::$options->get('feed')) 
-		|| (!$is_feed && self::$options->get($type))
-		)
-			if ( $type != 'excerpt' && FALSE !== strpos($content, '[cfi]') )
-				return str_replace(self::$token, self::generate(), $content);
-			else
-				return self::generate() . $content;
+		$cond = ($is_feed && self::$options->feed) || (!$is_feed && self::$options->$type);
+
+		if ( !$cond )
+			return $content;
+
+		$img = self::generate();
+
+		if ( $type != 'excerpt' && FALSE !== strpos($content, self::token) )
+			$content = str_replace(self::token, $img, $content);
+		else
+			$content = $img . $content;
+
+//		if ( is_feed() )
+//			echo $img;
 
 		return $content;
 	}
@@ -85,11 +136,9 @@ abstract class displayCFI
 		if ( ! empty($defaults) )
 			self::$data = wp_parse_args($defaults, self::$data);
 
-		if ( isset(self::$data['url']) )
-			$url = self::$data['url'];
-		else
+		if ( self::$data['id'] )
 		{
-			if ( isset(self::$data['size']) )
+			if ( self::$data['size'] )
 				$data = image_downsize(self::$data['id'], self::$data['size']);
  			else
  				$data = image_downsize(self::$data['id']);
@@ -97,14 +146,20 @@ abstract class displayCFI
 			$url = $data[0];
 		}
 
-		if ( !$url )
+		if ( empty($url) )
+			$url = self::$data['url'];
+
+		if ( empty($url) )
+			$url = self::$options->default_url;
+
+		if ( empty($url) )
 			return;
 
 		// Begin img tag
 		$image .= '<img src="'. $url .'" ';
 
 		// Set alignment
-		$align = self::$data['align'] ? self::$data['align'] : self::$options->get('default_align');
+		$align = self::$data['align'] ? self::$data['align'] : self::$options->default_align;
 
 		if ( is_feed() )
 			$image .= sprintf( 'style="%s" ', self::$styles[$align] );
@@ -129,7 +184,7 @@ abstract class displayCFI
 	static function loop($query)
 	{
 		$query = wp_parse_args($query, array(
-			'meta_key' => $CFI_display->key,
+			'meta_key' => displayCFI::key,
 			'post_type' => 'post',
 			'post_status' => 'publish'
 		));
@@ -176,51 +231,7 @@ abstract class displayCFI
 
 		self::$id = $post_id ? $post_id : $post->ID;
 
-		self::$data = get_post_meta(self::$id, self::$key, TRUE);
-	}
-}
-
-
-// Init
-_cfi_init();
-function _cfi_init()
-{
-	// Load translations
-	$plugin_dir = basename(dirname(__FILE__));
-	load_plugin_textdomain('custom-field-images', "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
-
-	// Load scbFramework
-	require_once dirname(__FILE__) . '/inc/scb/load.php';
-
-	$options = new scbOptions('cfi_options', __FILE__, array(
-		'default_align' => '',
-		'extra_attr' => '',
-		'add_title' => TRUE,
-		'default_link' => TRUE,
-		'insert_button' => TRUE,
-
-		'content' => TRUE,
-		'feed' => TRUE,
-		'excerpt' => TRUE
-	));
-
-	displayCFI::init($options);
-
-	// Load template tags
-	require_once dirname(__FILE__) . '/template-tags.php';
-
-	// Load widget class
-	if ( class_exists('WP_Widget') )
-	{
-		require_once dirname(__FILE__) . '/widget.php';
-		scbWidget::init('widgetCFI', __FILE__, 'cfi-loop');
-	}
-
-	// Load admin classes
-	if ( is_admin() )
-	{
-		require_once dirname(__FILE__) . '/admin.php';
-		cfi_admin_init(__FILE__, $options);
+		self::$data = get_post_meta(self::$id, self::key, TRUE);
 	}
 }
 

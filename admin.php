@@ -119,7 +119,7 @@ abstract class boxCFI extends displayCFI
 	{
 		global $wpdb;
 
-		$key = self::$key;
+		$key = self::key;
 		$regex = '"id";s:[0-9]+:"' . intval($id) . '"';
 
 		$wpdb->query("
@@ -136,7 +136,7 @@ abstract class boxCFI extends displayCFI
 
 		if ( empty($_POST['cfi-url']) && empty($_POST['cfi-id']) )
 		{
-			delete_post_meta($post_id, self::$key);
+			delete_post_meta($post_id, self::key);
 			return;
 		}
 
@@ -159,8 +159,8 @@ abstract class boxCFI extends displayCFI
 		else
 			unset(self::$data['id'], self::$data['size']);
 
-		   add_post_meta($post_id, self::$key, self::$data, TRUE) or
-		update_post_meta($post_id, self::$key, self::$data);
+		   add_post_meta($post_id, self::key, self::$data, TRUE) or
+		update_post_meta($post_id, self::key, self::$data);
 	}
 
 	private static function get_plugin_url()
@@ -193,10 +193,15 @@ class settingsCFI extends scbBoxesPage
 
 	function settings_handler()
 	{
-		if ( $_POST['action'] != __('Save Changes', 'custom-field-images') )
+		if ( $_POST['action'] != __('Save Settings', 'custom-field-images') )
 			return;
 
 		scbAdminPage::form_handler();
+	}
+
+	function defaults_box()
+	{
+	
 	}
 
 	function settings_box()
@@ -214,6 +219,13 @@ class settingsCFI extends scbBoxesPage
 			),
 
 			array(
+				'title' => __('Default URL', 'custom-field-images'),
+				'type' => 'text',
+				'name' => 'default_url',
+				'desc' => __('This image will be added to posts that don\'t have one', 'custom-field-images'),
+			),
+
+			array(
 				'title' => __('Default alignment', 'custom-field-images'),
 				'type' => 'radio',
 				'name' => 'default_align',
@@ -227,13 +239,6 @@ class settingsCFI extends scbBoxesPage
 			),
 
 			array(
-				'title' => __('Extra link attributes', 'custom-field-images'),
-				'desc' => __('Example', 'custom-field-images') . ': <em>target="_blank" rel="nofollow"</em>',
-				'type' => 'text',
-				'name' => 'extra_attr'
-			),
-
-			array(
 				'title' => __('Link image to post', 'custom-field-images'),
 				'desc' => __('If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.', 'custom-field-images'),
 				'type' => 'checkbox',
@@ -241,10 +246,10 @@ class settingsCFI extends scbBoxesPage
 			),
 
 			array(
-				'title' => __('Duplicate Alt. Text as Title', 'custom-field-images'),
-				'desc' => __('The <em>Alt. Text</em> will also be added as the image title.', 'custom-field-images'),
-				'type' => 'checkbox',
-				'name' => 'add_title',
+				'title' => __('Extra link attributes', 'custom-field-images'),
+				'desc' => __('Example', 'custom-field-images') . ': <em>target="_blank" rel="nofollow"</em>',
+				'type' => 'text',
+				'name' => 'extra_attr'
 			),
 
 			array(
@@ -252,7 +257,7 @@ class settingsCFI extends scbBoxesPage
 				'desc' => __('Add button in the Insert Image form', 'custom-field-images'),
 				'type' => 'checkbox',
 				'name' => 'insert_button',
-			)
+			),
 		);
 
 		echo $this->form_table($rows, $this->formdata, __('Save Changes', 'custom-field-images'));
@@ -408,7 +413,7 @@ class settingsCFI extends scbBoxesPage
 			$element['link'] = $link['href'];
 		}
 
-		add_post_meta($post->ID, displayCFI::$key, $element, TRUE);
+		add_post_meta($post->ID, displayCFI::key, $element, TRUE);
 
 		// Delete image from post
 		$new_content = str_replace($matches[0], '', $post->content);
@@ -431,17 +436,17 @@ class settingsCFI extends scbBoxesPage
 	private function export_single($post)
 	{
 		$img = displayCFI::generate($post->ID);
-		if ( FALSE === strpos($post->content, displayCFI::$token) )
+		if ( FALSE === strpos($post->content, displayCFI::token) )
 			$new_content = $img . $post->content;
 		else
-			$new_content = str_replace(displayCFI::$token, $img, $post->content);
+			$new_content = str_replace(displayCFI::token, $img, $post->content);
 
 		if ( $new_content == $post->content )
 			return 0;
 
 		$this->update_post($new_content, $post->ID);
 
-		delete_post_meta($post->ID, displayCFI::$key);
+		delete_post_meta($post->ID, displayCFI::key);
 
 		return 1;
 	}
@@ -462,7 +467,7 @@ class settingsCFI extends scbBoxesPage
 			FROM {$wpdb->posts} NATURAL JOIN {$wpdb->postmeta}
 			WHERE post_type IN ('post', 'page')
 			AND meta_key $operator '%s'
-		", displayCFI::$key));
+		", displayCFI::key));
 	}
 
 // Delete methods
@@ -474,7 +479,7 @@ class settingsCFI extends scbBoxesPage
 		return $wpdb->query($wpdb->prepare("
 			DELETE FROM $wpdb->postmeta
 			WHERE meta_key = '%s'
-		", displayCFI::$key));
+		", displayCFI::key));
 	}
 }
 
