@@ -1,5 +1,4 @@
-jQuery(function($){
-$(document).ready(function(){
+jQuery(document).ready(function($){
 	var $box = $(document).find('#cfi-box');
 	var $id_row = $box.find('tr:eq(0)');
 	var $url_row = $box.find('tr:eq(1)');
@@ -69,6 +68,5 @@ $(document).ready(function(){
 			$('#TB_iframeContent').load(addButton); 						// after each tab load
 		});
 	});
-});
 });
 
