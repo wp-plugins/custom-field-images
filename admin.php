@@ -1,5 +1,12 @@
 <?php
 
+function cfi_admin_init($file, $options)
+{
+	boxCFI::init($options->insert_button);
+
+	new settingsCFI($file, $options);
+}
+
 abstract class boxCFI extends displayCFI
 {
 	static $insert;
@@ -26,10 +33,12 @@ abstract class boxCFI extends displayCFI
 		{
 			$src = self::get_plugin_url() . '/inc';
 
-			wp_register_script('livequery', $src . '/livequery.js');
-			wp_enqueue_script('cfi-insert', $src . '/insert.js', array('jquery', 'livequery'));
+			wp_enqueue_script('livequery', $src . '/livequery.js', array('jquery'), '1.0.3', true);
+			wp_enqueue_script('cfi-insert', $src . '/insert.js', array('jquery', 'livequery'), 2.0, true);
 
-			echo scbAdminPage::js_wrap("window.cfi_insert_text='" . __('Insert CFI', 'custom-field-images') . "';");
+			wp_localize_script('cfi-insert', 'cfiL10n', array(
+				'insert_text' => __('Insert CFI', 'custom-field-images')
+			));
 		}
 
 ?>
@@ -225,7 +234,6 @@ class settingsCFI extends scbBoxesPage
 				'title' => __('Default URL', 'custom-field-images'),
 				'type' => 'text',
 				'name' => 'default_url',
-				'desc' => __('This image will be added to posts that don\'t have one', 'custom-field-images'),
 			),
 
 			array(
@@ -299,21 +307,21 @@ class settingsCFI extends scbBoxesPage
 		$sections = array(
 			array(
 				'header' => __("Import images", 'custom-field-images'),
-				'description' => __("This will extract the first image at the beginning of posts, insert it into custom fields and then remove it from the post content.", 'custom-field-images'),
+				'description' => __("Extract the first image at the beginning of each post and insert it into a custom field.", 'custom-field-images'),
 				'value' => __('Import', 'custom-field-images'),
 				'action' => 'import'
 			),
 
 			array(
 				'header' => __("Export images", 'custom-field-images'),
-				'description' => __("This will insert each image in the post content and then delete the custom field.", 'custom-field-images'),
+				'description' => __("Insert each image in the post content and then delete the custom field.", 'custom-field-images'),
 				'value' => __('Export', 'custom-field-images'),
 				'action' => 'export'
 			),
 
 			array(
 				'header' => __("Delete images", 'custom-field-images'),
-				'description' => __("This will delete all custom field images.", 'custom-field-images'),
+				'description' => __("Delete all custom field images.", 'custom-field-images'),
 				'value' => __('Delete', 'custom-field-images'),
 				'action' => 'delete'
 			),
@@ -486,10 +494,4 @@ class settingsCFI extends scbBoxesPage
 	}
 }
 
-function cfi_admin_init($file, $options)
-{
-	boxCFI::init($options->insert_button);
-
-	new settingsCFI($file, $options);
-}
 
