@@ -40,7 +40,6 @@ function _cfi_init()
 		'default_align' => '',
 		'default_link' => TRUE,
 		'extra_attr' => '',
-		'add_title' => TRUE,
 		'insert_button' => TRUE,
 
 		'content' => TRUE,
@@ -167,14 +166,10 @@ abstract class displayCFI
 		else
 			$image .= sprintf( 'class="cfi align%s" ', $align );
 
-		// Set alt text
+		// Set alt text & title
 		$alt = self::$data['alt'] ? self::$data['alt'] : get_the_title();
 
-		$image .= sprintf( 'alt="%s" ', $alt );
-
-		// Set title
-		if ( self::$options->get('add_title') )
-			$image .= sprintf( 'title="%s" ', $alt );
+		$image .= sprintf( 'alt="%s" title="%s"', $alt, $alt);
 
 		// End img tag
 		$image .= '/>';

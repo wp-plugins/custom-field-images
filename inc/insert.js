@@ -1,3 +1,11 @@
+function test() {
+	var inner_function = function() {
+		alert('boo');
+	}
+}
+
+console.log(typeof inner_function);
+
 jQuery(document).ready(function($){
 	var $box = $(document).find('#cfi-box');
 	var $id_row = $box.find('tr:eq(0)');
@@ -40,7 +48,7 @@ jQuery(document).ready(function($){
 
 	function addButton()
 	{
-		button = $('<a>')
+		var button = $('<a>')
 			.attr('href', '#')
 			.css('color', '#006505')
 			.text(cfiL10n.insert_text)
