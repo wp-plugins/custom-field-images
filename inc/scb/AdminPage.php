@@ -22,6 +22,8 @@ abstract class scbAdminPage extends scbForms
 	// scbOptions object holder
 	// Normally, it's used for storing formdata
 	protected $options;
+
+	// l10n
 	protected $textdomain;
 
 	// Formdata used for filling the form elements

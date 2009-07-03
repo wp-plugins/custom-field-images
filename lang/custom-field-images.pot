@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Custom Field Images 2.0rc1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
-"POT-Creation-Date: 2009-07-03 20:08+0300\n"
+"POT-Creation-Date: 2009-07-03 20:22+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,6 +27,10 @@ msgstr ""
 
 #: admin.php:61 admin.php:95
 msgid "Link to"
+msgstr ""
+
+#: admin.php:64
+msgid "Size"
 msgstr ""
 
 #: admin.php:79
@@ -67,7 +71,7 @@ msgstr ""
 msgid "Custom Field Images"
 msgstr ""
 
-#: admin.php:190 inc/scb/AdminPage.php:273
+#: admin.php:190 inc/scb/AdminPage.php:275
 msgid "Settings"
 msgstr ""
 
@@ -209,7 +213,7 @@ msgstr[1] ""
 msgid "An error has occured."
 msgstr ""
 
-#: inc/scb/AdminPage.php:105
+#: inc/scb/AdminPage.php:107
 msgid "Settings <strong>saved</strong>."
 msgstr ""
 

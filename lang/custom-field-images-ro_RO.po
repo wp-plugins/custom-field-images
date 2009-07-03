@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Custom Field Images 1.8.4a\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
-"POT-Creation-Date: 2009-07-03 20:08+0300\n"
-"PO-Revision-Date: 2009-07-03 20:09+0200\n"
+"POT-Creation-Date: 2009-07-03 20:22+0300\n"
+"PO-Revision-Date: 2009-07-03 20:23+0200\n"
 "Last-Translator: scribu <scribu@gmail.com>\n"
 "Language-Team: ROMANIAN <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -28,6 +28,10 @@ msgstr "Custom Field Image"
 #: admin.php:95
 msgid "Link to"
 msgstr "Link spre"
+
+#: admin.php:64
+msgid "Size"
+msgstr "Mărime"
 
 #: admin.php:79
 msgid "Image ID"
@@ -72,7 +76,7 @@ msgid "Custom Field Images"
 msgstr ""
 
 #: admin.php:190
-#: inc/scb/AdminPage.php:273
+#: inc/scb/AdminPage.php:275
 msgid "Settings"
 msgstr "Setări"
 
@@ -206,7 +210,7 @@ msgstr[1] "imagini"
 msgid "An error has occured."
 msgstr "S-a produs o eroare."
 
-#: inc/scb/AdminPage.php:105
+#: inc/scb/AdminPage.php:107
 msgid "Settings <strong>saved</strong>."
 msgstr "Setările au fost <strong>salvate</strong>."
 

@@ -36,7 +36,7 @@ abstract class boxCFI extends displayCFI
 <style type="text/css">
 		#cfi-box table, #cfi-box input[type='text'] {width:100%}
 		#cfi-box th {width:7%; text-align:right; font-weight: normal}
-		#cfi-id input {margin:0 !important; max-width: 15em !important}
+		#cfi-id input {margin:0 !important; max-width: 8em !important}
 </style>
 <?php
 	}
@@ -61,7 +61,7 @@ abstract class boxCFI extends displayCFI
 				'title' => __('Link to', 'custom-field-images'),
 				'type' => 'text',
 				'name' => 'cfi-id',
-				'desc' => '&nbsp;&nbsp;Size:',
+				'desc' => '&nbsp;&nbsp;' . __('Size', 'custom-field-images') . ':',
 			),
 
 			array(
@@ -196,7 +196,7 @@ class settingsCFI extends scbBoxesPage
 
 	function settings_handler()
 	{
-		if ( $_POST['action'] != __('Save Settings', 'custom-field-images') )
+		if ( $_POST['action'] != __('Save Changes', 'custom-field-images') )
 			return;
 
 		scbAdminPage::form_handler();
