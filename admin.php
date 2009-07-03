@@ -76,7 +76,12 @@ abstract class boxCFI extends displayCFI
 			array(
 				'type' => 'select',
 				'name' => 'cfi-size',
-				'value' => apply_filters('intermediate_image_sizes', array('thumbnail', 'medium', 'large')),
+				'value' => array(
+					'thumbnail' => __('thumbnail', 'custom-field-images'),
+					'medium' => __('medium', 'custom-field-images'),
+					'large' => __('large', 'custom-field-images'),
+					'full' => __('full', 'custom-field-images'),
+				)
 			),
 		);
 

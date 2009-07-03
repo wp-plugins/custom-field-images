@@ -1,24 +1,27 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: Custom Field Images CZ (2.0)\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
 "POT-Creation-Date: 2009-07-03 21:11+0300\n"
 "PO-Revision-Date: \n"
-"Last-Translator: scribu <scribu@gmail.com>\n"
-"Language-Team: \n"
+"Last-Translator: Separatista <pavelevap@separatista.net>\n"
+"Language-Team: Separatista <pavelevap@separatista.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n>=2 && n<=4 ? 1 : n==1 ? 0 : 2;\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext\n"
+"X-Poedit-Language: Czech\n"
+"X-Poedit-Country: CZECH REPUBLIC\n"
 
 #: admin.php:33
-#, fuzzy
 msgid "Insert CFI"
-msgstr "TlaÄÃ­tko \"Insert CFI\""
+msgstr "Vložit jako volitelný obrázek"
 
 #: admin.php:49
 msgid "Custom Field Image"
-msgstr ""
+msgstr "Volitelný obrázek"
 
 #: admin.php:63
 #: admin.php:97
@@ -27,28 +30,28 @@ msgstr "URL odkazu"
 
 #: admin.php:66
 msgid "Size"
-msgstr ""
+msgstr "Velikost"
 
 #: admin.php:81
 msgid "Image ID"
-msgstr "ID obrÃ¡zku"
+msgstr "ID obrázku"
 
 #: admin.php:85
 msgid "Image URL"
-msgstr "URL obrÃ¡zku"
+msgstr "URL obrázku"
 
 #: admin.php:91
 msgid "Alt. Text"
-msgstr "AlternativnÃ­ text"
+msgstr "Alternativní text"
 
 #: admin.php:103
 msgid "Align"
-msgstr "ZarovnÃ¡nÃ­"
+msgstr "Zarovnání"
 
 #: admin.php:108
 #: admin.php:238
 msgid "none"
-msgstr ""
+msgstr "Žádné"
 
 #: admin.php:109
 #: admin.php:239
@@ -58,7 +61,7 @@ msgstr "Doleva"
 #: admin.php:110
 #: admin.php:240
 msgid "center"
-msgstr "Na stÅed"
+msgstr "Na střed"
 
 #: admin.php:111
 #: admin.php:241
@@ -69,33 +72,33 @@ msgstr "Doprava"
 #. Plugin Name of an extension
 #: admin.php:188
 msgid "Custom Field Images"
-msgstr "VolitelnÃ© obrÃ¡zky"
+msgstr "Volitelné obrázky"
 
 #: admin.php:192
 #: inc/scb/AdminPage.php:275
 msgid "Settings"
-msgstr "NastavenÃ­"
+msgstr "Nastavení"
 
 #: admin.php:193
 msgid "Management"
-msgstr "SprÃ¡va obrÃ¡zkÅ¯"
+msgstr "Správa obrázků"
 
 #: admin.php:201
 #: admin.php:267
 msgid "Save Changes"
-msgstr "UloÅ¾it zmÄny"
+msgstr "Uložit změny"
 
 #: admin.php:216
 msgid "Display in"
-msgstr "ObrÃ¡zek bude automaticky zobrazen"
+msgstr "Obrázek bude automaticky zobrazen"
 
 #: admin.php:220
 msgid "content"
-msgstr "Obsah pÅÃ­spÄvku"
+msgstr "Obsah příspěvku"
 
 #: admin.php:221
 msgid "excerpt"
-msgstr "StruÄnÃ½ vÃ½pis pÅÃ­spÄvku"
+msgstr "Stručný výpis příspěvku"
 
 #: admin.php:222
 msgid "feed"
@@ -103,52 +106,51 @@ msgstr "RSS zdroj"
 
 #: admin.php:227
 msgid "Default URL"
-msgstr ""
+msgstr "Výchozí URL adresa"
 
 #: admin.php:233
 msgid "Default alignment"
-msgstr "VÃ½chozÃ­ zarovnÃ¡nÃ­"
+msgstr "Výchozí zarovnání"
 
 #: admin.php:246
 msgid "Link image to post"
-msgstr "Odkazovat obrÃ¡zkem pÅÃ­mo na pÅÃ­spÄvek"
+msgstr "Odkazovat obrázkem přímo na příspěvek"
 
 #: admin.php:247
 msgid "If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with."
-msgstr "Pokud zÅ¯stane pole <em>URL odkazu</em> nevyplnÄnÃ©, bude obrÃ¡zek automaticky odkazovat na pÅÃ­spÄvek (nebo strÃ¡nku), ke kterÃ©mu je pÅiÅazen."
+msgstr "Pokud zůstane pole <em>URL odkazu</em> nevyplněné, bude obrázek automaticky odkazovat na příspěvek (nebo stránku), ke kterému je přiřazen."
 
 #: admin.php:253
 msgid "Extra link attributes"
-msgstr "DodateÄnÃ© parametry odkazu"
+msgstr "Dodatečné parametry odkazu"
 
 #: admin.php:254
 msgid "Example"
-msgstr "PÅÃ­klad"
+msgstr "Příklad"
 
 #: admin.php:260
 msgid "Insert CFI button"
-msgstr "TlaÄÃ­tko \"Insert CFI\""
+msgstr "Tlačítko \"Vložit jako volitelný obrázek\""
 
 #: admin.php:261
 msgid "Add button in the Insert Image form"
-msgstr "Automaticky pÅidÃ¡vat tlaÄÃ­tko do formulÃ¡Åe \"PÅidat obrÃ¡zek\""
+msgstr "Automaticky přidávat toto tlačítko do formuláře \"Přidat obrázek\""
 
 #: admin.php:276
 msgid "Are you sure?"
-msgstr "Opravdu to chcete udÄlat?"
+msgstr "Opravdu to chcete udělat?"
 
 #: admin.php:298
 msgid "Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed."
-msgstr "Zde mÅ¯Å¾ete pracovat se vÅ¡emi volitelnÃ½mi obrÃ¡zky najednou. NeÅ¾ se do toho ale pustÃ­te, udÄlejte radÄji <strong>zÃ¡lohu</strong> databÃ¡ze Wordpressu."
+msgstr "Zde můžete pracovat se všemi volitelnými obrázky najednou. Než se do toho ale pustíte, udělejte raději <strong>zálohu</strong> databáze Wordpressu."
 
 #: admin.php:302
 msgid "Import images"
-msgstr "Import obrÃ¡zkÅ¯"
+msgstr "Import obrázků"
 
 #: admin.php:303
-#, fuzzy
 msgid "Extract the first image at the beginning of each post and insert it into a custom field."
-msgstr "NÃ¡stroj pro import obrÃ¡zkÅ¯ automaticky vyhledÃ¡ vÅ¡echny obrÃ¡zky, kterÃ© jsou vloÅ¾eny hned na zaÄÃ¡tku vÅ¡ech pÅÃ­spÄvkÅ¯ (strÃ¡nek), pÅevede je na volitelnÃ© obrÃ¡zky a potom je z pÅÃ­spÄvkÅ¯ smaÅ¾e."
+msgstr "Nástroj pro import obrázků vyhledá všechny obrázky, které jsou vloženy hned na začátku všech příspěvků (stránek), převede je na volitelné obrázky a potom je z příspěvků automaticky smaže."
 
 #: admin.php:304
 msgid "Import"
@@ -156,12 +158,11 @@ msgstr "Importovat"
 
 #: admin.php:309
 msgid "Export images"
-msgstr "Export obrÃ¡zkÅ¯"
+msgstr "Export obrázků"
 
 #: admin.php:310
-#, fuzzy
 msgid "Insert each image in the post content and then delete the custom field."
-msgstr "PomocÃ­ exportu obrÃ¡zkÅ¯ vloÅ¾Ã­te automaticky vÅ¡echny volitelnÃ© obrÃ¡zky na zaÄÃ¡tek pÅÃ­sluÅ¡nÃ©ho pÅÃ­spÄvku (strÃ¡nky) a potom budou volitelnÃ© obrÃ¡zky smazÃ¡ny."
+msgstr "Pomocí exportu obrázků vložíte automaticky všechny volitelné obrázky na začátek příslušného příspěvku (stránky) a potom budou volitelné obrázky smazány."
 
 #: admin.php:311
 msgid "Export"
@@ -169,12 +170,11 @@ msgstr "Exportovat"
 
 #: admin.php:316
 msgid "Delete images"
-msgstr "Smazat obrÃ¡zky"
+msgstr "Smazat obrázky"
 
 #: admin.php:317
-#, fuzzy
 msgid "Delete all custom field images."
-msgstr "Zde mÅ¯Å¾ete smazat vÅ¡echny volitelnÃ© obrÃ¡zky."
+msgstr "Zde můžete smazat všechny volitelné obrázky."
 
 #: admin.php:318
 msgid "Delete"
@@ -182,22 +182,22 @@ msgstr "Smazat"
 
 #: admin.php:353
 msgid "Imported"
-msgstr "NaimportovÃ¡n"
+msgstr "Naimportován"
 
 #: admin.php:354
 msgid "Exported"
-msgstr "ExportovÃ¡n"
+msgstr "Exportován"
 
 #: admin.php:355
 msgid "Deleted"
-msgstr "SmazÃ¡n"
+msgstr "Smazán"
 
 #: admin.php:360
 msgid "image"
 msgid_plural "images"
-msgstr[0] "obrÃ¡zek"
-msgstr[1] "obrÃ¡zky"
-msgstr[2] "obrÃ¡zkÅ¯"
+msgstr[0] "obrázek"
+msgstr[1] "obrázky"
+msgstr[2] "obrázků"
 
 #: admin.php:365
 msgid "An error has occured."
@@ -205,27 +205,27 @@ msgstr "Objevila se chyba."
 
 #: inc/scb/AdminPage.php:107
 msgid "Settings <strong>saved</strong>."
-msgstr "ZmÄny byly <strong>uloÅ¾eny</strong>."
+msgstr "Změny byly <strong>uloženy</strong>."
 
 #: widget.php:12
 msgid "Display posts as a thumb list"
-msgstr "Zobrazuje vÃ½pis pÅÃ­spÄvkÅ¯ jako volitelnÃ© obrÃ¡zky"
+msgstr "Zobrazuje výpis příspěvků jako volitelné obrázky"
 
 #: widget.php:15
 msgid "CFI Loop"
-msgstr "VolitelnÃ© obrÃ¡zky"
+msgstr "Volitelné obrázky"
 
 #: widget.php:39
 msgid "Title"
-msgstr "NÃ¡zev"
+msgstr "Název"
 
 #: widget.php:46
 msgid "Query string"
-msgstr "UpÅesÅujÃ­cÃ­ parametry"
+msgstr "Upřesňující parametry"
 
 #: widget.php:49
 msgid "Example: <em>category_name=Events</em>"
-msgstr "PÅÃ­klad: <em>category_name=NezaÅazenÃ©</em>"
+msgstr "Příklad: <em>category_name=Nezařazené</em>"
 
 #. Plugin URI of an extension
 msgid "http://scribu.net/wordpress/custom-field-images"
@@ -233,7 +233,7 @@ msgstr "http://scribu.net/wordpress/custom-field-images"
 
 #. Description of an extension
 msgid "Easily associate any image to a post and display it in post excerpts, feeds etc."
-msgstr "VolitelnÃ© obrÃ¡zky - Plugin pro pohodlnÃ© pÅiÅazenÃ­ libovolnÃ©ho obrÃ¡zku k pÅÃ­spÄvku a jeho automatickÃ© zobrazenÃ­ v pÅÃ­spÄvku, struÄnÃ©m vÃ½pisu nebo RSS zdroji."
+msgstr "Volitelné obrázky - Plugin pro pohodlné přiřazení libovolného obrázku k příspěvku a jeho automatické zobrazení v příspěvku, stručném výpisu nebo RSS zdroji."
 
 #. Author of an extension
 msgid "scribu"
@@ -244,9 +244,9 @@ msgid "http://scribu.net/"
 msgstr "http://scribu.net/"
 
 #~ msgid "Duplicate Alt. Text as Title"
-#~ msgstr "PouÅ¾Ã­t alternativnÃ­ text takÃ© jako nÃ¡zev obrÃ¡zku"
+#~ msgstr "Použít alternativní text také jako název obrázku"
 #~ msgid "The <em>Alt. Text</em> will also be added as the image title."
 #~ msgstr ""
-#~ "Pole <em>AlternativnÃ­ text</em> bude automaticky pouÅ¾ito takÃ© jako "
-#~ "nÃ¡zev obrÃ¡zku."
+#~ "Pole <em>Alternativní text</em> bude automaticky použito také jako název "
+#~ "obrázku."
 

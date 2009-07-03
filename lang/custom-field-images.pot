@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Custom Field Images 2.0rc2\n"
+"Project-Id-Version: Custom Field Images 2.0\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
-"POT-Creation-Date: 2009-07-03 21:11+0300\n"
+"POT-Creation-Date: 2009-07-04 00:55+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,189 +17,205 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: admin.php:33
+#: admin.php:40
 msgid "Insert CFI"
 msgstr ""
 
-#: admin.php:49
+#: admin.php:56
 msgid "Custom Field Image"
 msgstr ""
 
-#: admin.php:63 admin.php:97
+#: admin.php:70 admin.php:110
 msgid "Link to"
 msgstr ""
 
-#: admin.php:66
+#: admin.php:73
 msgid "Size"
 msgstr ""
 
 #: admin.php:81
+msgid "thumbnail"
+msgstr ""
+
+#: admin.php:82
+msgid "medium"
+msgstr ""
+
+#: admin.php:83
+msgid "large"
+msgstr ""
+
+#: admin.php:84
+msgid "full"
+msgstr ""
+
+#: admin.php:94
 msgid "Image ID"
 msgstr ""
 
-#: admin.php:85
+#: admin.php:98
 msgid "Image URL"
 msgstr ""
 
-#: admin.php:91
+#: admin.php:104
 msgid "Alt. Text"
 msgstr ""
 
-#: admin.php:103
+#: admin.php:116
 msgid "Align"
 msgstr ""
 
-#: admin.php:108 admin.php:238
+#: admin.php:121 admin.php:251
 msgid "none"
 msgstr ""
 
-#: admin.php:109 admin.php:239
+#: admin.php:122 admin.php:252
 msgid "left"
 msgstr ""
 
-#: admin.php:110 admin.php:240
+#: admin.php:123 admin.php:253
 msgid "center"
 msgstr ""
 
-#: admin.php:111 admin.php:241
+#: admin.php:124 admin.php:254
 msgid "right"
 msgstr ""
 
-#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 2.0rc2)  #-#-#-#-#
+#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 2.0)  #-#-#-#-#
 #. Plugin Name of an extension
-#: admin.php:188
+#: admin.php:201
 msgid "Custom Field Images"
 msgstr ""
 
-#: admin.php:192 inc/scb/AdminPage.php:275
+#: admin.php:205 inc/scb/AdminPage.php:275
 msgid "Settings"
 msgstr ""
 
-#: admin.php:193
+#: admin.php:206
 msgid "Management"
 msgstr ""
 
-#: admin.php:201 admin.php:267
+#: admin.php:214 admin.php:280
 msgid "Save Changes"
 msgstr ""
 
-#: admin.php:216
+#: admin.php:229
 msgid "Display in"
 msgstr ""
 
-#: admin.php:220
+#: admin.php:233
 msgid "content"
 msgstr ""
 
-#: admin.php:221
+#: admin.php:234
 msgid "excerpt"
 msgstr ""
 
-#: admin.php:222
+#: admin.php:235
 msgid "feed"
 msgstr ""
 
-#: admin.php:227
+#: admin.php:240
 msgid "Default URL"
 msgstr ""
 
-#: admin.php:233
+#: admin.php:246
 msgid "Default alignment"
 msgstr ""
 
-#: admin.php:246
+#: admin.php:259
 msgid "Link image to post"
 msgstr ""
 
-#: admin.php:247
+#: admin.php:260
 msgid ""
 "If the <em>Link to</em> field is blank, the image will have a link to the "
 "post or page it is associated with."
 msgstr ""
 
-#: admin.php:253
+#: admin.php:266
 msgid "Extra link attributes"
 msgstr ""
 
-#: admin.php:254
+#: admin.php:267
 msgid "Example"
 msgstr ""
 
-#: admin.php:260
+#: admin.php:273
 msgid "Insert CFI button"
 msgstr ""
 
-#: admin.php:261
+#: admin.php:274
 msgid "Add button in the Insert Image form"
 msgstr ""
 
-#: admin.php:276
+#: admin.php:289
 msgid "Are you sure?"
 msgstr ""
 
-#: admin.php:298
+#: admin.php:311
 msgid ""
 "Here you can manage all custom field images at once. Please make a "
 "<strong>backup</strong> of your database before you proceed."
 msgstr ""
 
-#: admin.php:302
+#: admin.php:315
 msgid "Import images"
 msgstr ""
 
-#: admin.php:303
+#: admin.php:316
 msgid ""
 "Extract the first image at the beginning of each post and insert it into a "
 "custom field."
 msgstr ""
 
-#: admin.php:304
+#: admin.php:317
 msgid "Import"
 msgstr ""
 
-#: admin.php:309
+#: admin.php:322
 msgid "Export images"
 msgstr ""
 
-#: admin.php:310
+#: admin.php:323
 msgid "Insert each image in the post content and then delete the custom field."
 msgstr ""
 
-#: admin.php:311
+#: admin.php:324
 msgid "Export"
 msgstr ""
 
-#: admin.php:316
+#: admin.php:329
 msgid "Delete images"
 msgstr ""
 
-#: admin.php:317
+#: admin.php:330
 msgid "Delete all custom field images."
 msgstr ""
 
-#: admin.php:318
+#: admin.php:331
 msgid "Delete"
 msgstr ""
 
-#: admin.php:353
+#: admin.php:366
 msgid "Imported"
 msgstr ""
 
-#: admin.php:354
+#: admin.php:367
 msgid "Exported"
 msgstr ""
 
-#: admin.php:355
+#: admin.php:368
 msgid "Deleted"
 msgstr ""
 
-#: admin.php:360
+#: admin.php:373
 msgid "image"
 msgid_plural "images"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin.php:365
+#: admin.php:378
 msgid "An error has occured."
 msgstr ""
 
