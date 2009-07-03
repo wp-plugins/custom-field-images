@@ -43,7 +43,7 @@ jQuery(document).ready(function($){
 		button = $('<a>')
 			.attr('href', '#')
 			.css('color', '#006505')
-			.text('Insert CFI')
+			.text(window.cfi_insert_text)
 			.addClass('insert-cfi')
 			.click(fillCfiBox);
 

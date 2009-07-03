@@ -28,6 +28,8 @@ abstract class boxCFI extends displayCFI
 
 			wp_register_script('livequery', $src . '/livequery.js');
 			wp_enqueue_script('cfi-insert', $src . '/insert.js', array('jquery', 'livequery'));
+
+			echo scbAdminPage::js_wrap("window.cfi_insert_text='" . __('Insert CFI', 'custom-field-images') . "';");
 		}
 
 ?>
@@ -174,7 +176,6 @@ abstract class boxCFI extends displayCFI
 }
 
 
-
 // _____________Settings page_____________
 
 class settingsCFI extends scbBoxesPage
@@ -189,6 +190,8 @@ class settingsCFI extends scbBoxesPage
 			array('settings', __('Settings', 'custom-field-images'), 'normal'),
 			array('manage', __('Management', 'custom-field-images'), 'side'),
 		);
+
+		$this->textdomain = 'custom-field-images';
 	}
 
 	function settings_handler()
