@@ -3,7 +3,7 @@ Contributors: scribu
 Donate link: http://scribu.net/wordpress
 Tags: custom fields, images, thumbs
 Requires at least: 2.5
-Tested up to: 2.8
+Tested up to: 2.8.1
 Stable tag: trunk
 
 Easily associate any image to a post and display it in post excerpts, feeds etc.
@@ -71,6 +71,9 @@ Just clear the URL field and save the post.
 2. The quick insert button
 
 == Changelog ==
+
+= 2.0.0.1 =
+* fixed l10n issue
 
 = 2.0 =
 * add image by ID and size

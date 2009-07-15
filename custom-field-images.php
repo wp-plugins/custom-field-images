@@ -2,10 +2,12 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily associate any image to a post and display it in post excerpts, feeds etc.
-Version: 2.0
+Version: 2.0.0.1
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
+Text Domain: custom-field-images
+Domain Path: /lang
 
 Copyright (C) 2009 scribu.net (scribu AT gmail DOT com)
 
@@ -33,7 +35,7 @@ function _cfi_init()
 	load_plugin_textdomain('custom-field-images', "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
 
 	// Load scbFramework
-	require_once dirname(__FILE__) . '/inc/scb/load.php';
+	require_once dirname(__FILE__) . '/scb/load.php';
 
 	$options = new scbOptions('cfi_options', __FILE__, array(
 		'default_url' => '',
