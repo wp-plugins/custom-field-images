@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily associate any image to a post and display it in post excerpts, feeds etc.
-Version: 2.0.0.1
+Version: 2.1a
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
@@ -40,13 +40,14 @@ function _cfi_init()
 	$options = new scbOptions('cfi_options', __FILE__, array(
 		'default_url' => '',
 		'default_align' => '',
-		'default_link' => TRUE,
+		'default_link' => true,
+		'first_attachment' => false,
 		'extra_attr' => '',
-		'insert_button' => TRUE,
+		'insert_button' => true,
 
-		'content' => TRUE,
-		'feed' => TRUE,
-		'excerpt' => TRUE
+		'content' => true,
+		'feed' => true,
+		'excerpt' => true
 	));
 
 	displayCFI::init($options);
@@ -131,54 +132,6 @@ abstract class displayCFI
 		return $content;
 	}
 
-	static function generate($post_id = '', $defaults = '')
-	{
-		self::load($post_id);
-
-		if ( ! empty($defaults) )
-			self::$data = wp_parse_args($defaults, self::$data);
-
-		if ( self::$data['id'] )
-		{
-			if ( self::$data['size'] )
-				$data = image_downsize(self::$data['id'], self::$data['size']);
- 			else
- 				$data = image_downsize(self::$data['id']);
-
-			$url = $data[0];
-		}
-
-		if ( empty($url) )
-			$url = self::$data['url'];
-
-		if ( empty($url) )
-			$url = self::$options->default_url;
-
-		if ( empty($url) )
-			return;
-
-		// Begin img tag
-		$image .= '<img src="'. $url .'" ';
-
-		// Set alignment
-		$align = self::$data['align'] ? self::$data['align'] : self::$options->default_align;
-
-		if ( is_feed() )
-			$image .= sprintf( 'style="%s" ', self::$styles[$align] );
-		else
-			$image .= sprintf( 'class="cfi align%s" ', $align );
-
-		// Set alt text & title
-		$alt = self::$data['alt'] ? self::$data['alt'] : get_the_title();
-
-		$image .= sprintf( 'alt="%s" title="%s"', $alt, $alt);
-
-		// End img tag
-		$image .= '/>';
-
-		return self::add_link($image);
-	}
-
 	static function loop($query)
 	{
 		$query = wp_parse_args($query, array(
@@ -195,11 +148,11 @@ abstract class displayCFI
 		echo "<ul class='cfi-loop'>";
 		while ( $side_query->have_posts() ) : $side_query->the_post();
 			echo "<li>";
-			echo self::generate($post->ID, array(
+			echo self::generate(get_the_ID(), array(
 				'size' => 'thumbnail',
 				'alt' => $post->post_title,
 				'align' => '',
-				'link' => get_permalink($post->ID)
+				'link' => get_permalink(get_the_ID())
 			));
 			echo "</li>\n";
 		endwhile;
@@ -208,28 +161,100 @@ abstract class displayCFI
 		return ob_get_clean();
 	}
 
-	protected static function add_link($image)
+	static function generate($post_id = '', $defaults = '')
 	{
-		$link = self::$data['link'];
+		self::load_with_defaults($post_id, $defaults);
 
-		if ( empty($link) )
-			if ( self::$options->get('default_link') )
+		if ( empty($url) )
+			return;
+
+		// Begin img tag
+		$image .= '<img src="'. $url .'" ';
+
+		if ( is_feed() )
+			$image .= sprintf( 'style="%s" ', self::$styles[$align] );
+		else
+			$image .= sprintf( 'class="cfi align%s" ', $align );
+
+		$image .= sprintf( 'alt="%s" title="%s"', $alt, $alt );
+
+		// End img tag
+		$image .= '/>';
+
+		if ( ! $link = self::$data['link'] )
+			return $image . "\n";
+
+		return @sprintf( "<a href='$link' %s>$image</a>\n", stripslashes(self::$options->extra_attr) );
+	}
+
+	static function load_with_defaults($post_id, $defaults)
+	{
+		self::load($post_id);
+
+#print_r(self::$data);
+
+		if ( ! empty($defaults) )
+			self::$data = wp_parse_args($defaults, self::$data);
+
+		// id
+		if ( ! self::$data['id'] && ! self::$data['url'] && self::$options->first_attachment )
+			self::$data['id'] = self::get_first_attachment_id($post_id);
+
+		// url
+		if ( ! $url = self::get_url_by_id(self::$data['id'], self::$data['size']) )
+			if ( ! $url = self::$data['url'] )
+				if ( ! $url = self::$options->default_url )
+					return;
+
+		// align
+		if ( ! $align = self::$data['align'] )
+			$align = self::$options->default_align;
+
+		// alt
+		if ( ! $alt = self::$data['alt'] )
+			$alt = get_the_title();
+
+		// link
+		if ( ! $link = self::$data['link'] )
+			if ( self::$options->default_link )
 				$link = get_permalink(self::$id);
-			else
-				return $image . "\n";
 
-		return sprintf( "<a href='$link' %s>$image</a>\n", stripslashes(self::$options->get('extra_attr')) );
+		foreach ( array_keys(self::$data) as $key )
+			if ( isset($$key) )
+				self::$data[$key] = $$key;
+	}
+
+	static function get_first_attachment_id($post_id)
+	{
+		$atachment = get_children(array(
+			'post_parent' => $post_id,
+			'post_type' => 'attachment',
+			'numberposts' => 1
+		));
+
+		return @key($atachment);
+	}
+
+	static function get_url_by_id($id, $size)
+	{
+		if ( ! $id )
+			return false;
+
+		if ( $size )
+			$data = image_downsize($id, $size);
+		else
+			$data = image_downsize($id);
+
+		return @$data[0];
 	}
 
 	static function load($post_id = '')
 	{
-		global $post;
-
 		$post_id = intval($post_id);
 
-		self::$id = $post_id ? $post_id : $post->ID;
+		self::$id = $post_id ? $post_id : get_the_ID();
 
-		self::$data = get_post_meta(self::$id, self::key, TRUE);
+		self::$data = array_merge(self::$data, get_post_meta(self::$id, self::key, TRUE));
 	}
 }
 

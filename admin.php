@@ -255,6 +255,13 @@ class settingsCFI extends scbBoxesPage
 			),
 
 			array(
+				'title' => __('Use first attachment', 'custom-field-images'),
+				'desc' => __('If there is no CFI for a post, use the first attachment to that post instead.', 'custom-field-images'),
+				'type' => 'checkbox',
+				'name' => 'first_attachment',
+			),
+
+			array(
 				'title' => __('Link image to post', 'custom-field-images'),
 				'desc' => __('If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with.', 'custom-field-images'),
 				'type' => 'checkbox',
