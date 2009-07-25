@@ -10,8 +10,6 @@ jQuery(document).ready(function($){
 
 	var fillCfiBox = function()
 	{
-		console.log(this);
-
 		var $item = $(this).parents('.media-item');
 
 		$id_row.show();
