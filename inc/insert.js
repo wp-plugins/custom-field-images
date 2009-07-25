@@ -3,8 +3,15 @@ jQuery(document).ready(function($){
 	var $id_row = $box.find('tr:eq(0)');
 	var $url_row = $box.find('tr:eq(1)');
 
-	function fillCfiBox()
+	if ( $id_row.find(':text').val() == "" )
+		$id_row.hide();
+	else
+		$url_row.hide();
+
+	var fillCfiBox = function()
 	{
+		console.log(this);
+
 		var $item = $(this).parents('.media-item');
 
 		$id_row.show();
@@ -38,30 +45,19 @@ jQuery(document).ready(function($){
 		return false;
 	}
 
-	function addButton()
+	var addButton = function()
 	{
-		var button = $('<a>')
-			.attr('href', '#')
-			.css('color', '#006505')
-			.text(cfiL10n.insert_text)
-			.addClass('insert-cfi')
-			.click(fillCfiBox);
-
 		$('.media-item :submit', $(this).contents()).livequery(function() {
 			if ( $(this).find(' + .insert-cfi').length > 0 )
 				return;
 
-			button.clone(true)
-				.insertAfter($(this))
-				.before(' &nbsp;(')
-				.after(')');
+			$(this).after('(<a class="insert-cfi" href="#">' + cfiL10n.insert_text + '</a>)');
+
+			$(this).find(' + .insert-cfi')
+				.css('color', '#006505')
+				.click(fillCfiBox);
 		});
 	}
-
-	if ( $id_row.find(':text').val() == "" )
-		$id_row.hide();
-	else
-		$url_row.hide();
 
 	$('#add_image').click(function() {										// when invoking iframe
 		$('#TB_iframeContent').livequery(function() {						// after creating iframe tag
