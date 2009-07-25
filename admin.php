@@ -34,9 +34,9 @@ abstract class boxCFI extends displayCFI
 			'insert_text' => __('Insert CFI', 'custom-field-images')
 		));
 
+// <script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
+
 ?>
-<script type='text/javascript' 
-        src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
 <style type="text/css">
 		#cfi-box table, #cfi-box input[type='text'] {width:100%}
 		#cfi-box th {width:7%; text-align:right; font-weight: normal}
