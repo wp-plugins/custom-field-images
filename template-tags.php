@@ -11,7 +11,7 @@ function custom_field_image($post_id = '', $defaults = '')
 
 /*
 Get a custom field image in various formats:
-'html' - the default way, just returns the formatted image
+'html' - returns the generated image html
 'array' - returns an array with the following fields:
 	'id'
 	'size'
@@ -26,11 +26,9 @@ function get_custom_field_image($post_id = '', $defaults = '', $format = 'html')
 	if ( 'html' == $format )
 		return displayCFI::generate($post_id, $defaults);
 
-	displayCFI::load_with_defaults($post_id);
+	displayCFI::load($post_id);
 
 	$data = displayCFI::$data;
-
-#	print_r($data);
 
 	if ( 'object' == $format )
 		return (object) $data;

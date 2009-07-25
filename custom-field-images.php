@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily associate any image to a post and display it in post excerpts, feeds etc.
-Version: 2.1a
+Version: 2.1a2
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
@@ -26,6 +26,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+function debug() {
+	echo "<pre>";
+	foreach ( func_get_args() as $arg )
+		if ( is_array($arg) || is_object($arg) )
+			print_r($arg);
+		else
+			var_dump($arg);
+	echo "</pre>";
+}
+
+
 // Init
 _cfi_init();
 function _cfi_init()
@@ -43,7 +54,6 @@ function _cfi_init()
 		'default_link' => true,
 		'first_attachment' => false,
 		'extra_attr' => '',
-		'insert_button' => true,
 
 		'content' => true,
 		'feed' => true,
@@ -85,17 +95,15 @@ abstract class displayCFI
 	);
 
 	// Data fields for current image
-	static $data = array(
-		'id' => '',
-		'size' => '',
-		'url' => '',
-		'align' => '',
-		'alt' => '',
-		'link' => ''
+	static $data_keys = array(
+		'id',
+		'size',
+		'url',
+		'align',
+		'alt',
+		'link'
 	);
-
-	// $post->ID
-	static $id;
+	static $data = array();
 
 	// Options object holder
 	static $options;
@@ -145,10 +153,10 @@ abstract class displayCFI
 		ob_start();
 
 		// Do the loop
-		echo "<ul class='cfi-loop'>";
+		echo "<ul class='cfi-loop'>\n";
 		while ( $side_query->have_posts() ) : $side_query->the_post();
 			echo "<li>";
-			echo self::generate(get_the_ID(), array(
+			echo self::generate('', array(
 				'size' => 'thumbnail',
 				'alt' => $post->post_title,
 				'align' => '',
@@ -163,7 +171,9 @@ abstract class displayCFI
 
 	static function generate($post_id = '', $defaults = '')
 	{
-		self::load_with_defaults($post_id, $defaults);
+		self::load($post_id, $defaults);
+
+		extract(self::$data);
 
 		if ( empty($url) )
 			return;
@@ -187,11 +197,15 @@ abstract class displayCFI
 		return @sprintf( "<a href='$link' %s>$image</a>\n", stripslashes(self::$options->extra_attr) );
 	}
 
-	static function load_with_defaults($post_id, $defaults)
+	static function load($post_id, $defaults, $raw = false)
 	{
-		self::load($post_id);
+		if ( ! $post_id = intval($post_id) )
+			$post_id = get_the_ID();
 
-#print_r(self::$data);
+		self::$data = get_post_meta($post_id, self::key, TRUE);
+
+		if ( $raw )
+			return self::$data;
 
 		if ( ! empty($defaults) )
 			self::$data = wp_parse_args($defaults, self::$data);
@@ -217,9 +231,9 @@ abstract class displayCFI
 		// link
 		if ( ! $link = self::$data['link'] )
 			if ( self::$options->default_link )
-				$link = get_permalink(self::$id);
+				$link = get_permalink($post_id);
 
-		foreach ( array_keys(self::$data) as $key )
+		foreach ( self::$data_keys as $key )
 			if ( isset($$key) )
 				self::$data[$key] = $$key;
 	}
@@ -246,15 +260,6 @@ abstract class displayCFI
 			$data = image_downsize($id);
 
 		return @$data[0];
-	}
-
-	static function load($post_id = '')
-	{
-		$post_id = intval($post_id);
-
-		self::$id = $post_id ? $post_id : get_the_ID();
-
-		self::$data = array_merge(self::$data, get_post_meta(self::$id, self::key, TRUE));
 	}
 }
 

@@ -9,12 +9,8 @@ function cfi_admin_init($file, $options)
 
 abstract class boxCFI extends displayCFI
 {
-	static $insert;
-
 	static function init($insert)
 	{
-		self::$insert = $insert;
-
 		add_action('admin_print_styles', array(__CLASS__, 'scripts'));
 		add_action('admin_menu', array(__CLASS__, 'box_init'));
 
@@ -29,17 +25,14 @@ abstract class boxCFI extends displayCFI
 		if ( !in_array($pagenow, array('post-new.php', 'post.php', 'page-new.php', 'page.php')) )
 			return;
 
-		if ( self::$insert )
-		{
-			$src = self::get_plugin_url() . '/inc';
+		$src = plugins_dir_url(__FILE__) . 'inc/';
 
-			wp_enqueue_script('livequery', $src . '/livequery.js', array('jquery'), '1.0.3', true);
-			wp_enqueue_script('cfi-insert', $src . '/insert.js', array('jquery', 'livequery'), 2.0, true);
+		wp_register_script('livequery', $src . 'livequery.js', array('jquery'), '1.0.3', true);
+		wp_enqueue_script('cfi-insert', $src . 'insert.js', array('jquery', 'livequery'), 2.0, true);
 
-			wp_localize_script('cfi-insert', 'cfiL10n', array(
-				'insert_text' => __('Insert CFI', 'custom-field-images')
-			));
-		}
+		wp_localize_script('cfi-insert', 'cfiL10n', array(
+			'insert_text' => __('Insert CFI', 'custom-field-images')
+		));
 
 ?>
 <style type="text/css">
@@ -58,7 +51,9 @@ abstract class boxCFI extends displayCFI
 
 	static function box()
 	{
-		self::load();
+		global $post;
+
+		self::load($post->ID, '', true);
 
 		$options = array();
 		if ( self::$data )
@@ -156,7 +151,7 @@ abstract class boxCFI extends displayCFI
 			return;
 		}
 
-		foreach ( array_keys(self::$data) as $name )
+		foreach ( self::$data_keys as $name )
 		{
 			$newval = trim($_POST['cfi-'.$name]);
 
@@ -177,15 +172,6 @@ abstract class boxCFI extends displayCFI
 
 		   add_post_meta($post_id, self::key, self::$data, TRUE) or
 		update_post_meta($post_id, self::key, self::$data);
-	}
-
-	private static function get_plugin_url()
-	{
-		// WP < 2.6
-		if ( !function_exists('plugins_url') )
-			return get_option('siteurl') . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
-
-		return plugins_url(plugin_basename(dirname(__FILE__)));
 	}
 }
 
@@ -216,11 +202,6 @@ class settingsCFI extends scbBoxesPage
 		scbAdminPage::form_handler();
 	}
 
-	function defaults_box()
-	{
-	
-	}
-
 	function settings_box()
 	{
 		$rows = array(
@@ -232,25 +213,6 @@ class settingsCFI extends scbBoxesPage
 					__('content', 'custom-field-images'),
 					__('excerpt', 'custom-field-images'),
 					__('feed', 'custom-field-images'),
-				)
-			),
-
-			array(
-				'title' => __('Default URL', 'custom-field-images'),
-				'type' => 'text',
-				'name' => 'default_url',
-			),
-
-			array(
-				'title' => __('Default alignment', 'custom-field-images'),
-				'type' => 'radio',
-				'name' => 'default_align',
-				'value' => array('', 'left', 'center', 'right'),
-				'desc' => array(
-					__('none', 'custom-field-images'),
-					__('left', 'custom-field-images'),
-					__('center', 'custom-field-images'),
-					__('right', 'custom-field-images'),
 				)
 			),
 
@@ -276,10 +238,22 @@ class settingsCFI extends scbBoxesPage
 			),
 
 			array(
-				'title' => __('Insert CFI button', 'custom-field-images'),
-				'desc' => __('Add button in the Insert Image form', 'custom-field-images'),
-				'type' => 'checkbox',
-				'name' => 'insert_button',
+				'title' => __('Default URL', 'custom-field-images'),
+				'type' => 'text',
+				'name' => 'default_url',
+			),
+
+			array(
+				'title' => __('Default alignment', 'custom-field-images'),
+				'type' => 'radio',
+				'name' => 'default_align',
+				'value' => array('', 'left', 'center', 'right'),
+				'desc' => array(
+					__('none', 'custom-field-images'),
+					__('left', 'custom-field-images'),
+					__('center', 'custom-field-images'),
+					__('right', 'custom-field-images'),
+				)
 			),
 		);
 
