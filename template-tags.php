@@ -26,7 +26,7 @@ function get_custom_field_image($post_id = '', $defaults = '', $format = 'html')
 	if ( 'html' == $format )
 		return displayCFI::generate($post_id, $defaults);
 
-	displayCFI::load($post_id);
+	displayCFI::load($post_id, $defaults);
 
 	$data = displayCFI::$data;
 

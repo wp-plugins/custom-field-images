@@ -197,18 +197,18 @@ abstract class displayCFI
 		return @sprintf( "<a href='$link' %s>$image</a>\n", stripslashes(self::$options->extra_attr) );
 	}
 
-	static function load($post_id, $defaults, $raw = false)
+	static function load($post_id = '', $defaults = '', $raw = false)
 	{
 		if ( ! $post_id = intval($post_id) )
 			$post_id = get_the_ID();
 
 		self::$data = get_post_meta($post_id, self::key, TRUE);
 
-		if ( $raw )
-			return self::$data;
-
 		if ( ! empty($defaults) )
 			self::$data = wp_parse_args($defaults, self::$data);
+
+		if ( $raw )
+			return self::$data;
 
 		// id
 		if ( ! self::$data['id'] && ! self::$data['url'] && self::$options->first_attachment )
