@@ -26,17 +26,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-function debug() {
-	echo "<pre>";
-	foreach ( func_get_args() as $arg )
-		if ( is_array($arg) || is_object($arg) )
-			print_r($arg);
-		else
-			var_dump($arg);
-	echo "</pre>";
-}
-
-
 // Init
 _cfi_init();
 function _cfi_init()

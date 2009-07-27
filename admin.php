@@ -28,7 +28,7 @@ abstract class boxCFI extends displayCFI
 		$src = plugins_dir_url(__FILE__) . 'inc/';
 
 		wp_register_script('livequery', $src . 'livequery.js', array('jquery'), '1.0.3', true);
-		wp_enqueue_script('cfi-insert', $src . 'insert.js', array('jquery', 'livequery'), '2.1a1', true);
+		wp_enqueue_script('cfi-insert', $src . 'insert.js', array('jquery', 'livequery'), '2.1', true);
 
 		wp_localize_script('cfi-insert', 'cfiL10n', array(
 			'insert_text' => __('Insert CFI', 'custom-field-images')
