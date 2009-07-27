@@ -49,7 +49,7 @@ jQuery(document).ready(function($){
 			if ( $(this).find(' + .insert-cfi').length > 0 )
 				return;
 
-			$(this).after('(<a class="insert-cfi" href="#">' + cfiL10n.insert_text + '</a>)');
+			$(this).after(' &nbsp;(<a class="insert-cfi" href="#">' + cfiL10n.insert_text + '</a>)');
 
 			$(this).find(' + .insert-cfi')
 				.css('color', '#006505')
