@@ -73,8 +73,11 @@ Just clear the URL field and save the post.
 
 == Changelog ==
 
-= 2.0.0.1 =
-* fixed l10n issue
+= 2.1 =
+* added first attachment option
+* better values for get_custom_field_image()
+* bugfix for IE
+* [more info](http://scribu.net/wordpress/custom-field-images/cfi-2-1.html)
 
 = 2.0 =
 * add image by ID and size
