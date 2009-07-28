@@ -162,7 +162,7 @@ abstract class displayCFI
 	{
 		self::load($post_id, $defaults);
 
-		extract(self::$data);
+		@extract(self::$data);
 
 		if ( empty($url) )
 			return;
