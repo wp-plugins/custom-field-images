@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily associate any image to a post and display it in post excerpts, feeds etc.
-Version: 2.1
+Version: 2.1.1
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
@@ -39,15 +39,18 @@ function _cfi_init()
 
 	$options = new scbOptions('cfi_options', __FILE__, array(
 		'default_url' => '',
+		'default_size' => 'thumbnail',
 		'default_align' => '',
-		'default_link' => true,
+		'default_link' => true,		// todo: replace with link_to_post
 		'first_attachment' => false,
 		'extra_attr' => '',
 
 		'content' => true,
-		'feed' => true,
+		'feed' => true,		// todo: make it display_in => array(...)
 		'excerpt' => true
 	));
+
+	$options->update_reset();
 
 	displayCFI::init($options);
 
@@ -202,6 +205,10 @@ abstract class displayCFI
 		// id
 		if ( ! self::$data['id'] && ! self::$data['url'] && self::$options->first_attachment )
 			self::$data['id'] = self::get_first_attachment_id($post_id);
+
+		// size
+		if ( ! $size = self::$data['size'] )
+			$size = self::$options->default_size;
 
 		// url
 		if ( ! $url = self::get_url_by_id(self::$data['id'], self::$data['size']) )

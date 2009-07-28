@@ -25,7 +25,7 @@ abstract class boxCFI extends displayCFI
 		if ( !in_array($pagenow, array('post-new.php', 'post.php', 'page-new.php', 'page.php')) )
 			return;
 
-		$src = plugins_dir_url(__FILE__) . 'inc/';
+		$src = plugin_dir_url(__FILE__) . 'inc/';
 
 		wp_register_script('livequery', $src . 'livequery.js', array('jquery'), '1.0.3', true);
 		wp_enqueue_script('cfi-insert', $src . 'insert.js', array('jquery', 'livequery'), '2.1', true);
@@ -246,6 +246,18 @@ class settingsCFI extends scbBoxesPage
 			),
 
 			array(
+				'title' => __('Default size', 'custom-field-images'),
+				'type' => 'select',
+				'name' => 'default_size',
+				'value' => array(
+					'thumbnail' => __('thumbnail', 'custom-field-images'),
+					'medium' => __('medium', 'custom-field-images'),
+					'large' => __('large', 'custom-field-images'),
+					'full' => __('full', 'custom-field-images'),
+				)
+			),
+/*
+			array(
 				'title' => __('Default alignment', 'custom-field-images'),
 				'type' => 'radio',
 				'name' => 'default_align',
@@ -257,6 +269,7 @@ class settingsCFI extends scbBoxesPage
 					__('right', 'custom-field-images'),
 				)
 			),
+*/
 		);
 
 		echo $this->form_table($rows, $this->formdata, __('Save Changes', 'custom-field-images'));

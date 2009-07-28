@@ -73,6 +73,10 @@ Just clear the URL field and save the post.
 
 == Changelog ==
 
+= 2.1.1 =
+* fixed warning
+* set default size to thumbnail
+
 = 2.1 =
 * added first attachment option
 * better values for get_custom_field_image()
@@ -85,12 +89,6 @@ Just clear the URL field and save the post.
 * default URL
 * fixed l10n
 * [more info](http://scribu.net/wordpress/custom-field-images/cfi-2-0.html)
-
-= 1.9.2 =
-* bugfix
-
-= 1.9.1 =
-* fixed template tags
 
 = 1.9 =
 * l10n

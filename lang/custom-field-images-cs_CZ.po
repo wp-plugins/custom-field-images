@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Custom Field Images CZ (2.0)\n"
+"Project-Id-Version: Custom Field Images CZ (2.1)\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/custom-field-images\n"
-"POT-Creation-Date: 2009-07-04 00:55+0300\n"
+"POT-Creation-Date: 2009-07-25 22:54+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Separatista <pavelevap@separatista.net>\n"
 "Language-Team: Separatista <pavelevap@separatista.net>\n"
@@ -15,211 +15,211 @@ msgstr ""
 "X-Poedit-Language: Czech\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 
-#: admin.php:40
+#: admin.php:34
 msgid "Insert CFI"
 msgstr "Vložit jako volitelný obrázek"
 
-#: admin.php:56
+#: admin.php:49
 msgid "Custom Field Image"
 msgstr "Volitelný obrázek"
 
-#: admin.php:70
-#: admin.php:110
+#: admin.php:65
+#: admin.php:104
 msgid "Link to"
 msgstr "URL odkazu"
 
-#: admin.php:73
+#: admin.php:68
 msgid "Size"
 msgstr "Velikost"
 
-#: admin.php:81
+#: admin.php:75
 msgid "thumbnail"
 msgstr "Náhled"
 
-#: admin.php:82
+#: admin.php:76
 msgid "medium"
 msgstr "Střední velikost"
 
-#: admin.php:83
+#: admin.php:77
 msgid "large"
 msgstr "Velký obrázek"
 
-#: admin.php:84
+#: admin.php:78
 msgid "full"
 msgstr "Původní velikost"
 
-#: admin.php:94
+#: admin.php:88
 msgid "Image ID"
 msgstr "ID obrázku"
 
-#: admin.php:98
+#: admin.php:92
 msgid "Image URL"
 msgstr "URL obrázku"
 
-#: admin.php:104
+#: admin.php:98
 msgid "Alt. Text"
 msgstr "Alternativní text"
 
-#: admin.php:116
+#: admin.php:110
 msgid "Align"
 msgstr "Zarovnání"
 
-#: admin.php:121
-#: admin.php:251
+#: admin.php:115
+#: admin.php:252
 msgid "none"
 msgstr "Žádné"
 
-#: admin.php:122
-#: admin.php:252
+#: admin.php:116
+#: admin.php:253
 msgid "left"
 msgstr "Doleva"
 
-#: admin.php:123
-#: admin.php:253
+#: admin.php:117
+#: admin.php:254
 msgid "center"
 msgstr "Na střed"
 
-#: admin.php:124
-#: admin.php:254
+#: admin.php:118
+#: admin.php:255
 msgid "right"
 msgstr "Doprava"
 
-#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 2.0)  #-#-#-#-#
+#. #-#-#-#-#  custom-field-images.pot (Custom Field Images 2.1a)  #-#-#-#-#
 #. Plugin Name of an extension
-#: admin.php:201
+#: admin.php:186
 msgid "Custom Field Images"
 msgstr "Volitelné obrázky"
 
-#: admin.php:205
-#: inc/scb/AdminPage.php:275
+#: admin.php:190
+#: scb/AdminPage.php:275
 msgid "Settings"
 msgstr "Nastavení"
 
-#: admin.php:206
+#: admin.php:191
 msgid "Management"
 msgstr "Správa obrázků"
 
-#: admin.php:214
-#: admin.php:280
+#: admin.php:199
+#: admin.php:260
 msgid "Save Changes"
 msgstr "Uložit změny"
 
-#: admin.php:229
+#: admin.php:209
 msgid "Display in"
 msgstr "Obrázek bude automaticky zobrazen"
 
-#: admin.php:233
+#: admin.php:213
 msgid "content"
 msgstr "Obsah příspěvku"
 
-#: admin.php:234
+#: admin.php:214
 msgid "excerpt"
 msgstr "Stručný výpis příspěvku"
 
-#: admin.php:235
+#: admin.php:215
 msgid "feed"
 msgstr "RSS zdroj"
 
-#: admin.php:240
-msgid "Default URL"
-msgstr "Výchozí URL adresa"
+#: admin.php:220
+msgid "Use first attachment"
+msgstr "Použít první obrázek"
 
-#: admin.php:246
-msgid "Default alignment"
-msgstr "Výchozí zarovnání"
+#: admin.php:221
+msgid "If there is no CFI for a post, use the first attachment to that post instead."
+msgstr "Pokud není u příspěvku definován konkrétní volitelný obrázek, bude automaticky použit první z obrázků, které jsou k příspěvku přiřazeny."
 
-#: admin.php:259
+#: admin.php:227
 msgid "Link image to post"
 msgstr "Odkazovat obrázkem přímo na příspěvek"
 
-#: admin.php:260
+#: admin.php:228
 msgid "If the <em>Link to</em> field is blank, the image will have a link to the post or page it is associated with."
 msgstr "Pokud zůstane pole <em>URL odkazu</em> nevyplněné, bude obrázek automaticky odkazovat na příspěvek (nebo stránku), ke kterému je přiřazen."
 
-#: admin.php:266
+#: admin.php:234
 msgid "Extra link attributes"
 msgstr "Dodatečné parametry odkazu"
 
-#: admin.php:267
+#: admin.php:235
 msgid "Example"
 msgstr "Příklad"
 
-#: admin.php:273
-msgid "Insert CFI button"
-msgstr "Tlačítko \"Vložit jako volitelný obrázek\""
+#: admin.php:241
+msgid "Default URL"
+msgstr "Výchozí URL adresa"
 
-#: admin.php:274
-msgid "Add button in the Insert Image form"
-msgstr "Automaticky přidávat toto tlačítko do formuláře \"Přidat obrázek\""
+#: admin.php:247
+msgid "Default alignment"
+msgstr "Výchozí zarovnání"
 
-#: admin.php:289
+#: admin.php:269
 msgid "Are you sure?"
 msgstr "Opravdu to chcete udělat?"
 
-#: admin.php:311
+#: admin.php:291
 msgid "Here you can manage all custom field images at once. Please make a <strong>backup</strong> of your database before you proceed."
 msgstr "Zde můžete pracovat se všemi volitelnými obrázky najednou. Než se do toho ale pustíte, udělejte raději <strong>zálohu</strong> databáze Wordpressu."
 
-#: admin.php:315
+#: admin.php:295
 msgid "Import images"
 msgstr "Import obrázků"
 
-#: admin.php:316
+#: admin.php:296
 msgid "Extract the first image at the beginning of each post and insert it into a custom field."
 msgstr "Nástroj pro import obrázků vyhledá všechny obrázky, které jsou vloženy hned na začátku všech příspěvků (stránek), převede je na volitelné obrázky a potom je z příspěvků automaticky smaže."
 
-#: admin.php:317
+#: admin.php:297
 msgid "Import"
 msgstr "Importovat"
 
-#: admin.php:322
+#: admin.php:302
 msgid "Export images"
 msgstr "Export obrázků"
 
-#: admin.php:323
+#: admin.php:303
 msgid "Insert each image in the post content and then delete the custom field."
 msgstr "Pomocí exportu obrázků vložíte automaticky všechny volitelné obrázky na začátek příslušného příspěvku (stránky) a potom budou volitelné obrázky smazány."
 
-#: admin.php:324
+#: admin.php:304
 msgid "Export"
 msgstr "Exportovat"
 
-#: admin.php:329
+#: admin.php:309
 msgid "Delete images"
 msgstr "Smazat obrázky"
 
-#: admin.php:330
+#: admin.php:310
 msgid "Delete all custom field images."
 msgstr "Zde můžete smazat všechny volitelné obrázky."
 
-#: admin.php:331
+#: admin.php:311
 msgid "Delete"
 msgstr "Smazat"
 
-#: admin.php:366
+#: admin.php:346
 msgid "Imported"
 msgstr "Naimportován"
 
-#: admin.php:367
+#: admin.php:347
 msgid "Exported"
 msgstr "Exportován"
 
-#: admin.php:368
+#: admin.php:348
 msgid "Deleted"
 msgstr "Smazán"
 
-#: admin.php:373
+#: admin.php:353
 msgid "image"
 msgid_plural "images"
 msgstr[0] "obrázek"
 msgstr[1] "obrázky"
 msgstr[2] "obrázků"
 
-#: admin.php:378
+#: admin.php:358
 msgid "An error has occured."
 msgstr "Objevila se chyba."
 
-#: inc/scb/AdminPage.php:107
+#: scb/AdminPage.php:107
 msgid "Settings <strong>saved</strong>."
 msgstr "Změny byly <strong>uloženy</strong>."
 
@@ -259,6 +259,10 @@ msgstr "scribu"
 msgid "http://scribu.net/"
 msgstr "http://scribu.net/"
 
+#~ msgid "Insert CFI button"
+#~ msgstr "Tlačítko \"Vložit jako volitelný obrázek\""
+#~ msgid "Add button in the Insert Image form"
+#~ msgstr "Automaticky přidávat toto tlačítko do formuláře \"Přidat obrázek\""
 #~ msgid "Duplicate Alt. Text as Title"
 #~ msgstr "Použít alternativní text také jako název obrázku"
 #~ msgid "The <em>Alt. Text</em> will also be added as the image title."
