@@ -256,7 +256,7 @@ class settingsCFI extends scbBoxesPage
 					'full' => __('full', 'custom-field-images'),
 				)
 			),
-/*
+
 			array(
 				'title' => __('Default alignment', 'custom-field-images'),
 				'type' => 'radio',
@@ -269,7 +269,7 @@ class settingsCFI extends scbBoxesPage
 					__('right', 'custom-field-images'),
 				)
 			),
-*/
+
 		);
 
 		echo $this->form_table($rows, $this->formdata, __('Save Changes', 'custom-field-images'));
