@@ -2,8 +2,8 @@
 Contributors: scribu
 Donate link: http://scribu.net/wordpress
 Tags: custom fields, images, thumbs
-Requires at least: 2.5
-Tested up to: 2.8
+Requires at least: 2.8
+Tested up to: 2.9-rare
 Stable tag: trunk
 
 Easily associate any image to a post and display it in post excerpts, feeds etc.
@@ -72,6 +72,14 @@ Just clear the URL field and save the post.
 3. The settings page
 
 == Changelog ==
+
+= 2.2 = 
+* added border:0; to all styles for feeds
+* if displaying the post, show only the image, without the link
+* if size not available, use default
+* grab the first image in the gallery tab and not the first image uploaded
+* added Russian translation
+* [more info](http://scribu.net/wordpress/custom-field-images/cfi-2-2.html)
 
 = 2.1.1 =
 * fixed warning

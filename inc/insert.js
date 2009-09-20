@@ -1,9 +1,9 @@
 jQuery(document).ready(function($){
-	var $box = $(document).find('#cfi-box');
-	var $id_row = $box.find('tr:eq(0)');
-	var $url_row = $box.find('tr:eq(1)');
+	var $box = $(document).find('#cfi-box'),
+		$id_row = $box.find('tr:eq(0)'),
+		$url_row = $box.find('tr:eq(1)');
 
-	if ( $id_row.find(':text').val() == "" )
+	if ( $id_row.find(':text').val() == '' )
 		$id_row.hide();
 	else
 		$url_row.hide();

@@ -22,7 +22,7 @@ abstract class boxCFI extends displayCFI
 	{
 		global $pagenow;
 
-		if ( !in_array($pagenow, array('post-new.php', 'post.php', 'page-new.php', 'page.php')) )
+		if ( ! in_array($pagenow, array('post-new.php', 'post.php', 'page-new.php', 'page.php')) )
 			return;
 
 		$src = plugin_dir_url(__FILE__) . 'inc/';
