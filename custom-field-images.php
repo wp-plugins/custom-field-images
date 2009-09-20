@@ -30,10 +30,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 _cfi_init();
 function _cfi_init()
 {
-	// Load translations
-	$plugin_dir = basename(dirname(__FILE__));
-	load_plugin_textdomain('custom-field-images', "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
-
 	// Load scbFramework
 	require_once dirname(__FILE__) . '/scb/load.php';
 
@@ -67,6 +63,10 @@ function _cfi_init()
 	// Load admin classes
 	if ( is_admin() )
 	{
+		// Load translations
+		$plugin_dir = basename(dirname(__FILE__));
+		load_plugin_textdomain('custom-field-images', "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
+	
 		require_once dirname(__FILE__) . '/admin.php';
 		cfi_admin_init(__FILE__, $options);
 	}
@@ -81,9 +81,9 @@ abstract class displayCFI
 
 	// Styles for images in feeds
 	static $styles = array(
-		'left' => 'float:left; margin: 0 1em .5em 0;',
-		'center' => 'display:block; margin:0 auto .5em auto;',
-		'right' => 'float:right; margin: 0 0 .5em 1em;'
+		'left' => 'border:0; float:left; margin: 0 1em .5em 0;',
+		'center' => 'border:0; display:block; margin:0 auto .5em auto;',
+		'right' => 'border:0; float:right; margin: 0 0 .5em 1em;'
 	);
 
 	// Data fields for current image
@@ -183,7 +183,7 @@ abstract class displayCFI
 		// End img tag
 		$image .= '/>';
 
-		if ( ! $link = self::$data['link'] )
+		if ( ! $link = self::$data['link'] || is_singular() )
 			return $image . "\n";
 
 		return @sprintf( "<a href='$link' %s>$image</a>\n", stripslashes(self::$options->extra_attr) );
@@ -211,7 +211,7 @@ abstract class displayCFI
 			$size = self::$options->default_size;
 
 		// url
-		if ( ! $url = self::get_url_by_id(self::$data['id'], self::$data['size']) )
+		if ( ! $url = self::get_url_by_id(self::$data['id'], $size) )
 			if ( ! $url = self::$data['url'] )
 				if ( ! $url = self::$options->default_url )
 					return;
@@ -239,6 +239,8 @@ abstract class displayCFI
 		$atachment = get_children(array(
 			'post_parent' => $post_id,
 			'post_type' => 'attachment',
+			'order' => 'ASC',
+			'orderby' => 'menu_order',
 			'numberposts' => 1
 		));
 
