@@ -22,9 +22,7 @@ The plugin has button for importing / exporting / deleting any available images,
 
 **Show recent posts as images**
 
-Instead of displaying recent posts as a list of plain links, you can display them as a list of images, using the built-in widget.
-
-**If you're using WordPress 2.7 or older, and Custom Field Images 1.9 or newer, the CFI Loop widget won't work.**
+Instead of displaying recent posts as plain links, you can display them as a list of images, using the built-in widget.
 
 == Installation ==
 
