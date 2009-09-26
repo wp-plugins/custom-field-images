@@ -43,6 +43,12 @@ There is also an additional template tag, called `get_custom_field_image()` whic
 
 == Frequently Asked Questions ==
 
+= "Parse error: syntax error, unexpected T_CLASS..." Help! =
+
+Make sure your new host is running PHP 5. Add this line to wp-config.php:
+
+`var_dump(PHP_VERSION);`
+
 = Why are the images displayed two times? =
 
 Probably because you used the template tag and forgot to uncheck the content, excerpt or feed checkboxes from the Settings page.
@@ -53,7 +59,7 @@ This is due to your theme's CSS. Check if you have something like this in style.
 
 `img.alignleft {float:left; margin: 0 1em .5em 0}
 img.alignright {float:right; margin: 0 0 .5em 1em}
-img.aligncenter {display:block; margin:0 auto .5em auto}`
+img.aligncenter {display:block; margin: 0 auto .5em auto}`
 
 = What if I don't want to use the widget? =
 

@@ -16,7 +16,7 @@ jQuery(document).ready(function($){
 		$url_row.hide();
 
 		// Set cfi-id
-		var id = $item.find(':submit').attr('name').replace(/^.*?(\d+).*?$/, '$1');
+		var id = $item.find('input:submit').attr('name').replace(/^.*?(\d+).*?$/, '$1');
 		$box.find('[name=cfi-id]').val(id);
 
 		// Set cfi-size
@@ -45,7 +45,7 @@ jQuery(document).ready(function($){
 
 	var addButton = function()
 	{
-		$('.media-item :submit', $(this).contents()).livequery(function() {
+		$('.media-item input:submit', $(this).contents()).livequery(function() {
 			if ( $(this).find(' + .insert-cfi').length > 0 )
 				return;
 
