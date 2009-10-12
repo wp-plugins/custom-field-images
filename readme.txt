@@ -77,6 +77,9 @@ Just clear the URL field and save the post.
 
 == Changelog ==
 
+= 2.2.2 =
+* fixed image link on single posts
+
 = 2.2 = 
 * added border:0; to all styles for feeds
 * if displaying the post, show only the image, without the link

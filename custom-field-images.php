@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Field Images
 Description: Easily associate any image to a post and display it in post excerpts, feeds etc.
-Version: 2.2.1
+Version: 2.2.2
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/custom-field-images
@@ -183,9 +183,7 @@ abstract class displayCFI
 		// End img tag
 		$image .= '/>';
 
-		$link = self::$data['link'];
-
-		if ( ! $link || is_singular() )
+		if ( ! $link = self::$data['link'] )
 			return $image . "\n";
 
 		return @sprintf( "<a href='$link' %s>$image</a>\n", stripslashes(self::$options->extra_attr) );
@@ -228,7 +226,7 @@ abstract class displayCFI
 
 		// link
 		if ( ! $link = self::$data['link'] )
-			if ( self::$options->default_link )
+			if ( self::$options->default_link && ! is_singular() )
 				$link = get_permalink($post_id);
 
 		foreach ( self::$data_keys as $key )
