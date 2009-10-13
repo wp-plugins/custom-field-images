@@ -46,8 +46,6 @@ function _cfi_init()
 		'excerpt' => true
 	));
 
-	$options->update_reset();
-
 	displayCFI::init($options);
 
 	// Load template tags
