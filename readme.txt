@@ -45,7 +45,7 @@ There is also an additional template tag, called `get_custom_field_image()` whic
 
 = "Parse error: syntax error, unexpected T_CLASS..." Help! =
 
-Make sure your new host is running PHP 5. Add this line to wp-config.php:
+Make sure your host is running PHP 5. Add this line to wp-config.php to check:
 
 `var_dump(PHP_VERSION);`
 
