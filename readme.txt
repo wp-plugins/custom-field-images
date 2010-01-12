@@ -10,6 +10,8 @@ Easily associate any image to a post and display it in post excerpts, feeds etc.
 
 == Description ==
 
+**This plugin will not be updated anymore. Most of the functionality has been integrated into WordPress.**
+
 Custom Field Images provides a flexible way to associate an image to a post and display it anywhere on your site.
 
 **Easily insert image data**
