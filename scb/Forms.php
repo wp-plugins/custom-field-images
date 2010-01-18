@@ -1,7 +1,8 @@
 <?php
 
-class scbForms
-{
+class scbForms {
+	const token = '%input%';
+
 	/* Generates one or more form elements of the same type,
 	   including <select>s and <textarea>s.
 
@@ -16,91 +17,62 @@ class scbForms
 
 		$formdata = associative array with the formdata with which to fill the elements
 	*/
-	function input($args, $formdata = array())
-	{
-		$args = self::_validate_data($args);
-		$formdata = self::_validate_data($formdata);
-		
-		// Backwards compat
-		foreach ( array('name', 'value') as $key )
-		{
-			$old = $key . 's';
-			if ( isset($args[$old]) )
-				$args[$key] = $args[$old];
-		}
+	
+	protected static $args;
+	protected static $formdata = array();
 
-		// Check required fields
+	static function input($args, $formdata = array()) {
+		$args = self::validate_data($args);
+
 		$error = false;
-		foreach ( array('name', 'type') as $key )
-		{
-			if ( isset($args[$key]) )
-				continue;
+		foreach ( array('name', 'value') as $key ) {
+			$old = $key . 's';
 
-			$error = true;
-			trigger_error("No $key specified", E_USER_WARNING);
+			if ( isset($args[$old]) ) {
+				$args[$key] = $args[$old];
+				unset($args[$old]);
+			}
 		}
 
-		if ( $error )
-			return;
+		if ( !isset($args['name']) || empty($args['name']) )
+			return trigger_error("Empty name", E_USER_WARNING);
 
-		switch ( $args['type'] )
-		{
-			case 'select':  	return self::_select($args, $formdata);
-			case 'textarea':	return self::_textarea($args, $formdata);
+		self::$args = $args;
+		self::$formdata = self::validate_data($formdata);
+
+		switch ( $args['type'] ) {
+			case 'select':  	return self::_select();
+			case 'textarea':	return self::_textarea();
+			default:			return self::_input();
 		}
-
-		return self::_input($args, $formdata);
 	}
 
-	static $token = '%input%';
-
 	// Deprecated
-	function select($args, $options = array())
-	{
+	static function select($args, $options = array()) {
 		if ( !empty($options) )
 			$args['value'] = $options;
 
-		return self::_select($args);
+		self::$args = $args;
+
+		return self::_select();
 	}
 
 	// Deprecated
-	function textarea($args, $content = '')
-	{
+	static function textarea($args, $content = '') {
 		if ( !empty($content) )
 			$args['value'] = $content;
 
-		return self::_textarea($args);
+		self::$args = $args;
+
+		return self::_textarea();
 	}
 
 
 // ____________UTILITIES____________
 
 
-	function form($inputs, $formdata = NULL, $nonce)
-	{
-		$output = '';
-		foreach ( $inputs as $input )
-			$output .= self::input($input, $formdata);
-
-		$output = self::form_wrap($output, $nonce);
-
-		return $output;
-	}
-
-	function table($rows, $formdata = NULL)
-	{
-		$output = '';
-		foreach ( $rows as $row )
-			$output .= self::table_row($row, $formdata);
-
-		$output = self::table_wrap($output);
-
-		return $output;
-	}
-
-	// Generates multiple rows and wraps them in a form table
-	function form_table($rows, $formdata = NULL)
-	{
+	// Generates a table wrapped in a form
+	static function form_table($rows, $formdata = NULL) {
 		$output = '';
 		foreach ( $rows as $row )
 			$output .= self::table_row($row, $formdata);
@@ -110,8 +82,30 @@ class scbForms
 		return $output;
 	}
 
-	function table_row($args, $formdata = NULL)
-	{
+	// Generates a form
+	static function form($inputs, $formdata = NULL, $nonce) {
+		$output = '';
+		foreach ( $inputs as $input )
+			$output .= self::input($input, $formdata);
+
+		$output = self::form_wrap($output, $nonce);
+
+		return $output;
+	}
+
+	// Generates a table
+	static function table($rows, $formdata = NULL) {
+		$output = '';
+		foreach ( $rows as $row )
+			$output .= self::table_row($row, $formdata);
+
+		$output = self::table_wrap($output);
+
+		return $output;
+	}
+
+	// Generates a table row
+	static function table_row($args, $formdata = NULL) {
 		return self::row_wrap($args['title'], self::input($args, $formdata));
 	}
 
@@ -119,15 +113,16 @@ class scbForms
 // ____________WRAPPERS____________
 
 
-	function table_wrap($content)
-	{
-		$output = "\n<table class='form-table'>\n" . $content . "\n</table>\n";
+	// Wraps the given content in a <form><table>
+	static function form_table_wrap($content, $nonce = 'update_options') {
+		$output = self::table_wrap($content);
+		$output = self::form_wrap($output, $nonce);
 
 		return $output;
 	}
 
-	function form_wrap($content, $nonce = 'update_options')
-	{
+	// Wraps the given content in a <form>
+	static function form_wrap($content, $nonce = 'update_options') {
 		$output = "\n<form method='post' action=''>\n";
 		$output .= $content;
 		$output .= wp_nonce_field($action = $nonce, $name = "_wpnonce", $referer = true , $echo = false);
@@ -136,73 +131,88 @@ class scbForms
 		return $output;
 	}
 
-	function form_table_wrap($content, $nonce = 'update_options')
-	{
-		$output = self::table_wrap($content);
-		$output = self::form_wrap($output, $nonce);
+	// Wraps the given content in a <table>
+	static function table_wrap($content) {
+		$output = "\n<table class='form-table'>\n" . $content . "\n</table>\n";
 
 		return $output;
 	}
 
-	function row_wrap($title, $content)
-	{
+	// Wraps the given content in a <tr><td>
+	static function row_wrap($title, $content) {
 		return "\n<tr>\n\t<th scope='row'>" . $title . "</th>\n\t<td>\n\t\t" . $content . "\t</td>\n\n</tr>";
 	}
 
 
 // ____________PRIVATE METHODS____________
 
+
 	// Recursivly transform empty arrays to ''
-	private static function _validate_data($data)
-	{
-		if ( empty($data) )
-			return '';
-			
+	private static function validate_data($data) {
 		if ( ! is_array($data) )
 			return $data;
 
+		if ( empty($data) )
+			return '';
+
 		foreach ( $data as $key => &$value )
-			if ( is_array($value) )
-				$value = self::_validate_data($value);
+			$value = self::validate_data($value);
 
 		return $data;
 	}
 
 	// From multiple inputs to single inputs
-	private static function _input($args, $formdata)
-	{
-		extract(wp_parse_args($args, array(
+	private static function _input() {
+		extract(wp_parse_args(self::$args, array(
 			'name' => NULL,
 			'value' => NULL,
 			'desc' => NULL,
 			'checked' => NULL,
-		)), EXTR_SKIP);
+		)));
+
+		$m_name = is_array($name);
+		$m_value = is_array($value);
+		$m_desc = is_array($desc);
 
 		// Correct name
-		if ( !is_array($name) && is_array($value)
-			&& $type == 'checkbox'
+		if ( !$m_name && $m_value
+			&& 'checkbox' == $type
 			&& false === strpos($name, '[')
 		)
 			$args['name'] = $name = $name . '[]';
 
 		// Expand names or values
-		if ( !is_array($name) && !is_array($value) )
+		if ( !$m_name && !$m_value ) {
 			$a = array($name => $value);
-		elseif ( is_array($name) && !is_array($value) )
+		}
+		elseif ( $m_name && !$m_value ) {
 			$a = array_fill_keys($name, $value);
-		elseif ( !is_array($name) && is_array($value) )
+		}
+		elseif ( !$m_name && $m_value ) {
 			$a = array_fill_keys($value, $name);
-		else
+		}
+		else {
 			$a = array_combine($name, $value);
+		}
+
+		// Correct descriptions
+		$_after = '';
+		if ( isset($desc) && !$m_desc && false === strpos($desc, self::token) ) {
+			if ( $m_value ) {
+				$_after = $desc;
+				$args['desc'] = $desc = $value;
+			}
+			elseif ( $m_name ) {
+				$_after = $desc;
+				$args['desc'] = $desc = $name;			
+			}
+		}
 
 		// Determine what goes where
-		if ( !is_array($name) && is_array($value) )
-		{
+		if ( !$m_name && $m_value ) {
 			$i1 = 'val';
 			$i2 = 'name';
-		}
-		else
-		{
+		} else {
 			$i1 = 'name';
 			$i2 = 'val';
 		}
@@ -210,13 +220,12 @@ class scbForms
 		$func = in_array($type, array('checkbox', 'radio')) ? '_checkbox_single' : '_input_single';
 
 		// Set constant args
-		$const_args = self::array_slice_assoc($args, array('type', 'desc_pos', 'checked'));
+		$const_args = self::array_extract(self::$args, array('type', 'desc_pos', 'checked'));
 		if ( isset($extra) )
 			$const_args['extra'] = explode(' ', $extra);
 
 		$i = 0;
-		foreach ( $a as $name => $val )
-		{
+		foreach ( $a as $name => $val ) {
 			$cur_args = $const_args;
 
 			if ( $$i1 !== NULL )
@@ -233,26 +242,25 @@ class scbForms
 
 			// Find relevant formdata
 			$match = NULL;
-			if ( $checked === NULL )
-			{
-				$match = @$formdata[str_replace('[]', '', $$i1)];
-				if ( is_array($match) )
+			if ( $checked === NULL ) {
+				$match = @self::$formdata[str_replace('[]', '', $$i1)];
+				if ( is_array($match) ) {
 					$match = $match[$i];
-			}
-			else if ( is_array($checked) )
+				}
+			} else if ( is_array($checked) ) {
 				$cur_args['checked'] = $checked[$i];
+			}
 
 			$output[] = self::$func($cur_args, $match);
 
 			$i++;
 		}
 
-		return implode("\n", $output);
+		return implode("\n", $output) . $_after;
 	}
 
 	// Handle args for checkboxes and radio inputs
-	private static function _checkbox_single($args, $data)
-	{
+	private static function _checkbox_single($args, $data) {
 		$args = wp_parse_args($args, array(
 			'name' => NULL,
 			'value' => true,
@@ -266,11 +274,11 @@ class scbForms
 			$$key = &$val;
 		unset($val);
 
-		if ( $checked === NULL && $name !== NULL && $value == $data )
+		if ( $checked === NULL && $value == $data )
 			$checked = true;
 
 		if ( $checked )
-			$extra[] = "checked='checked'";
+			$extra[] = 'checked="checked"';
 
 		if ( $desc === NULL && !is_bool($value) )
 			$desc = str_replace('[]', '', $value);
@@ -279,51 +287,129 @@ class scbForms
 	}
 
 	// Handle args for text inputs
-	private static function _input_single($args, $data)
-	{
-		foreach ( $args as $key => &$value )
-			$$key = &$value;
-
+	private static function _input_single($args, $data) {
 		$args = wp_parse_args($args, array(
-			'value' => stripslashes(esc_html($data)),
+			'value' => stripslashes($data),
 			'desc_pos' => 'after',
 			'extra' => array('class="regular-text"'),
 		));
 
-		if ( FALSE === strpos($name, '[]') )
+		foreach ( $args as $key => &$val )
+			$$key = &$val;
+		unset($val);
+
+		if ( FALSE === strpos($name, '[') )
 			$extra[] = "id='{$name}'";
 
 		return self::_input_gen($args);
 	}
 
 	// Generate html with the final args
-	function _input_gen($args)
-	{
+	private static function _input_gen($args) {
 		extract(wp_parse_args($args, array(
 			'name' => NULL,
 			'value' => NULL,
 			'desc' => NULL,
-		)), EXTR_SKIP);
+			'extra' => array()
+		)));
 
-		$extra = implode(' ', $extra);
+		$extra = self::validate_extra($extra, $name);
 
-		// Build the item
+		$value = esc_attr($value);
+
 		$input = "<input name='{$name}' value='{$value}' type='{$type}'{$extra} /> ";
 
-		// Set label
-		if ( FALSE === strpos($desc, self::$token) )
-			switch ($desc_pos)
-			{
-				case 'before': $label = $desc .' ' . self::$token; break;
-				case 'after': $label = self::$token . ' ' . $desc;
-			}
+		return self::add_label($input, $desc, $desc_pos);
+	}
+
+	private static function _select() {
+		extract(wp_parse_args(self::$args, array(
+			'name' => '',
+			'value' => array(),
+			'text' => '',
+			'selected' => array('foo'),	// hack to make default blank
+			'extra' => '',
+			'numeric' => false,	// use numeric array instead of associative
+			'desc' => '',
+			'desc_pos' => '',
+		)), EXTR_SKIP);
+
+		if ( empty($value) )
+			$value = array('' => '');
+
+		if ( !is_array($value) )
+			return trigger_error("'value' argument is expected to be an array", E_USER_WARNING);
+
+		if ( !self::is_associative($value) && !$numeric )
+			$value = array_combine($value, $value);
+
+		if ( isset(self::$formdata[$name]) )
+			$cur_val = self::$formdata[$name];
 		else
+			$cur_val = $selected;
+
+		if ( false === $text ) {
+			$opts = '';
+		} else {
+			$opts = "\t<option value=''";
+			if ( $cur_val === array('foo') )
+				$opts .= " selected='selected'";
+			$opts .= ">{$text}</option>\n";
+		}
+
+		foreach ( $value as $key => $value ) {
+			if ( empty($key) || empty($value) )
+				continue;
+
+			$cur_extra = array();
+			if ( (string) $key == (string) $cur_val )
+				$cur_extra[] = "selected='selected'";
+
+			$cur_extra = self::validate_extra($cur_extra, $key);
+
+			$opts .= "\t<option value='{$key}'{$cur_extra}>{$value}</option>\n";
+		}
+
+		$extra = self::validate_extra($extra, $name);
+
+		$input =  "<select name='{$name}'$extra>\n{$opts}</select>";
+		
+		return self::add_label($input, $desc, $desc_pos);
+	}
+
+	private static function _textarea() {
+		extract(wp_parse_args(self::$args, array(
+			'name' => '',
+			'extra' => 'class="widefat"',
+			'value' => '',
+			'escaped' => false,
+		)), EXTR_SKIP);
+
+		if ( !$escaped )
+			$value = wp_htmledit_pre(stripslashes($value));
+
+		$extra = self::validate_extra($extra, $name);
+
+		return "<textarea name='{$name}'{$extra}>\n{$value}\n</textarea>\n";
+	}
+
+	private static function add_label($input, $desc, $desc_pos) {
+		if ( empty($desc_pos) )
+			$desc_pos = 'after';
+
+		$label = '';
+		if ( false === strpos($desc, self::token) ) {
+			switch ($desc_pos) {
+				case 'before': $label = $desc . ' ' . self::token; break;
+				case 'after': $label = self::token . ' ' . $desc;
+			}
+		} else {
 			$label = $desc;
+		}
 
-		$label = trim(str_replace(self::$token, $input, $label));
+		$label = trim(str_replace(self::token, $input, $label));
 
-		// Add label
-		if ( empty($label) || $desc === false )
+		if ( empty($desc) )
 			$output = $input . "\n";
 		else
 			$output = "<label>{$label}</label>\n";
@@ -331,92 +417,19 @@ class scbForms
 		return $output;
 	}
 
-	private static function _select($args, $formdata)
-	{
-		extract(wp_parse_args($args, array(
-			'name' => '',
-			'value' => array(),
-			'text' => '',
-			'selected' => array('foo'),	// hack to make default blank
-			'extra' => '',
-			'numeric' => false	// use numeric array instead of associative
-		)), EXTR_SKIP);
+	private static function validate_extra($extra, $name, $implode = true) {
+		if ( !is_array($extra) )
+			$extra = explode(' ', $extra);
 
-		$cur_val = $selected;
-		if ( isset($formdata[$name]) )
-			$cur_val = $formdata[$name];
+		if ( empty($extra) )
+			return '';
 
-		if ( !is_array($value) )
-			return trigger_error("Second argument is expected to be an array", E_USER_WARNING);
-
-		if ( empty($value) )
-			$value = array('' => '');
-
-		if ( !self::is_associative($value) && !$numeric )
-			$value = array_combine($value, $value);
-
-		if ( FALSE === $text )
-			$opts = '';
-		else
-		{
-			$opts = "\t<option value=''";
-			if ( $cur_val === array('foo') )
-				$opts .= " selected='selected'";
-			$opts .= ">{$text}</option>\n";
-		}
-
-		foreach ( $value as $key => $value )
-		{
-			if ( empty($key) && empty($value) )
-				continue;
-
-			$cur_extra = array();
-			if ( $key == $cur_val )
-				$cur_extra[] = "selected='selected'";
-
-			$cur_extra = implode(' ', $cur_extra);
-			if ( !empty($cur_extra) )
-				$cur_extra = ' ' . $cur_extra;
-
-			$opts .= "\t<option value='{$key}'{$cur_extra}>{$value}</option>\n";
-		}
-
-		$extra = self::validate_extra($extra, $name);
-
-		return "<select name='{$name}' $extra>\n{$opts}</select>\n";
+		return ' ' . ltrim(implode(' ', $extra));
 	}
 
-	private static function _textarea($args, $formdata)
-	{
-		extract(wp_parse_args($args, array(
-			'name' => '', 
-			'extra' => 'class="widefat"',
-			'value' => '',
-			'escaped' => FALSE,
-		)), EXTR_SKIP);
+// Utilities
 
-		if ( !$escaped )
-			$value = stripslashes(esc_html($value));
-
-		$extra = self::validate_extra($extra, $name);
-
-		return "<textarea name='{$name}'{$extra}>\n{$value}\n</textarea>\n";
-	}
-
-	private static function validate_extra($extra, $name, $implode = true)
-	{
-		$extra = explode(' ', $extra);
-		if ( FALSE === strpos($name, '[]') )
-			$extra[] = " id='{$name}'";
-		$extra = implode(' ', $extra);
-
-		return $extra;
-	}
-
-// Sugar
-
-	private static function is_associative($array)
-	{
+	private static function is_associative($array) {
 		if ( !is_array($array) || empty($array) )
 			return false;
 
@@ -425,40 +438,24 @@ class scbForms
 		return array_keys($keys) !== $keys;
 	}
 
-	private static function array_slice_assoc($array, $keys)
-	{
+	private static function array_extract($array, $keys) {
 		$r = array();
 		foreach ( $keys as $key )
 			if ( isset($array[$key]) )
 				$r[$key] = $array[$key];
 
-		return $r;			
-	}
-
-	private static function debug() 
-	{
-		$args = func_get_args();
-		
-		echo "<pre>";
-
-		foreach ( $args as $arg )
-			if ( is_array($arg) || is_object($arg) )
-				print_r($arg);
-			else
-				var_dump($arg);
-
-		echo "</pre><br />";
+		return $r;
 	}
 }
 
 // PHP < 5.2
 if ( !function_exists('array_fill_keys') ) :
-function array_fill_keys($keys, $value)
-{
+function array_fill_keys($keys, $value) {
 	if ( !is_array($keys) )
 		trigger_error('First argument is expected to be an array.' . gettype($keys) . 'given', E_USER_WARNING);
 
-	foreach($keys as $key)
+	$r = array();
+	foreach ( $keys as $key )
 		$r[$key] = $value;
 
 	return $r;

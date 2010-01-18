@@ -3,14 +3,12 @@ Contributors: scribu
 Donate link: http://scribu.net/wordpress
 Tags: custom fields, images, thumbs
 Requires at least: 2.8
-Tested up to: 2.8.5
+Tested up to: 2.9.1
 Stable tag: trunk
 
 Easily associate any image to a post and display it in post excerpts, feeds etc.
 
 == Description ==
-
-**This plugin will not be updated anymore. Most of the functionality has been integrated into WordPress.**
 
 Custom Field Images provides a flexible way to associate an image to a post and display it anywhere on your site.
 
@@ -78,6 +76,9 @@ Just clear the URL field and save the post.
 3. The settings page
 
 == Changelog ==
+
+= 2.2.3 =
+* confirmed 2.9 compatibility
 
 = 2.2.2 =
 * fixed image link on single posts

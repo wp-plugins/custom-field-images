@@ -2,14 +2,14 @@
 
 function cfi_admin_init($file, $options)
 {
-	boxCFI::init($options->insert_button);
+	boxCFI::init();
 
 	new settingsCFI($file, $options);
 }
 
 abstract class boxCFI extends displayCFI
 {
-	static function init($insert)
+	static function init()
 	{
 		add_action('admin_print_styles', array(__CLASS__, 'scripts'));
 		add_action('admin_menu', array(__CLASS__, 'box_init'));
