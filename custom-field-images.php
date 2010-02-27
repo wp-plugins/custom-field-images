@@ -28,8 +28,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 // Init
 _cfi_init();
-function _cfi_init()
-{
+function _cfi_init() {
 	// Load scbFramework
 	require_once dirname(__FILE__) . '/scb/load.php';
 
@@ -52,15 +51,13 @@ function _cfi_init()
 	require_once dirname(__FILE__) . '/template-tags.php';
 
 	// Load widget class
-	if ( class_exists('WP_Widget') )
-	{
+	if ( class_exists('WP_Widget') ) {
 		require_once dirname(__FILE__) . '/widget.php';
 		scbWidget::init('widgetCFI', __FILE__, 'cfi-loop');
 	}
 
 	// Load admin classes
-	if ( is_admin() )
-	{
+	if ( is_admin() ) {
 		// Load translations
 		$plugin_dir = basename(dirname(__FILE__));
 		load_plugin_textdomain('custom-field-images', "wp-content/plugins/$plugin_dir/lang", "$plugin_dir/lang");
@@ -70,8 +67,7 @@ function _cfi_init()
 	}
 }
 
-abstract class displayCFI
-{
+abstract class displayCFI {
 	// wp_postmeta.meta_key
 	const key = '_cfi_image';
 
@@ -98,16 +94,14 @@ abstract class displayCFI
 	// Options object holder
 	static $options;
 
-	static function init($options)
-	{
+	static function init($options) {
 		self::$options = $options;
 
 		add_filter('the_excerpt', array(__CLASS__, 'filter'), 20);
 		add_filter('the_content', array(__CLASS__, 'filter'), 20);
 	}
 
-	static function filter($content)
-	{
+	static function filter($content) {
 		$type = substr(current_filter(), 4);
 		$is_feed = is_feed();
 
@@ -130,8 +124,7 @@ abstract class displayCFI
 		return $content;
 	}
 
-	static function loop($query)
-	{
+	static function loop($query) {
 		$query = wp_parse_args($query, array(
 			'meta_key' => displayCFI::key,
 			'post_type' => 'post',
@@ -159,8 +152,7 @@ abstract class displayCFI
 		return ob_get_clean();
 	}
 
-	static function generate($post_id = '', $defaults = '')
-	{
+	static function generate($post_id = '', $defaults = '') {
 		self::load($post_id, $defaults);
 
 		@extract(self::$data);
@@ -187,8 +179,7 @@ abstract class displayCFI
 		return @sprintf( "<a href='$link' %s>$image</a>\n", stripslashes(self::$options->extra_attr) );
 	}
 
-	static function load($post_id = '', $defaults = '', $raw = false)
-	{
+	static function load($post_id = '', $defaults = '', $raw = false) {
 		if ( ! $post_id = intval($post_id) )
 			$post_id = get_the_ID();
 
@@ -201,21 +192,21 @@ abstract class displayCFI
 			return self::$data;
 
 		// id
-		if ( ! self::$data['id'] && ! self::$data['url'] && self::$options->first_attachment )
+		if ( ! @self::$data['id'] && ! @self::$data['url'] && self::$options->first_attachment )
 			self::$data['id'] = self::get_first_attachment_id($post_id);
 
 		// size
-		if ( ! $size = self::$data['size'] )
+		if ( ! $size = @self::$data['size'] )
 			$size = self::$options->default_size;
 
 		// url
 		if ( ! $url = self::get_url_by_id(self::$data['id'], $size) )
-			if ( ! $url = self::$data['url'] )
+			if ( ! $url = @self::$data['url'] )
 				if ( ! $url = self::$options->default_url )
 					return;
 
 		// align
-		if ( ! $align = self::$data['align'] )
+		if ( ! $align = @self::$data['align'] )
 			$align = self::$options->default_align;
 
 		// alt
@@ -232,8 +223,7 @@ abstract class displayCFI
 				self::$data[$key] = $$key;
 	}
 
-	static function get_first_attachment_id($post_id)
-	{
+	static function get_first_attachment_id($post_id) {
 		$atachment = get_children(array(
 			'post_parent' => $post_id,
 			'post_type' => 'attachment',
@@ -245,8 +235,7 @@ abstract class displayCFI
 		return @key($atachment);
 	}
 
-	static function get_url_by_id($id, $size)
-	{
+	static function get_url_by_id($id, $size) {
 		if ( ! $id )
 			return false;
 
