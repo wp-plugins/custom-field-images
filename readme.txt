@@ -10,6 +10,8 @@ Easily associate any image to a post and display it in post excerpts, feeds etc.
 
 == Description ==
 
+**This plugin is retired. Please use [Post Thumbnails](http://markjaquith.wordpress.com/2009/12/23/new-in-wordpress-2-9-post-thumbnail-images/) instead.**
+
 Custom Field Images provides a flexible way to associate an image to a post and display it anywhere on your site.
 
 **Easily insert image data**
