@@ -184,6 +184,9 @@ abstract class displayCFI {
 			$post_id = get_the_ID();
 
 		self::$data = get_post_meta($post_id, self::key, TRUE);
+		
+		if ( empty(self::$data) )
+			self::$data = array();
 
 		if ( ! empty($defaults) )
 			self::$data = wp_parse_args($defaults, self::$data);
