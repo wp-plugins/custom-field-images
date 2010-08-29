@@ -9,7 +9,8 @@ Plugin URI: http://scribu.net/wordpress/custom-field-images
 Text Domain: custom-field-images
 Domain Path: /lang
 
-Copyright (C) 2009 scribu.net (scribu AT gmail DOT com)
+
+Copyright (C) 2009 Cristi Burcă (scribu@gmail.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

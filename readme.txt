@@ -26,6 +26,8 @@ The plugin has button for importing / exporting / deleting any available images,
 
 Instead of displaying recent posts as plain links, you can display them as a list of images, using the built-in widget.
 
+Links: [Plugin News](http://scribu.net/wordpress/custom-field-images) | [Author's Site](http://scribu.net)
+
 == Installation ==
 
 You can use the WordPress plugin installer, or do it manually:
